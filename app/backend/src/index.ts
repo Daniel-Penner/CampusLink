@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const app = express();
 const prisma = new PrismaClient();
-
+npx prisma db pull
 app.use(express.json());
 
 // Add a new user (this could be for registration purposes)
