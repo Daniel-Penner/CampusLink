@@ -1,27 +1,15 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
+    "lib": ["ES2020", "DOM"],
+    "module": "ESNext",  // Ensures ES Module syntax is used
     "skipLibCheck": true,
     "moduleResolution": "node",
-    "types": ["vite/client", "node"],
-    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
-    // Add this flag to fix the issue
-    "allowSyntheticDefaultImports": true
+    "outDir": "./dist"
   },
   "include": [
-    "./src"
+    "./src/**/*.ts"
   ]
 }
