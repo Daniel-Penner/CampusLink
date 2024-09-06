@@ -1,0 +1,101 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--background-color);
+    height: 100vh;
+    color: var(--text-color);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px;
+    background-color: var(--background-color);
+}
+
+.logo {
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.navLinks {
+    display: flex;
+    gap: 20px;
+}
+
+.loginButton,
+.getStartedButton {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--text-color);
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.getStartedButton {
+    background-color: var(--primary-color);
+}
+
+.loginButton:hover,
+.getStartedButton:hover {
+    background-color: var(--button-hover);
+}
+
+.mainContent {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 50px;
+}
+
+.signupSection, .loginSection {
+    background-color: var(--secondary-background);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.signupSection h1, .loginSection h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.inputField {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--input-background);
+    color: var(--input-text-color);
+    border: none;
+    border-radius: 5px;
+}
+
+.signUpButton, .loginButton, .googleButton {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.signUpButton:hover, .loginButton:hover, .googleButton:hover {
+    background-color: var(--button-hover);
+}
+
+.orDivider {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.forgotPassword {
+    margin-top: 10px;
+    display: inline-block;
+    color: var(--primary-color);
+    text-decoration: none;
+}
