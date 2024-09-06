@@ -1,74 +1,70 @@
-.container {
+.pageContainer {
+    position: relative;
+    top: 40px; /* Offset the navbar */
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: var(--background-color);
-    height: 100vh;
+    justify-content: space-between; /* Push sign-up to the left and log-in to the right */
+    height: calc(100vh - 80px); /* Full height minus navbar */
+    width: 100vw; /* Ensure full width of the viewport */
+    background-color: var(--background-color); /* Dark background */
+    background-image: url("../../assets/background.png");
+    background-size: cover; /* Resize the background image to cover the entire container */
+    padding: 5% 6%;
+}
+
+.pageContainer h1{
+    text-align: left;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+.pageContainer h2{
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+.pageContainer p{
+    text-align: left;
+    margin-bottom: 50px;
+    color: var(--label-color);
+}
+
+.middleLine {
+    width: 5px; /* Thickness of the line */
+    background-color: var(--primary-color); /* Use the green color */
+    height: 80vh; /* Match the height of the sections */
+    margin-top: calc(-5% + 40px);
+    margin-bottom: 40px;
+}
+
+
+.signUpSection {
+    width: 50%; /* Take up around half of the page */
+    padding: 40px;
     color: var(--text-color);
+    background: none; /* No container for sign-up, directly on the background */
+    text-align: center;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 20px;
-    background-color: var(--background-color);
-}
-
-.logo {
-    font-size: 24px;
-    color: var(--primary-color);
-}
-
-.navLinks {
-    display: flex;
-    gap: 20px;
-}
-
-.loginButton,
-.getStartedButton {
-    background: transparent;
-    border: 2px solid var(--primary-color);
-    color: var(--text-color);
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-.getStartedButton {
-    background-color: var(--primary-color);
-}
-
-.loginButton:hover,
-.getStartedButton:hover {
-    background-color: var(--button-hover);
-}
-
-.mainContent {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    padding: 50px;
-}
-
-.signupSection, .loginSection {
-    background-color: var(--secondary-background);
-    padding: 20px;
+.loginSection {
+    margin-top: 40px;
+    width: 30%;
+    padding: 40px;
+    height: 50vh;
+    background-color: var(--secondary-background); /* Container background */
+    border: 2px solid var(--border-color);
     border-radius: 10px;
-}
-
-.signupSection h1, .loginSection h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
+    color: var(--text-color);
 }
 
 .inputField {
-    display: block;
     width: 100%;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     background-color: var(--input-background);
     color: var(--input-text-color);
-    border: none;
+    border: 2px solid var(--border-color);
     border-radius: 5px;
 }
 
@@ -76,8 +72,9 @@
     width: 100%;
     padding: 10px;
     margin-top: 10px;
+    margin-bottom: 10px;
     background-color: var(--primary-color);
-    color: var(--text-color);
+    color: var(--button-text);
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -85,17 +82,4 @@
 
 .signUpButton:hover, .loginButton:hover, .googleButton:hover {
     background-color: var(--button-hover);
-}
-
-.orDivider {
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-}
-
-.forgotPassword {
-    margin-top: 10px;
-    display: inline-block;
-    color: var(--primary-color);
-    text-decoration: none;
 }

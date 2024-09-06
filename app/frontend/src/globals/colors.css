@@ -1,9 +1,13 @@
 :root {
-    --primary-color: #10b981;       /* Green color for buttons and highlights */
-    --background-color: #181818;    /* Dark background */
-    --text-color: #ffffff;          /* White for text */
-    --input-background: #333333;    /* Gray background for input fields */
-    --input-text-color: #cccccc;    /* Light gray for input text */
-    --button-hover: #0a8754;        /* Slightly darker green for hover state */
-    --secondary-background: #232323;/* Secondary background for side sections */
+    --primary-color: #00c885;       /* Green color for buttons and highlights */
+    --background-color: #131313;    /* Dark background */
+    --secondary-background: #1E1E1E;/* background for containers */
+    --lighter-grey: #353535;        /* for some buttons directly against the dark background color*/
+    --text-color: #E0E0E0;          /* text against the background and buttons */
+    --input-background: #131313;    /* Dark grey background for input fields */
+    --input-text-color: #5A5A5A;    /* Light gray for input text */
+    --border-color: #565656; /* borders for containers and inputs*/
+    --label-color: #878787; /*subheaders and some labels*/
+    --button-text: #ffffff;         /* for use with green buttons */
+    --button-hover: #00965a;        /* Slightly darker green for hover state */
 }
