@@ -57,14 +57,20 @@
     }
 }
 
-.navMenu a {
+.navButton {
+    background: none;
+    border: none;
     color: var(--text-color);
     text-decoration: none;
     margin-bottom: 10px;
     font-size: 20px;
+    cursor: pointer;
     transition: color 0.3s ease;
+    padding: 0;
+    text-align: left;
 }
 
-.navMenu a:hover {
+/* Hover effect for buttons */
+.navButton:hover {
     color: var(--primary-color);
 }

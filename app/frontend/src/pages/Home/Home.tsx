@@ -1,24 +1,47 @@
 import React from 'react';
 import styles from './Home.module.css';
 import Navbar from '../../components/Navbar/Navbar';
+import {GoogleLogin} from '@react-oauth/google';
+import { PiUserCirclePlusLight } from "react-icons/pi";
 
 const Homepage: React.FC = () => {
+    const handleSignUp = () => {
+        // Your existing sign-up logic
+        console.log('Sign Up button clicked');
+    };
+
+
     return (
         <div className={styles.pageContainer}>
             <Navbar />
             <div className={styles.signUpSection}>
                 <h1>For international students</h1>
                 <p>A tool for students from abroad to communicate and share things you've learned about Kelowna.</p>
-                <input
-                    type="email"
-                    placeholder="Email Address"
-                    className={styles.inputField}
-                />
-                <button className={styles.signUpButton}>Sign Up</button>
-                <div className={styles.orDivider}>
-                    <span>Or</span>
+                <div className={styles.inputContainer}>
+                    <input
+                        type="email"
+                        placeholder="Email Address"
+                        className={styles.inputField}
+                    />
+                    <button className={styles.signUpButton} onClick={handleSignUp}>
+                        <PiUserCirclePlusLight {styles.icon}/>
+                        <span>Sign Up</span>
+                    </button>
                 </div>
-                <button className={styles.googleButton}>Continue with Google</button>
+                <div className={styles.orDivider}>
+                    <hr className={styles.line} />
+                    <span>Or</span>
+                    <hr className={styles.line} />
+                </div>
+                <GoogleLogin
+                    onSuccess={credentialResponse => {
+                        console.log(credentialResponse);
+                    }}
+                    onError={() => {
+                        console.log('Login Failed');
+                    }}
+                    useOneTap
+                />
             </div>
 
             {/* Green line between the sections */}
