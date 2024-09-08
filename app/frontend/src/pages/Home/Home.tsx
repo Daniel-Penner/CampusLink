@@ -1,13 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styles from './Home.module.css';
 import Navbar from '../../components/Navbar/Navbar';
-import {GoogleLogin} from '@react-oauth/google';
+import { FcGoogle } from "react-icons/fc";
 import { PiUserCirclePlusLight } from "react-icons/pi";
+import {useNavigate} from "react-router-dom";
 
 const Homepage: React.FC = () => {
+    const [email, setEmail] = useState('');
+    const navigate = useNavigate();
     const handleSignUp = () => {
         // Your existing sign-up logic
-        console.log('Sign Up button clicked');
+        navigate('/register', { state: { email } });
     };
 
 
@@ -22,9 +25,10 @@ const Homepage: React.FC = () => {
                         type="email"
                         placeholder="Email Address"
                         className={styles.inputField}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                     <button className={styles.signUpButton} onClick={handleSignUp}>
-                        <PiUserCirclePlusLight {styles.icon}/>
+                        <PiUserCirclePlusLight className={styles.icon}/>
                         <span>Sign Up</span>
                     </button>
                 </div>
@@ -33,15 +37,9 @@ const Homepage: React.FC = () => {
                     <span>Or</span>
                     <hr className={styles.line} />
                 </div>
-                <GoogleLogin
-                    onSuccess={credentialResponse => {
-                        console.log(credentialResponse);
-                    }}
-                    onError={() => {
-                        console.log('Login Failed');
-                    }}
-                    useOneTap
-                />
+                <button className={styles.googleButton}>
+                    <FcGoogle className={styles.logo}/> <span>Continue with Google</span>
+                </button>
             </div>
 
             {/* Green line between the sections */}

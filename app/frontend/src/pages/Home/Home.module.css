@@ -80,7 +80,7 @@
     background-color: var(--input-background);
 }
 
-.loginButton, .googleButton {
+.loginButton{
     width: 100%;
     padding: 10px;
     margin-top: 10px;
@@ -92,7 +92,7 @@
     cursor: pointer;
 }
 
-.loginButton:hover, .googleButton:hover {
+.loginButton:hover{
     background-color: var(--button-hover);
 }
 
@@ -136,10 +136,9 @@
     align-items: center;
     justify-content: center;
     position: absolute; /* Position the icon */
-    left: 25px; /* Adjust position to align */
-    top: -25px;
-    width: 20px;
-    height: 20px;
+    left: 15px; /* Adjust position to align */
+    width: 40px;
+    height: 40px;
 }
 
 .signUpButton span {
@@ -150,8 +149,7 @@
 }
 
 .signUpButton:hover {
-    width: 140px; /* Expand the width */
-    transform: scale(1.05); /* Increase size by 5% */
+    width: 170px; /* Expand the width */
 }
 
 .signUpButton:hover span {
@@ -161,13 +159,40 @@
 .orDivider {
     display: flex;
     align-items: center;
-    margin: 20px 0;
+    margin: 40px 0;
     text-align: center;
+    width: 75%;
+}
+
+.orDivider span {
+    font-size: 18px;
 }
 
 .orDivider .line {
     flex-grow: 1;
     height: 1px;
-    background-color: var(--primary-color);
     margin: 0 10px;
+}
+
+.googleButton{
+    display: flex;
+    justify-content: center;
+    width: 50%;
+    height: 55px;
+    align-items: center;
+    font-size: 18px;
+    background-color: var(--lighter-grey);
+    color: var(--text-color);
+    transition: background-color 0.3s;
+    border: none;
+}
+
+.googleButton:hover{
+    background-color: var(--primary-color);
+}
+
+.googleButton .logo {
+    height: 30px;
+    width: 30px;
+    margin-right: 20px;
 }
