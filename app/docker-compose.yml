@@ -26,7 +26,6 @@ services:
       - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password  # To avoid issues with password plugins
 
   backend:
     build:
@@ -42,7 +41,7 @@ services:
       - '5000:5000'
     volumes:
       - ./backend:/src
-    command: sh -c "npx prisma migrate deploy && npm start"
+    command: sh -c "npx prisma migrate deploy && npx prisma generate && npm start"  # Run dev migrations
 
   frontend:
     build:
