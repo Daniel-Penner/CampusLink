@@ -5,13 +5,18 @@ import authRoutes from './routes/auth';
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173',  // Allow requests from the frontend port
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
+    origin: 'http://localhost:5173',  // Adjust as needed
+    methods: ['GET', 'POST', 'OPTIONS'],  // Include all necessary methods
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 
 app.get('/', (req, res) => {
     res.send('Hello World');
+});
+
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ message: 'API is working!' });
 });
 
 app.use(express.json()); // To parse JSON request bodies
