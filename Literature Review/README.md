@@ -6,8 +6,10 @@
    - [Theme 1: General Trends](#theme-1-general-trends)
    - [Theme 2: Methodologies](#theme-2-methodologies)
 3. [Analysis of Similar Websites](#analysis-of-similar-websites)
-   - [Website 1: [Discord]](#website-1-discord )
-   - [Website 2: [Website Name]](#website-2-website-name)
+   - [Website 1: Discord](#website-1-discord )
+   - [Website 2: Slack](#website-2-slack )
+   - [Website 3: LinkedIn](#website-3-linkedin )
+   - [Website 4: Instagram](#website-4-instagram )
 4. [Research Gaps and Design Implications](#research-gaps-and-design-implications)
 5. [Conclusion](#conclusion)
 6. [References](#references)
@@ -72,7 +74,7 @@ The biggest competitor to Discord and another site that fills the same general n
 - **Channel-Based Navigation**: Like Discord, Slack uses channels and threads to divide communication in a way that is manageable to users.
 - **Search Functionality**: A powerful search feature to allow users to navigate even more easily across all past communications.
 
-## 3. LinkedIn
+## Website 3: LinkedIn
 
 The primary web application worldwide for professional networking. Allows users to easily find and make connections, and employers to reach out to users based on profiles that detail skills and job experience.
 
@@ -91,7 +93,7 @@ The primary web application worldwide for professional networking. Allows users 
 - **Search Filters**: Users can filter for certain attributes when searching for jobs or other users.
 - **Activity Feed**: Users are prevented with an active feed that is managed for them by an algorithm within the platform.
 
-## 4. Instagram
+## Website 4: Instagram
 Despite being unrelated to academics, Instagram is a huge social media platform that is widely used by students. 
 
 ### Styling/Design Choices:
