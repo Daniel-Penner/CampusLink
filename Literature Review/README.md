@@ -18,6 +18,10 @@
 
 # Introduction
 
+In today's highly interconnected world, social networking platforms are a tool that is very often used to alleviate a sense of growing isolation. For international students, these feelings can be accentuated due to challenges with language, cultural, and religious barriers. CampusLink strives to allow international students at smaller university campuses the opportunity to easily find others experiencing similar challenges, or seek mentorship from those who have overcome these difficulties. The following literature explores the best development practices, user interface design patterns, and technological stacks to ensure that CampusLink is as capable of achieving its desired purpose as possible. 
+
+Through the analysis of academic research on web development, social networks, and the challenges of international students and thoroughly examining comparable websites like Discord, Slack, Instagram, and LinkedIn, this literature review aims to identify the best practices and technology for creating a modern, user friendly, and scalable platform. The insights gained from this review will guide the design and development processes to come, and in doing so greatly enhance the adopability and performance of the final product.
+
 # Analysis of Academic Papers
 
 ## Web Application Tech Stacks
@@ -151,9 +155,17 @@ Despite being unrelated to academics, Instagram is a huge social media platform 
 - **Direct Messaging on Web**: The website version offers access to Instagram Direct, allowing users to send and receive messages from their desktop to enable more intimate communication between users on top of the existing interaction with content.
 - **Hover Effects**: When users hover over their posts, a simple effect shows quick stats (likes and comments) which lets users gauge the popularity of their posts without needing to individually click into each one.
 
+# Research Gaps
+
+While the literature and sites above provide an abundance of valuable information, it is challenging to find academic research that combines a combination of these topics. While significant research exists on the implementation of secure messaging between users, and plenty of papers now cover AI-powered language translation, there is very little research attempting to use these in tandem. Simultaneously while there are plenty of attempts to create web application prototypes for students, there are few attempts to create them in a well-stylized and deployable manner. 
+
+The general lack of specificity or project complexity in this field means that CampusLink can be among the first software of its kind. Not just a prototype web application for students, but one that implements growing large language models for help features. One that looks and works like a fully deployed and active website, and not just a few un-stylized pages as a proof-of-concept. By building CampusLink as a fully developed site rather than a minimal prototype to show off one feature, it can be tested as if it were a real, public web application, which allows for the most real-world generalization of any results.
+
 # Conclusion
 
-CampusLink's tech stack and design principles can be greatly improved by learning from other, comparable sites and by applying the results of academic research on similar topics. 
+CampusLink's tech stack and design principles can be greatly improved by learning from other, comparable sites and by applying the results of academic research on similar topics. By using technologies like React and Express which are the most popular and generally liked frameworks in their respective field, and MongoDB which far exceeds the efficiency of other DBMSs, CampusLink can become a highly efficient, robust, and optimized web application. 
+
+CampusLink has the possibility of becoming a safe and expressive space to foster connection between international students who may otherwise struggle to adapt to social life on campus in an environment they're not used to. By creating a modern, minimalist, and clean user interface inspired by the previously analyzed websites, CampusLink can become more easily adoptable to its target demographic.
 
 # References
 
