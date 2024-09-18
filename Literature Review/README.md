@@ -12,7 +12,7 @@
    - [Website 2: Slack](#website-2-slack)
    - [Website 3: LinkedIn](#website-3-linkedin)
    - [Website 4: Instagram](#website-4-instagram)
-4. [Research Gaps and Design Implications](#research-gaps-and-design-implications)
+4. [Research Gaps](#research-gaps-and-design-implications)
 5. [Conclusion](#conclusion)
 6. [References](#references)
 
