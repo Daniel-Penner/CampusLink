@@ -3,38 +3,78 @@
 ### Table of Contents:
 1. [Introduction](#introduction)
 2. [Analysis of Academic Papers](#analysis-of-academic-papers)
-   - [Theme 1: General Trends](#theme-1-general-trends)
-   - [Theme 2: Methodologies](#theme-2-methodologies)
+   - [Web Application Tech Stacks](#web-application-tech-stacks)
+   - [Social Networking Development](#social-networking-development)
+   - [International Student Networking](#international-student-networking)
+   - [Large Language Model Integration](#large-language-model-integration)
 3. [Analysis of Similar Websites](#analysis-of-similar-websites)
-   - [Website 1: Discord](#website-1-discord )
-   - [Website 2: Slack](#website-2-slack )
-   - [Website 3: LinkedIn](#website-3-linkedin )
-   - [Website 4: Instagram](#website-4-instagram )
+   - [Website 1: Discord](#website-1-discord)
+   - [Website 2: Slack](#website-2-slack)
+   - [Website 3: LinkedIn](#website-3-linkedin)
+   - [Website 4: Instagram](#website-4-instagram)
 4. [Research Gaps and Design Implications](#research-gaps-and-design-implications)
 5. [Conclusion](#conclusion)
 6. [References](#references)
 
 # Introduction
 
-This literature review explores two main areas of research related to the development of [your website]. First, it examines relevant academic literature on [specific topics]. Second, it analyzes existing websites with similar purposes, focusing on their styling, navigation, and user experience (UX) choices.
-
-The review aims to establish a strong foundation for the design and functionality of the proposed website by identifying best practices and potential areas for innovation.
-
 # Analysis of Academic Papers
 
-## Theme 1: General Trends
+## Web Application Tech Stacks
 
-Discuss the overarching trends in the research field related to your project. Summarize key insights from the literature:
+### ‘Web Development and Performance Comparison of Web Development Technologies in Node.js and Python’
 
-- **[Author Name, Year]:** Overview of key findings related to [your topic].
-- **[Author Name, Year]:** Summary of insights on user experience, design principles, or methodologies relevant to your project.
-  
-## Theme 2: Methodologies
+- **Relevant Themes:** Web development, NodeJS, request handling
+- **Key Findings:** Challapalli et al. (2021) developed simple web servers, one in Python with Flask and one in NodeJS with Express, to compare the latency, and rate at which each could handle requests. All three tests showed NodeJS with Express outperforming the Python server, able to handle hundreds of times as many requests, and with latency thousands of times smaller than that of the Python server. The undeniable efficiency demonstrated by NodeJS with Express in this paper when compared to another industry standard framework and language, further affirms my confidence in NodeJS and Express as being the ideal tools for developing CampusLink.
+- **Critical Evaluation:** Despite the testing being definitive in regards to simply responding with a demo page, it would have been helpful if the paper had gone into additional detail with testing more extensive sites, and not just a single near-empty landing page. Seeing how the size of the response from the server impacts latency and request handling may have offered additional insight.
+- **Tech Stack Implications:** This paper highlighted the blazing speed that NodeJS and ExpressJS can provide, which only leads to further confidence in the notion that they would be the ideal tools for developing the routing system for CampusLink. To test their web servers, Challapalli et al. (2021) used Locust, a Python testing framework, and Autocannon, a NodeJS benchmarking tool. Because benchmark testing will not be a key part of CampusLink’s development, the use of Autocannon or other such tools does not seem necessary. 
 
-Summarize the different research methods used in the literature and compare their effectiveness for informing the design of your website:
+### ‘Evaluation and Comparison of Full-Stack JavaScript Technologies’
 
-- **[Author Name, Year]:** Details about the methodology used in this study.
-- **[Author Name, Year]:** Comparison with other methodologies.
+- **Relevant Themes:** Web development, NodeJS, ReactJS
+- **Key Findings:** Weber (2022) authored a comprehensive analysis of full-stack JavaScript technologies, outlining and comparing every major framework and library. Extrapolating large sums of data from polls performed by StateofJS, a massive online survey platform regarding the current state of the JavaScript ecosystem, Weber (2022) concluded that the most popular frontend and backend Javascript frameworks were React and Express respectively. Additionally, it found those two to be the only frameworks which fit into the category of:  “High usage, high satisfaction. Safe technologies to adopt” (pp. 17, Weber). In comparison with predefined criteria, the paper concludes that the MERN (MongoDB, Express, React, NodeJS) technological stack is the “best to learn and promises the most potential” (pp. i, Weber). 
+- **Critical Evaluation:** While this paper is extremely comprehensive, the results it gives to comparisons are resolved through somewhat unobjective means. While popularity is a measure that is objectively measured, how well-liked a software is is entirely subjective, and relying on a poll won’t always ensure an accurate demographic to generalize from, no matter the size. An additional tool for measurement that could have been used would have been the efficiency of different frameworks, that way there would be a more undeniable metric to go off of. 
+- **Tech Stack Implications:** The popularity and versatility of the MERN tech stack would make it ideal for the development of CampusLink.
+
+### ‘A Comparative Study: MongoDB vs. MySQL’
+
+- **Relevant Themes:** Database Management Systems (DBMS), MySQL, MongoDB
+- **Key Findings:** Gyorodi et al. (2015) ran performance tests for the four major operations performed by database management systems, to compare the speeds at which MySQL, the most popular SQL DBMS, and MongoDB, the most popular NoSQL DBMS, execute these tasks. In all four cases, MongoDB was able to perform operations in a fraction of the time of MySQL, which definitively shows it to be a more efficient tool for database management. If scalability is important in developing a web application, ensuring that the DBMS is efficient is of utmost importance, and as such, MongoDB seems to be the most reasonable DBMS to adopt for this project.
+- **Critical Evaluation:** While the results of the paper are fairly definitive, the testing was conducted with specifications that do not necessarily reflect a standard modern computing environment. Windows 7 is at this point a highly outdated operating system, an intel i3 is a fairly weak processor, and 4GB of RAM is microscopic compared to that possessed by the majority of modern home computers. Additionally, the testing was only performed on a few simple database operations. MongoDB has severe limitations when creating more complex queries that MySQL does not. The fact that this is not explored in the paper makes its conclusion unnecessarily one-sided. 
+- **Tech Stack Implications:** MongoDB is likely the ideal DBMS candidate for CampusLink, but it is important to at the very least take into consideration the restrictions it has, and the increased querying freedom MySQL may be able to offer.
+
+## Social Networking Development
+
+### ‘Web Application for Social Networking Using RTC’
+
+- **Relevant Themes:** Web development, social networking, real-time communication (RTC)
+- **Key Findings:** Pandey and Bein (2018) developed a student networking web application around WebRTC, an open-source framework for real-time, peer-to-peer, multimedia communication across the Internet. The application allowed for interaction between students and instructors through a Twitter-style Q&A forum, and real-time text and video chatting. The paper aimed to highlight the value of WebRTC as a tool to enable seamless browser integration for real-time video and text communication, without the need for extensions or downloads by users. Based on the effectiveness of WebRTC in the final application used for this paper, it could be a beneficial tool to implement for real-time communication in CampusLink.
+- **Critical Evaluation:** Despite successfully showing off the power of WebRTC as a software, the web application fell short in terms of general development. Further development could have been focused on creating a more aesthetically pleasing user interface to create a more production-ready prototype. Additionally, work could have gone into security, as the final product involved the sending and receiving of data over minimally secured channels. Nonetheless, WebRTC was used successfully in a way that it could also be integrated into CampusLink. 
+- **Tech Stack Implications:** The implementation of WebRTC described by Pandey and Bein (2018) presents a strong case for this technology as a means of establishing communication without the need for users to download external tools or browser extensions. Additionally, the javascript framework used for the front end aligns with modern industry-standard web development practices but would be successfully enhanced through pairing with a framework such as React.js to build a dynamic and interactive user interface.
+
+## International Student Networking
+
+### ‘Challenges for Global Learners: A Qualitative Study of the Concerns and Difficulties of International Students’
+
+- **Relevant Themes:** International students, small campuses, social networks
+- **Key Findings:** This paper analyzed major concerns and challenges for international students when studying at smaller American campuses. This seemed most applicable to CampusLink due to the target demographic being UBCO students, and UBCO is a relatively small campus on an international scale. The paper identified five particular points of difficulty for students: language, transportation, finances, cultural assimilation, and cultural or religious differences. This list gives a clear indication of what solutions to challenges should be prioritized when developing CampusLink.
+- **Critical Evaluation:** Despite the very thorough analysis performed by Gautam et al. (2016), the sample demographic that was surveyed for this paper was fairly minimal. A larger sample size may reveal more unique challenges for individual students. 
+
+## Large Language Model Integration
+
+### ‘Translation Performance from the User’s Perspective of Large Language Models and Neural Machine Translation Systems’
+
+- **Relevant Themes:** Language translation, large language models
+- **Key Findings:** Son and Kim (2023) analyzed three major large language models and compared their abilities to accurately perform English to non-English or non-English to English translations. All three models: Google translate, Microsoft Translate, and ChatGPT performed more strongly when translating from a non-English language to English. While ChatGPT is becoming continuously better at a number of tasks, it significantly underperformed compared to the other two, more specialized systems. On the other hand, Google Translate was consistently the highest-performing of the three options. These results lead me to believe that it may be both easier and yield a more effective result to simply integrate the Google Translate API into CampusLink than to use an open-source LLM for handling translation.
+- **Critical Evaluation:** This paper performs very extensive tests and approaches the topic from a very objective and analytical standpoint. That being said, ideally, the paper could have attempted to perform comparisons between more than three systems to show off differences between ChatGPT and other up-and-coming large language models.
+- **Tech Stack Implications:** Because of the significant improvement that Google Translate is when compared to other major AI-powered translation options, it would be the ideal translation option to integrate into CampusLink.
+
+### ‘Text-based Classification of Websites Using Self-hosted Large Language Models: An Accuracy and Efficiency Analysis’
+
+- **Relevant Themes:** Large language models, self-hosted LLMs
+- **Key Findings:** Sava (2024) analyzed the resource efficiency and accuracy of a number of large language models using the Ollama framework, a collection of lightweight, open-source large language models that are easily integrated into the web development process. The large sample size of different models provides very diverse and robust results for this paper. The findings suggest that the most accurate model is command-r-plus, while the most poorly performing are the LLAVA models. Despite the significant computational resources that the command-r-plus requires, given its outperformance of the other models, it is actually at a comfortable balance between efficiency and accuracy. 
+- **Critical Evaluation:** Sava (2024) did not fine-tune the models before testing them. While this provides a good indication of which models are good out of the box, it could artificially cause some to underperform which could be much stronger if trained for this particular task. 
+- **Tech Stack Implications:** If a self-hosted LLM is to be integrated into CampusLink, thanks to its out-of-the-box accuracy, command-r-plus would be the ideal choice.
 
 # Analysis of Similar Websites
 
@@ -111,12 +151,16 @@ Despite being unrelated to academics, Instagram is a huge social media platform 
 - **Direct Messaging on Web**: The website version offers access to Instagram Direct, allowing users to send and receive messages from their desktop to enable more intimate communication between users on top of the existing interaction with content.
 - **Hover Effects**: When users hover over their posts, a simple effect shows quick stats (likes and comments) which lets users gauge the popularity of their posts without needing to individually click into each one.
 
-# Research Gaps and Design Implications
-
 # Conclusion
+
+CampusLink's tech stack and design principles can be greatly improved by learning from other, comparable sites and by applying the results of academic research on similar topics. 
 
 # References
 
-- **[Author Name, Year].** _Title of the Paper_. Journal Name, Volume(Issue), Pages. DOI/URL
-- **Discord** [URL](https://discord.com)
-- **
+- Challapalli, S. S., et al. (2021). _Web development and performance comparison of Web Development Technologies in Node.js and Python_. DOI: [10.1109/ICTAI53825.2021.9673464](https://doi.org/10.1109/ictai53825.2021.9673464)
+- Weber, N. (2022). _Evaluation and Comparison of Full-Stack JavaScript Technologies_. University of Applied Sciences Offenburg.
+- Gyorodi, C., et al. (2015). _A comparative study: MongoDB vs. MySQL_. DOI: [10.1109/emes.2015.7158433](https://doi.org/10.1109/emes.2015.7158433)
+- Pandey, N., & Bein, D. (2018). _Web application for social networking using RTC_. DOI: [10.1109/ccwc.2018.8301692](https://doi.org/10.1109/ccwc.2018.8301692)
+- Gautam, C., et al. (2016). _Challenges for Global Learners: A qualitative study of the concerns and difficulties of international students_. DOI: [10.32674/jis.v6i2.368](https://doi.org/10.32674/jis.v6i2.368)
+- Son, J., & Kim, B. (2023). _Translation performance from the user’s perspective of large language models and neural machine translation systems_. DOI: [10.3390/info14100574](https://doi.org/10.3390/info14100574)
+- Sava, D.-M. (2024). _Text-based classification of websites using self-hosted Large Language Models: An accuracy and efficiency analysis_. University of Twente.
