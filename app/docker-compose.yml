@@ -14,18 +14,16 @@ services:
       - frontend
       - backend
 
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
+  mongo:
+    image: mongo:latest
+    container_name: mongo
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE: campuslink_db
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
     ports:
-      - '3306:3306'
+      - '27017:27017'
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mongo_data:/data/db
 
   backend:
     build:
@@ -33,15 +31,14 @@ services:
     container_name: backend
     restart: always
     environment:
-      DATABASE_URL: "mysql://root:rootpassword@mysql:3306/campuslink_db"
+      DATABASE_URL: "mongodb://root:rootpassword@mongo:27017/campuslink_db?authSource=admin"
       PORT: 5000
     depends_on:
-      - mysql
+      - mongo
     ports:
       - '5000:5000'
     volumes:
       - ./backend:/src
-    command: sh -c "npx prisma migrate deploy && npx prisma generate && npm start"  # Run dev migrations
 
   frontend:
     build:
@@ -54,4 +51,4 @@ services:
       - ./frontend:/src
 
 volumes:
-  mysql_data:
+  mongo_data:
