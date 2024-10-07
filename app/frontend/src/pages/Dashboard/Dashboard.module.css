@@ -1,0 +1,75 @@
+.pageContainer {
+    padding: 40px 60px;
+    height: calc(100vh - 80px);
+    background-color: var(--background-color); /* Dark background */
+    background-image: url("../../assets/background.png");
+    background-size: cover;
+    color: var(--text-color);
+}
+
+.pageTitle {
+    text-align: left;
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.dashboardGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    grid-template-rows: repeat(2, auto); /* Two rows */
+    gap: 20px; /* Space between grid items */
+}
+
+.section {
+    background-color: var(--secondary-background);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.messageList,
+.notificationList,
+.locationList,
+.serverList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.messageItem,
+.notificationItem,
+.locationItem,
+.serverItem {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: var(--input-background);
+    border-radius: 5px;
+    color: var(--text-color);
+}
+
+.messageItem:hover,
+.notificationItem:hover,
+.locationItem:hover,
+.serverItem:hover {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+}
+
+.viewAllLink {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.viewAllLink:hover {
+    text-decoration: underline;
+}

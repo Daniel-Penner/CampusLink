@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import { AxiosError } from 'axios';
 import styles from './Register.module.css';
 import Navbar from '../../components/Navbar/Navbar';
@@ -9,6 +9,7 @@ interface RegisterResponse {
 }
 
 const Register: React.FC = () => {
+    const navigate = useNavigate();
     const location = useLocation();
     const [email, setEmail] = useState(location.state?.email || '');
     const [firstName, setFirstName] = useState('');
@@ -49,7 +50,7 @@ const Register: React.FC = () => {
             if (response.status === 201) {
                 setSuccess('Registration successful!');
                 setError('');
-                // Optionally, redirect the user to a login page
+                navigate('/dashboard');
             }
         } catch (err) {
             const error = err as AxiosError<RegisterResponse>; // Type assertion with custom response type

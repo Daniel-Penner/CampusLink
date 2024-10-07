@@ -54,4 +54,33 @@ router.post('/register', async (req, res) => {
     }
 });
 
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (user) {
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (isMatch) {
+                const token = 'your_jwt_token_here'; // Replace with actual JWT creation
+                return res.status(200).json({
+                    message: 'login successful',
+                    token,
+                    user: {
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                    },
+                });
+            } else {
+                return res.status(401).json({ message: 'This password is incorrect' });
+            }
+        } else {
+            return res.status(401).json({ message: 'This account does not exist' });
+        }
+    } catch {
+        return res.status(500).json({ message: 'An unexpected error occurred' });
+    }
+});
+
+
 export default router;
