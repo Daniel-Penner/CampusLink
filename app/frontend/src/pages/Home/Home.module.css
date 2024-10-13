@@ -24,12 +24,6 @@
     font-weight: normal;
 }
 
-.pageContainer p{
-    text-align: left;
-    margin-bottom: 50px;
-    color: var(--label-color);
-}
-
 .middleLine {
     width: 5px; /* Thickness of the line */
     background-color: var(--primary-color); /* Use the green color */
@@ -47,24 +41,47 @@
     text-align: center;
 }
 
+.signUpSection p{
+    text-align: left !important;
+    margin-bottom: 20px;
+}
+
 .loginSection {
-    margin-top: 40px;
     width: 30%;
+    min-height: calc(80vh - 80px);
     padding: 40px;
-    height: 50vh;
-    background-color: var(--secondary-background); /* Container background */
-    border: 2px solid var(--border-color);
+    background-color: var(--secondary-background);
     border-radius: 10px;
     color: var(--text-color);
+    text-align: center;
+}
+
+.loginSection h2{
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: var(--primary-color);
+}
+
+.logo {
+    width:30%;
+    height: auto;
+}
+
+.form {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
 }
 
 .inputField {
     width: 100%;
-    padding: 10px;
+    padding: 15px;
+    font-size: 18px;
     margin-bottom: 20px;
     background-color: var(--input-background);
     color: var(--text-color);
-    border: 2px solid var(--border-color);
+    border: none;
     border-radius: 5px;
 }
 
@@ -82,9 +99,8 @@
 
 .loginButton{
     width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    padding: 15px;
+    margin-top: 30px;
     background-color: var(--primary-color);
     color: var(--button-text);
     border: none;
@@ -94,6 +110,15 @@
 
 .loginButton:hover{
     background-color: var(--button-hover);
+}
+
+.forgotPassword {
+    display: block;
+    margin-top: -10px;
+    text-align: left;
+    color: var(--primary-color);
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .orDivider span {
@@ -108,7 +133,7 @@
     height: 70px;
     background-color: var(--input-background);
     border-radius: 8px;
-    border: 2px solid var(--border-color);
+    border: none;
 }
 
 .signUpButton {
@@ -139,6 +164,13 @@
     left: 15px; /* Adjust position to align */
     width: 40px;
     height: 40px;
+}
+
+.error{
+    color: var(--error-color) !important;
+    padding:0;
+    margin-top: 20px;
+    text-align: left;
 }
 
 .signUpButton span {

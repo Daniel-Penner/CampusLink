@@ -5,6 +5,7 @@ import NavMenu from "../NavMenu/NavMenu";
 import ProfileMenu from "../ProfileMenu/ProfileMenu";  // New ProfileMenu component
 import profilePic from '../../assets/profile.png';
 import { AuthContext } from '../../contexts/AuthContext';
+import {useNavigate} from "react-router-dom";
 
 const Navbar: React.FC = () => {
     const authContext = useContext(AuthContext);
@@ -13,7 +14,7 @@ const Navbar: React.FC = () => {
     if (!authContext) {
         throw new Error('AuthContext is not provided. Make sure you are wrapping your component tree with AuthProvider.');
     }
-
+    const navigate = useNavigate();
     const { isAuthenticated } = authContext;
     const [menuOpen, setMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
@@ -74,8 +75,8 @@ const Navbar: React.FC = () => {
                         </div>
                     ) : (
                         <>
-                            <button className={styles.loginButton}>Log In</button>
-                            <button className={styles.getStartedButton}>Get Started</button>
+                            <button className={styles.loginButton} onClick={() => navigate('/login')}>Log In</button>
+                            <button className={styles.getStartedButton} onClick={() => navigate('/register')}>Get Started</button>
                         </>
                     )}
                 </div>

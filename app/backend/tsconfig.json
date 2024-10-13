@@ -8,7 +8,10 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "typeRoots": ["./node_modules/@types",
+      "./src/types"
+    ]
   },
   "include": ["src/**/*.ts"], // Ensure all TypeScript files are included
   "exclude": ["node_modules"]

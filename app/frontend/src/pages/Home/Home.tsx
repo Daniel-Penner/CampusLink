@@ -5,6 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import { PiUserCirclePlusLight } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../../contexts/AuthContext';
+import logo from "../../assets/logoSmall.svg";
 
 const Homepage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -30,7 +31,6 @@ const Homepage: React.FC = () => {
 
             const data = await response.json();
             if (response.ok && authContext) {
-                // Store the JWT token and name in AuthContext
                 authContext.login(data.token, `${data.user.firstName} ${data.user.lastName}`);
                 navigate('/dashboard'); // Redirect to dashboard after login
             } else {
@@ -73,7 +73,8 @@ const Homepage: React.FC = () => {
 
             <div className={styles.loginSection}>
                 <h2>Welcome Back</h2>
-                <form onSubmit={handleLogin}>
+                <img src={logo} alt="Logo" className={styles.logo}/>
+                <form onSubmit={handleLogin} className={styles.form}>
                     <input
                         type="email"
                         placeholder="Enter your email"
@@ -88,10 +89,10 @@ const Homepage: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    {error && <p className={styles.error}>{error}</p>}
+                    <a href="/password-reset" className={styles.forgotPassword}>Forgot Password?</a>
                     <button className={styles.loginButton} type="submit">Log In</button>
+                    {error && <p className={styles.error}>{error}</p>}
                 </form>
-                <a href="#" className={styles.forgotPassword}>Forgot Password?</a>
             </div>
         </div>
     );

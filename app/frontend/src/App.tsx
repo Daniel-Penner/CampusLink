@@ -6,6 +6,8 @@ import Register from "./pages/Register/Register";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
 import {AuthProvider} from "./contexts/AuthContext.tsx";
+import PasswordReset from "./pages/PasswordReset/PasswordReset.tsx";
+import Login from "./pages/Login/Login.tsx";
 
 function App() {
     return (
@@ -15,7 +17,10 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/register" element={<Register/>} />
+                <Route path="/login" element={<Login/>} />
                 <Route path="/dashboard" element={<Dashboard/>} />
+                <Route path="/password-reset" element={<PasswordReset/>}/>
+
             </Routes>
         </Router>
         </GoogleOAuthProvider>

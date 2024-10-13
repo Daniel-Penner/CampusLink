@@ -1,22 +1,14 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User from '../models/User';
+import crypto from 'crypto';
+import dotenv from 'dotenv';
+import {sendEmail} from "../utils/SendEmails";
 
 const router = express.Router();
 
-import dotenv from 'dotenv';
 dotenv.config();
-
-// Define a User schema using Mongoose
-const userSchema = new mongoose.Schema({
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, unique: true, required: true },
-    password: { type: String, required: true },
-});
-
-// Create a User model based on the schema
-const User = mongoose.model('User', userSchema);
 
 // Register User
 router.post('/register', async (req, res) => {
@@ -62,7 +54,11 @@ router.post('/login', async (req, res) => {
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
-                const token = 'your_jwt_token_here'; // Replace with actual JWT creation
+                const token = jwt.sign(
+                    { userId: user._id, email: user.email },
+                    process.env.JWT_SECRET || 'your_jwt_secret', // Make sure to store the secret in .env
+                    { expiresIn: '1h' } // Token expires in 1 hour
+                );
                 return res.status(200).json({
                     message: 'login successful',
                     token,
@@ -79,6 +75,55 @@ router.post('/login', async (req, res) => {
         }
     } catch {
         return res.status(500).json({ message: 'An unexpected error occurred' });
+    }
+});
+
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        console.log("looking for user")
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'User with this email does not exist' });
+        }
+
+        console.log("generating token")
+
+        // Generate a reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = new Date(Date.now() + 3600000);
+
+        console.log("giving user token")
+
+        await user.save();
+
+        // Check if we are reaching this point
+        console.log('Preparing to send email to:', user.email);
+
+        // Send the email with the reset link
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+        const subject = 'Password Reset Request';
+        const text = `You requested a password reset. Click this link to reset your password: ${resetLink}`;
+        const html = `<p>You requested a password reset. Click this link to reset your password:</p><a href="${resetLink}">${resetLink}</a>`;
+
+        console.log('Request body:', req.body); // Check if email is being received properly
+
+        // Add a log before calling sendEmail
+        console.log('Calling sendEmail function...');
+
+        return await sendEmail(user.email, subject, text, html);
+        //return res.json({ message: 'Password reset email sent successfully' });
+
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error in forgot-password route:', error.message);
+        } else {
+            console.error('Unexpected error:', error);
+        }
+        return res.status(500).json({ message: 'Server error' });
     }
 });
 
