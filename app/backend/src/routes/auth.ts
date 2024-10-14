@@ -5,6 +5,7 @@ import User from '../models/User';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import {sendEmail} from "../utils/SendEmails";
+import { emailTemplates } from '../data/Emails'
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ dotenv.config();
 
 // Register User
 router.post('/register', async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, verified } = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
@@ -28,9 +29,21 @@ router.post('/register', async (req, res) => {
             lastName,
             email,
             password: hashedPassword,
+            verified,
         });
 
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        newUser.verificationToken = verificationToken;
+        newUser.verificationExpires = new Date(Date.now() + 3600000);
+
         await newUser.save();
+
+        const verificationLink = `http://localhost/verify-email/${verificationToken}`;
+        const subject = 'Verify Your Email';
+        const text = `To log in to the site, verify your email: ${verificationLink}`;
+        const html = emailTemplates.verifyEmail(verificationLink, firstName);
+
+        await sendEmail(email, subject, text, html);
 
         return res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
@@ -54,19 +67,23 @@ router.post('/login', async (req, res) => {
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
-                const token = jwt.sign(
-                    { userId: user._id, email: user.email },
-                    process.env.JWT_SECRET || 'your_jwt_secret', // Make sure to store the secret in .env
-                    { expiresIn: '1h' } // Token expires in 1 hour
-                );
-                return res.status(200).json({
-                    message: 'login successful',
-                    token,
-                    user: {
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                    },
-                });
+                if(user.verified) {
+                    const token = jwt.sign(
+                        {userId: user._id, email: user.email},
+                        process.env.JWT_SECRET || 'your_jwt_secret', // Make sure to store the secret in .env
+                        {expiresIn: '1h'} // Token expires in 1 hour
+                    );
+                    return res.status(200).json({
+                        message: 'login successful',
+                        token,
+                        user: {
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                        },
+                    });
+                } else {
+                    return res.status(401).json({message: 'This account is not yet verified'})
+                }
             } else {
                 return res.status(401).json({ message: 'This password is incorrect' });
             }
@@ -104,18 +121,18 @@ router.post('/forgot-password', async (req, res) => {
         console.log('Preparing to send email to:', user.email);
 
         // Send the email with the reset link
-        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+        const resetLink = `http://localhost/new-password/${resetToken}`;
         const subject = 'Password Reset Request';
         const text = `You requested a password reset. Click this link to reset your password: ${resetLink}`;
-        const html = `<p>You requested a password reset. Click this link to reset your password:</p><a href="${resetLink}">${resetLink}</a>`;
+        const html = emailTemplates.passwordReset(resetLink);
 
         console.log('Request body:', req.body); // Check if email is being received properly
 
         // Add a log before calling sendEmail
         console.log('Calling sendEmail function...');
 
-        return await sendEmail(user.email, subject, text, html);
-        //return res.json({ message: 'Password reset email sent successfully' });
+        await sendEmail(user.email, subject, text, html);
+        return res.json({ message: 'Password reset email sent successfully' });
 
     } catch (error) {
         if (error instanceof Error) {
@@ -123,6 +140,31 @@ router.post('/forgot-password', async (req, res) => {
         } else {
             console.error('Unexpected error:', error);
         }
+        return res.status(500).json({ message: 'Server error' });
+    }
+});
+
+router.post('/reset-password/:token', async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    try {
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }, // Check if token is still valid
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired token' });
+        }
+
+        user.password = await bcrypt.hash(password, 10);
+        user.resetPasswordToken = undefined; // Clear the reset token
+        user.resetPasswordExpires = undefined; // Clear the token expiration
+
+        await user.save();
+        return res.status(200).json({ message: 'Password successfully reset' });
+    } catch (error) {
         return res.status(500).json({ message: 'Server error' });
     }
 });

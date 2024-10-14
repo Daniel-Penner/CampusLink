@@ -8,6 +8,9 @@ interface IUser extends Document {
     password: string;
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
+    verificationToken?: string;
+    verificationExpires?: Date;
+    verified: boolean;
 }
 
 // Define the User schema
@@ -18,6 +21,9 @@ const UserSchema: Schema = new Schema({
     password: { type: String, required: true },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    verificationToken: { type: String },
+    verificationExpires: { type: Date },
+    verified: { type: Boolean, default: false },
 });
 
 // Create and export the User model

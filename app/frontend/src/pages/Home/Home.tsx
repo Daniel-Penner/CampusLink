@@ -8,7 +8,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 import logo from "../../assets/logoSmall.svg";
 
 const Homepage: React.FC = () => {
-    const [email, setEmail] = useState('');
+    const [email1, setEmail1] = useState('');
+    const [email2, setEmail2] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Homepage: React.FC = () => {
     const authContext = useContext(AuthContext);
 
     const handleSignUp = () => {
-        navigate('/register', { state: { email } });
+        navigate('/register', { state: { email1 } });
     };
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -26,7 +27,7 @@ const Homepage: React.FC = () => {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email2, password }),
             });
 
             const data = await response.json();
@@ -52,7 +53,7 @@ const Homepage: React.FC = () => {
                         type="email"
                         placeholder="Email Address"
                         className={styles.inputField}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail1(e.target.value)}
                     />
                     <button className={styles.signUpButton} onClick={handleSignUp}>
                         <PiUserCirclePlusLight className={styles.icon} />
@@ -79,8 +80,8 @@ const Homepage: React.FC = () => {
                         type="email"
                         placeholder="Enter your email"
                         className={styles.inputField}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={email2}
+                        onChange={(e) => setEmail2(e.target.value)}
                     />
                     <input
                         type="password"

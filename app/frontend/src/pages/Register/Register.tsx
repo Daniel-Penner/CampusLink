@@ -38,6 +38,7 @@ const Register: React.FC = () => {
                         lastName: lastName,
                         email: email,
                         password: password,
+                        verified: false,
                     }),
                 });
                 console.log(response);

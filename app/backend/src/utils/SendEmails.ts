@@ -4,8 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Set the SendGrid API key
-sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
-sgMail.setApiKey('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');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string || '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');
 
 // Function to send an email
 export const sendEmail = async (to: string, subject: string, text: string, html: string) => {
@@ -20,7 +19,7 @@ export const sendEmail = async (to: string, subject: string, text: string, html:
     };
 
     try {
-        return await sgMail.send(msg);
+        await sgMail.send(msg);
     } catch (error) {
         // Type guard to check if the error has a 'response' property
         if (error instanceof Error) {
