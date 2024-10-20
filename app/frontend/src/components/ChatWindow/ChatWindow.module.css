@@ -1,0 +1,81 @@
+.chatContainer {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--secondary-background);
+    padding: 20px 0 20px 20px; /* Add padding for better positioning */
+    border-left: 1px solid var(--border-color);
+}
+
+.messageArea {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.sentMessage, .receivedMessage {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.messageProfilePic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.sentMessage p, .receivedMessage p {
+    background-color: var(--lighter-grey);
+    padding: 10px;
+    border-radius: 15px;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+.sentMessage p {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+.receivedMessage p {
+    background-color: var(--lighter-grey);
+    color: var(--text-color);
+}
+
+.inputContainer {
+    display: flex;
+    align-items: center;
+    background-color: var(--secondary-background);
+    margin: 0 20px 20px 0;
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+}
+
+.messageInput {
+    flex-grow: 1;
+    padding: 12px;
+    border: none;
+    font-size: 16px;
+    border-radius: 10px;
+    background-color: var(--secondary-background);
+    color: var(--text-color);
+    outline: none !important;
+}
+
+.sendButton {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    padding: 7px 8px 5px 8px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+}

@@ -9,6 +9,8 @@ import {AuthProvider} from "./contexts/AuthContext.tsx";
 import PasswordReset from "./pages/PasswordReset/PasswordReset.tsx";
 import Login from "./pages/Login/Login.tsx";
 import NewPassword from "./pages/NewPassword/NewPassword.tsx";
+import Messages from "./pages/Messages/Messages.tsx";
+import Verification from "./pages/Verification/Verification.tsx";
 
 function App() {
     return (
@@ -21,8 +23,9 @@ function App() {
                 <Route path="/login" element={<Login/>} />
                 <Route path="/dashboard" element={<Dashboard/>} />
                 <Route path="/password-reset" element={<PasswordReset/>}/>
+                <Route path="/verify-email/:token" element={<Verification/>}/>
                 <Route path="/new-password/:token" element={<NewPassword/>}/>
-
+                <Route path="/messages" element={<Messages/>}/>
             </Routes>
         </Router>
         </GoogleOAuthProvider>

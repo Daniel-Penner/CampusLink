@@ -1,7 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-// Define an interface for your User model
-interface IUser extends Document {
+export interface User extends Document {
     firstName: string;
     lastName: string;
     email: string;
@@ -13,7 +12,6 @@ interface IUser extends Document {
     verified: boolean;
 }
 
-// Define the User schema
 const UserSchema: Schema = new Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -26,6 +24,5 @@ const UserSchema: Schema = new Schema({
     verified: { type: Boolean, default: false },
 });
 
-// Create and export the User model
-const User = mongoose.model<IUser>('User', UserSchema);
+const User = mongoose.model<User>('User', UserSchema);
 export default User;

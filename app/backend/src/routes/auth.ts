@@ -169,5 +169,34 @@ router.post('/reset-password/:token', async (req, res) => {
     }
 });
 
+router.get('/verify-email/:token', async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        // Find the user with the provided token and ensure it's still valid
+        const user = await User.findOne({
+            verificationToken: token,
+            verificationExpires: { $gt: Date.now() }, // Ensure the token hasn't expired
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired token' });
+        }
+
+        // Verify the user's email and clear the token
+        user.verified = true;
+        user.verificationToken = undefined;
+        user.verificationExpires = undefined;
+
+        await user.save();
+
+        // Redirect to the login page after successful verification
+        return res.redirect('/login');
+    } catch (error) {
+        console.error('Error verifying email:', error);
+        return res.status(500).json({ message: 'Server error. Please try again.' });
+    }
+});
+
 
 export default router;
