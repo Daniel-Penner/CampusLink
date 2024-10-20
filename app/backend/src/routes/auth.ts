@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import {sendEmail} from "../utils/SendEmails";
 import { emailTemplates } from '../data/Emails'
 
+
 const router = express.Router();
 
 dotenv.config();
