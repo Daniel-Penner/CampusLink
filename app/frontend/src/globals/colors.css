@@ -10,4 +10,5 @@
     --label-color: #878787; /*subheaders and some labels*/
     --button-text: #ffffff;         /* for use with green buttons */
     --button-hover: #00965a;        /* Slightly darker green for hover state */
+    --error-color: red;
 }

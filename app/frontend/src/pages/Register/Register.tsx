@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import { AxiosError } from 'axios';
 import styles from './Register.module.css';
 import Navbar from '../../components/Navbar/Navbar';
 
-
 interface RegisterResponse {
     msg: string;
 }
-
 
 const Register: React.FC = () => {
     const location = useLocation();
@@ -20,42 +18,38 @@ const Register: React.FC = () => {
     const [success, setSuccess] = useState('');
     const [error, setError] = useState<string | null>(null);
 
-
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-
 
         if (password !== confirmPassword) {
             setError('Passwords do not match');
             return;
         }
 
-
         try {
-            const response = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email,
-                    password: password,
-                }),
-            });
-            console.log(response);
-            if (!response.ok) {
-                const data: RegisterResponse = await response.json();
-                setError(data.msg || 'Registration failed. Please try again.');
-                return;
-            }
-
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        password: password,
+                        verified: false,
+                    }),
+                });
+                console.log(response);
+                if (!response.ok) {
+                    const data: RegisterResponse = await response.json();
+                    setError(data.msg || 'Registration failed. Please try again.');
+                    return;
+                }
 
             if (response.status === 201) {
-                setSuccess('Registration successful!');
+                setSuccess('Registration Successful! Please verify your email to continue. ');
                 setError('');
-                // Optionally, redirect the user to a login page
             }
         } catch (err) {
             const error = err as AxiosError<RegisterResponse>; // Type assertion with custom response type
@@ -67,7 +61,6 @@ const Register: React.FC = () => {
             }
         }
     };
-
 
     return (
         <div className={styles.pageContainer}>

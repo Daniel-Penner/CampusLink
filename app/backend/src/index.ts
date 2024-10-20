@@ -1,30 +1,34 @@
 import express from 'express';
-import cors from 'cors';
-import authRoutes from './routes/auth';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
+const port = process.env.PORT || 5000;
 
-app.use(cors({
-    origin: 'http://localhost:5173',  // Adjust as needed
-    methods: ['GET', 'POST', 'OPTIONS'],  // Include all necessary methods
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+// Set the strictQuery option to suppress warnings
+mongoose.set('strictQuery', false);
 
+// Connect to MongoDB
+const databaseUrl = process.env.DATABASE_URL || 'mongodb://root:rootpassword@mongo:27017/campuslink_db?authSource=admin';
 
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
+mongoose.connect(databaseUrl)
+    .then(() => {
+        console.log('Connected to MongoDB');
+    })
+    .catch(err => {
+        console.error('Error connecting to MongoDB:', err.message);
+    });
 
-app.get('/api/health', (req, res) => {
-    res.status(200).json({ message: 'API is working!' });
-});
+app.use(express.json());
 
-app.use(express.json()); // To parse JSON request bodies
-
+// Your routes go here
+import authRoutes from './routes/auth';
+import directMessagesRoutes from './routes/direct-messages';
 app.use('/api/auth', authRoutes);
+app.use('/api/direct-messages', directMessagesRoutes);
 
-app.listen(5000, () => {
-    console.log('Server is running on port 5000');
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
-
-export default app;  // Correct ES module export

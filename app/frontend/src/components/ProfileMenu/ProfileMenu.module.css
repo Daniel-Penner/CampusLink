@@ -1,0 +1,27 @@
+.profileMenu {
+    position: absolute;
+    top: 60px; /* Position below the profile picture */
+    right: 0;
+    background-color: var(--secondary-background);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 102; /* Ensure it appears above other elements */
+}
+
+.menuItem {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.menuItem:hover {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+}

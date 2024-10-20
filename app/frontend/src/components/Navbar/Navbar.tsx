@@ -1,33 +1,47 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styles from './Navbar.module.css';
 import logo from '../../assets/logoLarge.svg';
-import NavMenu from "../NavMenu/NavMenu.tsx";
+import NavMenu from "../NavMenu/NavMenu";
+import ProfileMenu from "../ProfileMenu/ProfileMenu";  // New ProfileMenu component
+import profilePic from '../../assets/profile.png';
+import { AuthContext } from '../../contexts/AuthContext';
+import {useNavigate} from "react-router-dom";
 
 const Navbar: React.FC = () => {
+    const authContext = useContext(AuthContext);
+
+    // Ensure that authContext is not undefined
+    if (!authContext) {
+        throw new Error('AuthContext is not provided. Make sure you are wrapping your component tree with AuthProvider.');
+    }
+    const navigate = useNavigate();
+    const { isAuthenticated } = authContext;
     const [menuOpen, setMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [hamburgerOpen, setHamburgerOpen] = useState(false);
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false); // Track profile menu state
 
     const toggleMenu = () => {
         if (menuOpen) {
-            // Start the close animation
             setIsClosing(true);
-            setHamburgerOpen(false);  // Trigger hamburger transformation immediately
+            setHamburgerOpen(false);
             setTimeout(() => {
-                setMenuOpen(false);  // Close the menu after the animation ends
-                setIsClosing(false); // Reset closing state
-            }, 250);  // Match the animation duration
+                setMenuOpen(false);
+                setIsClosing(false);
+            }, 250);
         } else {
-            setMenuOpen(true);  // Open the menu
-            setHamburgerOpen(true);  // Trigger hamburger transformation immediately
+            setMenuOpen(true);
+            setHamburgerOpen(true);
         }
+    };
+
+    const toggleProfileMenu = () => {
+        setProfileMenuOpen(!profileMenuOpen);
     };
 
     return (
         <>
-            {/* Overlay to blur everything except the menu and close button */}
             {menuOpen && <div className={styles.overlay}></div>}
-
             <nav className={styles.navbar}>
                 <div>
                     <button
@@ -38,13 +52,33 @@ const Navbar: React.FC = () => {
                         <div></div>
                         <div></div>
                     </button>
-                    <a href="/" className={styles.logoContainer}>
+                    {isAuthenticated ? (
+                    <a href="/dashboard" className={styles.logoContainer}>
                         <img src={logo} alt="Logo" className={styles.logo} />
                     </a>
+                    ) : (
+                        <a href="/" className={styles.logoContainer}>
+                            <img src={logo} alt="Logo" className={styles.logo}/>
+                        </a>
+                    )}
                 </div>
                 <div className={styles.rightSide}>
-                    <button className={styles.loginButton}>Log In</button>
-                    <button className={styles.getStartedButton}>Get Started</button>
+                    {isAuthenticated ? (
+                        <div className={styles.profileContainer}>
+                            <img
+                                src={profilePic}
+                                alt="Profile"
+                                className={styles.profilePic}
+                                onClick={toggleProfileMenu}
+                            />
+                            {profileMenuOpen && <ProfileMenu />}
+                        </div>
+                    ) : (
+                        <>
+                            <button className={styles.loginButton} onClick={() => navigate('/login')}>Log In</button>
+                            <button className={styles.getStartedButton} onClick={() => navigate('/register')}>Get Started</button>
+                        </>
+                    )}
                 </div>
                 {(menuOpen || isClosing) && <NavMenu isClosing={isClosing} />}
             </nav>

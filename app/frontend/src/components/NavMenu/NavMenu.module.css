@@ -12,7 +12,7 @@
 
 /* NavMenu styles */
 .navMenu {
-    background-color: var(--secondary-background);
+    background-color: var(--background-color);
     padding: 20px;
     border-radius: 10px;
     display: flex;

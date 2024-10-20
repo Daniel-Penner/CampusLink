@@ -19,20 +19,23 @@ const NavMenu: React.FC<NavMenuProps> = ({ isClosing }) => {
             <button onClick={() => handleNavigation('/')} className={styles.navButton}>
                 Home
             </button>
-            <button onClick={() => handleNavigation('/works')} className={styles.navButton}>
-                Works
+            <button onClick={() => handleNavigation('/connections')} className={styles.navButton}>
+                Connections
             </button>
-            <button onClick={() => handleNavigation('/contact')} className={styles.navButton}>
-                Contact
+            <button onClick={() => handleNavigation('/messages')} className={styles.navButton}>
+                Messages
             </button>
-            <button onClick={() => handleNavigation('/tutorials')} className={styles.navButton}>
-                Tutorials / Blog
+            <button onClick={() => handleNavigation('/explore')} className={styles.navButton}>
+                Explore
             </button>
-            <button onClick={() => handleNavigation('/experiments')} className={styles.navButton}>
-                Experiments
+            <button onClick={() => handleNavigation('/forums')} className={styles.navButton}>
+                Forums
             </button>
-            <button onClick={() => handleNavigation('/ar-filters')} className={styles.navButton}>
-                AR Filters
+            <button onClick={() => handleNavigation('/supports')} className={styles.navButton}>
+                Support
+            </button>
+            <button onClick={() => handleNavigation('/notifications')} className={styles.navButton}>
+                Notifications
             </button>
         </div>
     );
