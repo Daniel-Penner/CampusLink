@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // To get token from URL and navigate after success
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './NewPassword.module.css';
 import Navbar from '../../components/Navbar/Navbar';
 import logo from "../../assets/logoSmall.svg";
 
 const PasswordResetForm: React.FC = () => {
-    const { token } = useParams<{ token: string }>(); // Get reset token from URL params
+    const { token } = useParams<{ token: string }>();
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -40,8 +40,8 @@ const PasswordResetForm: React.FC = () => {
             setError(null);
 
             setTimeout(() => {
-                navigate('/login'); // Redirect user to login page after successful password reset
-            }, 3000); // Wait for 3 seconds before redirecting
+                navigate('/login');
+            }, 3000);
 
         } catch (err) {
             setError('An unexpected error occurred. Please try again.');
@@ -51,27 +51,34 @@ const PasswordResetForm: React.FC = () => {
     return (
         <div className={styles.pageContainer}>
             <Navbar />
-            <div className={styles.passwordResetSection}>
-                <h1>Reset Your Password</h1>
-                <img src={logo} alt="Logo" className={styles.logo}/>
-                {error && <p className={styles.errorMessage}>{error}</p>}
-                {success && <p className={styles.successMessage}>{success}</p>}
-                <form className={styles.form} onSubmit={handlePasswordReset}>
+            <div
+                className="flex flex-col items-center justify-center w-[90%] sm:w-[60%] md:w-[40%] lg:w-[30%] h-[calc(70vh-80px)] p-6 sm:p-8 lg:p-10 bg-secondaryBackground rounded-lg text-white text-center"
+            >
+                <h1 className="text-[6vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-bold mb-8 text-primary-color">Reset Your Password</h1>
+                <img src={logo} alt="Logo" className="w-[30%] mb-8" />
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                {success && <p className="text-green-500 mb-4">{success}</p>}
+                <form className="flex flex-col w-full" onSubmit={handlePasswordReset}>
                     <input
                         type="password"
                         placeholder="New Password"
-                        className={styles.inputField}
+                        className="w-full p-[3vw] sm:p-[2.5vw] md:p-[2vw] lg:p-[1vw] text-[3vw] sm:text-[2.5vw] md:text-[2vw] lg:text-[1vw] mb-4 bg-input-background text-white rounded-md"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Confirm New Password"
-                        className={styles.inputField}
+                        className="w-full p-[3vw] sm:p-[2.5vw] md:p-[2vw] lg:p-[1vw] text-[3vw] sm:text-[2.5vw] md:text-[2vw] lg:text-[1vw] mb-4 bg-input-background text-white rounded-md"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
-                    <button type="submit" className={styles.resetButton}>Reset Password</button>
+                    <button
+                        type="submit"
+                        className="w-full p-[3vw] sm:p-[2.5vw] md:p-[2vw] lg:p-[1vw] bg-primary rounded-md text-white hover:bg-button-hover transition-all"
+                    >
+                        Reset Password
+                    </button>
                 </form>
             </div>
         </div>

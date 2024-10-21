@@ -37,20 +37,27 @@ const PasswordReset: React.FC = () => {
     return (
         <div className={styles.pageContainer}>
             <Navbar />
-            <div className={styles.passwordResetSection}>
-                <h1>Reset Your Password</h1>
-                <img src={logo} alt="Logo" className={styles.logo}/>
-                {error && <p className={styles.errorMessage}>{error}</p>}
-                {success && <p className={styles.successMessage}>{success}</p>}
-                <form className={styles.form} onSubmit={handlePasswordReset}>
+            <div
+                className="flex flex-col items-center justify-center w-[90%] sm:w-[60%] md:w-[40%] lg:w-[30%] h-[calc(70vh-80px)] p-6 sm:p-8 lg:p-10 bg-secondaryBackground rounded-lg text-white text-center"
+            >
+                <h1 className="text-[6vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-bold mb-8 text-primary-color">Reset Your Password</h1>
+                <img src={logo} alt="Logo" className="w-[30%] mb-8" />
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                {success && <p className="text-green-500 mb-4">{success}</p>}
+                <form className="flex flex-col w-full" onSubmit={handlePasswordReset}>
                     <input
                         type="email"
                         placeholder="Email Address"
-                        className={styles.inputField}
+                        className="w-full p-[3vw] sm:p-[2.5vw] md:p-[2vw] lg:p-[1vw] text-[3vw] sm:text-[2.5vw] md:text-[2vw] lg:text-[1vw] mb-4 bg-input-background text-white rounded-md"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
-                    <button type="submit" className={styles.resetButton}>Send Reset Link</button>
+                    <button
+                        type="submit"
+                        className="w-full p-[3vw] sm:p-[2.5vw] md:p-[2vw] lg:p-[1vw] bg-primary rounded-md text-white hover:bg-button-hover transition-all"
+                    >
+                        Send Reset Link
+                    </button>
                 </form>
             </div>
         </div>

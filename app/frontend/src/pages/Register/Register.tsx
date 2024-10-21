@@ -68,40 +68,40 @@ const Register: React.FC = () => {
                     <input
                         type="email"
                         placeholder="Email Address"
-                        className="w-full p-[1.5vw] sm:p-[1.25vw] md:p-[1vw] lg:p-[0.75vw] text-[2vw] sm:text-[2vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <input
                         type="text"
                         placeholder="First Name"
-                        className="w-full p-[1.5vw] sm:p-[1.25vw] md:p-[1vw] lg:p-[0.75vw] text-[2vw] sm:text-[2vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
                     <input
                         type="text"
                         placeholder="Last Name"
-                        className="w-full p-[1.5vw] sm:p-[1.25vw] md:p-[1vw] lg:p-[0.75vw] text-[2vw] sm:text-[2vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Password"
-                        className="w-full p-[1.5vw] sm:p-[1.25vw] md:p-[1vw] lg:p-[0.75vw] text-[2vw] sm:text-[2vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Confirm Password"
-                        className="w-full p-[1.5vw] sm:p-[1.25vw] md:p-[1vw] lg:p-[0.75vw] text-[2vw] sm:text-[2vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                     <button type="submit"
-                            className="w-full p-[1.5vw] sm:p-[1.25vw] md:p-[1vw] lg:p-[0.75vw] text-[2vw] sm:text-[1.5vw] md:text-[1.5vw] lg:text-[1vw] bg-primary text-button-text rounded-md hover:bg-button-hover">
+                            className="w-full p-[1.5vw] sm:p-[1.25vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] bg-primary text-button-text rounded-md hover:bg-button-hover">
                         Register
                     </button>
                 </form>
