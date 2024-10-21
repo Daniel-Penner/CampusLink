@@ -1,0 +1,80 @@
+.requestCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    width: calc(25vw - 30px);
+    margin-bottom: 20px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.profilePic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.info h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.info p {
+    margin: 5px 0 10px;
+    font-size: 14px;
+    color: var(--label-color);
+}
+
+.online {
+    color: var(--primary-color);
+}
+
+.offline {
+    color: var(--error-color);
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.acceptButton,
+.declineButton,
+.revokeButton {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.acceptButton {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+}
+
+.declineButton {
+    background-color: var(--error-color);
+    color: var(--button-text);
+}
+
+.revokeButton {
+    background-color: var(--error-color);
+    color: var(--button-text);
+}
+
+.actions button:hover {
+    opacity: 0.9;
+}

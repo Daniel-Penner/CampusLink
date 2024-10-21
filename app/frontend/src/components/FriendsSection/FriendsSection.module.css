@@ -1,0 +1,94 @@
+.friendsSection {
+    width: 100vw;
+    height: calc(100vh - 154px);
+    gap: 20px;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+}
+
+.friendCard {
+    display: flex;
+    position: relative;
+    width: calc(25vw - 25px);
+    height: fit-content;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.infoRow{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.infoRow h2{
+    margin-bottom: 0;
+}
+
+.profilePic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.info {
+    flex-grow: 1;
+}
+
+.activeStatus{
+    position: absolute;
+    right: 8px;
+    top: 5px;
+    font-size: 14px;
+}
+
+.online {
+    color: var(--primary-color);
+}
+
+.offline {
+    color: var(--error-color);
+}
+
+.actions {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.messageButton,
+.callButton,
+.unfriendButton {
+    padding: 8px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: calc(8vw - 25px);
+}
+
+.messageButton {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+}
+
+.callButton {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+}
+
+.unfriendButton {
+    background-color: var(--error-color);
+}

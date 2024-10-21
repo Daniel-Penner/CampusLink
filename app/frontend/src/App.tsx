@@ -11,6 +11,9 @@ import Login from "./pages/Login/Login.tsx";
 import NewPassword from "./pages/NewPassword/NewPassword.tsx";
 import Messages from "./pages/Messages/Messages.tsx";
 import Verification from "./pages/Verification/Verification.tsx";
+import Friends from "./pages/Connections/Friends/Friends.tsx";
+import OutgoingRequests from "./pages/Connections/OutgoingRequests/OutgoingRequests.tsx";
+import IncomingRequests from "./pages/Connections/IncomingRequests/IncomingRequests.tsx";
 
 function App() {
     return (
@@ -26,6 +29,9 @@ function App() {
                 <Route path="/verify-email/:token" element={<Verification/>}/>
                 <Route path="/new-password/:token" element={<NewPassword/>}/>
                 <Route path="/messages" element={<Messages/>}/>
+                <Route path="/connections" element={<Friends/>}/>
+                <Route path="/incoming-requests" element={<IncomingRequests/>}/>
+                <Route path="/outgoing-requests" element={<OutgoingRequests/>}/>
             </Routes>
         </Router>
         </GoogleOAuthProvider>
