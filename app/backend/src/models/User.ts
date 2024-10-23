@@ -10,6 +10,7 @@ export interface User extends Document {
     verificationToken?: string;
     verificationExpires?: Date;
     verified: boolean;
+    friendCode: string;
 }
 
 const UserSchema: Schema = new Schema({
@@ -22,6 +23,7 @@ const UserSchema: Schema = new Schema({
     verificationToken: { type: String },
     verificationExpires: { type: Date },
     verified: { type: Boolean, default: false },
+    friendCode: { type: String, unique: true, required: true },
 });
 
 const User = mongoose.model<User>('User', UserSchema);

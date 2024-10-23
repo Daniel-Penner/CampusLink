@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import styles from './AddFriendModal.module.css';
+import {AuthContext} from "../../contexts/AuthContext.tsx";
 
 interface AddFriendModalProps {
     closeModal: () => void;
@@ -7,14 +8,15 @@ interface AddFriendModalProps {
 }
 
 const AddFriendModal: React.FC<AddFriendModalProps> = ({ closeModal, addFriend }) => {
-    const [friendCode, setFriendCode] = useState('');
-    const [generatedCode, setGeneratedCode] = useState('');
+    const authContext = useContext(AuthContext);
 
-    const generateCode = () => {
-        // Here we generate a random friend code
-        const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-        setGeneratedCode(newCode);
-    };
+    // Ensure authContext is not undefined
+    if (!authContext) {
+        throw new Error('AuthContext is not provided.');
+    }
+
+    const { code } = authContext;
+    const [friendCode, setFriendCode] = useState('');
 
     return (
         <div className={styles.modal}>
@@ -31,10 +33,7 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({ closeModal, addFriend }
                     Add Friend
                 </button>
                 <div className={styles.generateSection}>
-                    <p>Your friend code: {generatedCode}</p>
-                    <button onClick={generateCode} className={styles.generateButton}>
-                        Generate Code
-                    </button>
+                    <p>Your friend code: {code}</p>
                 </div>
                 <button onClick={closeModal} className={styles.closeButton}>Close</button>
             </div>

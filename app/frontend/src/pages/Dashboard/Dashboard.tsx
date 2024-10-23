@@ -8,7 +8,7 @@ const Dashboard: React.FC = () => {
 
     // Ensure authContext is not undefined
     if (!authContext) {
-        throw new Error('AuthContext is not provided. Make sure you are wrapping your app with AuthProvider.');
+        throw new Error('AuthContext is not provided.');
     }
 
     const { name, isAuthenticated } = authContext;
