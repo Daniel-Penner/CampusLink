@@ -26,8 +26,10 @@ app.use(express.json());
 // Your routes go here
 import authRoutes from './routes/auth';
 import directMessagesRoutes from './routes/direct-messages';
+import connectionRoutes from './routes/connections';
 app.use('/api/auth', authRoutes);
 app.use('/api/direct-messages', directMessagesRoutes);
+app.use('/api/connections', connectionRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

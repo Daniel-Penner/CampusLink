@@ -9,10 +9,26 @@ const ConnectionsNavbar: React.FC<{ searchTerm: string; setSearchTerm: (term: st
     const location = useLocation(); // Get the current route to highlight the active page
     const [showModal, setShowModal] = useState(false);
 
-    const addFriend = (friendCode: string) => {
-        // Logic for adding a friend with the friendCode
-        console.log('Adding friend with code:', friendCode);
-        setShowModal(false);
+    const addFriend = async (friendCode: string) => {
+        try {
+            const response = await fetch('/api/connections/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ friendCode })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                console.log('Friend request sent:', data.message);
+            } else {
+                console.error('Error sending friend request:', data.message);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+        }
     };
 
     // Function to get the appropriate CSS class for active link

@@ -10,25 +10,18 @@ interface Request {
     status: 'Online' | 'Offline';
 }
 
-const dummyOutgoingRequests: Request[] = [
-    { name: 'Bruce Wayne', profilePic: 'https://i.pravatar.cc/150?img=3', status: 'Online' },
-    { name: 'Clark Kent', profilePic: 'https://i.pravatar.cc/150?img=4', status: 'Offline' }
-];
-
 const OutgoingRequestsPage: React.FC = () => {
     const [outgoingRequests, setOutgoingRequests] = useState<Request[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     useEffect(() => {
-        /*fetch('/api/outgoing-requests')
+        fetch('/api/connections/sent-pending')
             .then(res => res.json())
             .then(data => setOutgoingRequests(data))
             .catch(err => {
                 console.error('Error fetching outgoing requests:', err);
-          */      // Use dummy data in case of failure
-                setOutgoingRequests(dummyOutgoingRequests);
             });
-    //}, []);
+    }, []);
 
     return (
         <div className={styles.outgoingRequestsPage}>

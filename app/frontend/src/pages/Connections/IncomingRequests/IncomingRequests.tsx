@@ -10,25 +10,18 @@ interface Request {
     status: 'Online' | 'Offline';
 }
 
-const dummyIncomingRequests: Request[] = [
-    { name: 'Peter Parker', profilePic: 'https://i.pravatar.cc/150?img=1', status: 'Online' },
-    { name: 'Tony Stark', profilePic: 'https://i.pravatar.cc/150?img=2', status: 'Offline' }
-];
-
 const IncomingRequestsPage: React.FC = () => {
     const [incomingRequests, setIncomingRequests] = useState<Request[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     useEffect(() => {
-        /*fetch('/api/incoming-requests')
+        fetch('/connections/received-pending')
             .then(res => res.json())
             .then(data => setIncomingRequests(data))
             .catch(err => {
                 console.error('Error fetching incoming requests:', err);
-          */      // Use dummy data in case of failure
-                setIncomingRequests(dummyIncomingRequests);
             });
-    //}, []);
+    }, []);
 
     return (
         <div className={styles.incomingRequestsPage}>
