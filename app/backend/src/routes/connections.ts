@@ -49,6 +49,60 @@ router.post('/add', authenticateToken,async (req, res) => {
     }
 });
 
+router.post('/delete', authenticateToken,async (req, res) => {
+    const {user2Id} = req.body;
+    const user1Id = req.user.userId;
+    try {
+
+        const existingConnection = await Connection.findOne({
+            $or: [
+                {sender: user1Id, recipient: user2Id},
+                {sender: user2Id, recipient: user1Id}
+            ]
+        });
+
+        if (!existingConnection) {
+            return res.status(400).json({message: 'Connection does not exist'});
+        }
+
+        await existingConnection.remove();
+
+        return res.status(201).json({ message: 'Connection Deleted successfully' });
+
+    } catch (error) {
+        console.error('Error removing connection:', error);
+        return res.status(500).json({message: 'Server error. Please try again later.'});
+    }
+});
+
+router.post('/accept', authenticateToken,async (req, res) => {
+    const {user2Id} = req.body;
+    const user1Id = req.user.userId;
+    try {
+
+        const existingConnection = await Connection.findOne({
+            $or: [
+                {sender: user1Id, recipient: user2Id},
+                {sender: user2Id, recipient: user1Id}
+            ]
+        });
+
+        if (!existingConnection) {
+            return res.status(400).json({message: 'Connection does not exist'});
+        }
+
+        existingConnection.accepted = true;
+        await existingConnection.save();
+
+        return res.status(201).json({ message: 'Friend request accepted successfully!' });
+
+    } catch (error) {
+        console.error('Error accepting request:', error);
+        return res.status(500).json({message: 'Server error. Please try again later.'});
+    }
+});
+
+
 router.get('/friends', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 

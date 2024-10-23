@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styles from './DirectMessages.module.css';
 import { FaEdit, FaSearch } from 'react-icons/fa';
 
 interface DirectMessagesProps {
     users: {
+        _id: string;
         name: string;
         profilePic: string;
-        messages: { sender: string; content: string }[];
     }[];
     setSelectedUser: React.Dispatch<React.SetStateAction<string | null>>;
     selectedUser: string | null;
@@ -15,11 +15,10 @@ interface DirectMessagesProps {
 const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser, selectedUser }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Filter users based on the search term
     const filteredUsers = users.filter((user) =>
-        user.name?.toLowerCase().includes(searchTerm?.toLowerCase() || '')
+        user.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-
 
     return (
         <div className={styles.sidebar}>
@@ -42,20 +41,19 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser,
             </div>
 
             <ul className={styles.messageList}>
-                {filteredUsers.map((user, index) => (
+                {filteredUsers.map((user) => (
                     <li
-                        key={index}
+                        key={user._id}
                         className={
-                            user.name === selectedUser
+                            user._id === selectedUser
                                 ? `${styles.messageItem} ${styles.messageItemSelected}`
                                 : styles.messageItem
                         }
-                        onClick={() => setSelectedUser(user.name)}
+                        onClick={() => setSelectedUser(user._id)} // Set selected user by their _id
                     >
                         <img src={user.profilePic} alt={user.name} className={styles.profilePic} />
                         <div className={styles.userInfo}>
                             <div className={styles.userName}>{user.name}</div>
-                            <div className={styles.userMessage}>{user.messages[user.messages.length - 1].content}</div>
                         </div>
                     </li>
                 ))}

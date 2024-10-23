@@ -4,16 +4,6 @@ import Message from '../models/Message';
 
 const router = express.Router();
 
-// Get all users with basic info (exclude password)
-router.get('/users', async (req, res) => {
-    try {
-        const users = await User.find().select('firstName lastName email');
-        res.status(200).json(users);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching users' });
-    }
-});
-
 // Get message history for a conversation between two users
 router.get('/messages/:userId/:otherUserId', async (req, res) => {
     const { userId, otherUserId } = req.params;

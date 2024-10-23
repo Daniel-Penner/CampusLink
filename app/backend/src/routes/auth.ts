@@ -86,6 +86,7 @@ router.post('/login', async (req, res) => {
                             firstName: user.firstName,
                             lastName: user.lastName,
                             friendCode: user.friendCode,
+                            id: user._id,
                         },
                     });
                 } else {

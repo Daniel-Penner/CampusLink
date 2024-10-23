@@ -24,7 +24,7 @@ const Login: React.FC = () => {
 
             const data = await response.json();
             if (response.ok && authContext) {
-                authContext.login(data.token, `${data.user.firstName} ${data.user.lastName}`, `${data.user.friendCode}`);
+                authContext.login(data.token, data.user.id,`${data.user.firstName} ${data.user.lastName}`, data.user.friendCode);
                 navigate('/dashboard');
             } else {
                 setError(data.message || 'Error logging in');
