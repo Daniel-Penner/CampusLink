@@ -5,12 +5,12 @@ export interface User extends Document {
     lastName: string;
     email: string;
     password: string;
+    friendCode: string;
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
     verificationToken?: string;
     verificationExpires?: Date;
     verified: boolean;
-    friendCode: string;
 }
 
 const UserSchema: Schema = new Schema({
@@ -18,12 +18,12 @@ const UserSchema: Schema = new Schema({
     lastName: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
+    friendCode: { type: String, unique: true, required: true },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     verificationToken: { type: String },
     verificationExpires: { type: Date },
     verified: { type: Boolean, default: false },
-    friendCode: { type: String, unique: true, required: true },
 });
 
 const User = mongoose.model<User>('User', UserSchema);

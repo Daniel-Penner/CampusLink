@@ -15,11 +15,15 @@ export const generateUniqueFriendCode = async (): Promise<string> => {
     let friendCode: string;
     let existingUser: typeof User | null;
 
-    // Loop until a unique friend code is found
     do {
         friendCode = generateFriendCode();
+        console.log(`Generated Friend Code: ${friendCode}`);  // Add a log to see the generated code
         existingUser = await User.findOne({ friendCode });
+        if (existingUser) {
+            console.log(`Friend Code ${friendCode} already exists, generating a new one.`);
+        }
     } while (existingUser);
 
+    console.log(`Unique Friend Code found: ${friendCode}`);
     return friendCode;
 };

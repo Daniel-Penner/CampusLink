@@ -25,7 +25,11 @@ router.post('/register', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("Generating friend code...");
+
+        // Ensure that the friend code is being awaited correctly
         const friendCode = await generateUniqueFriendCode();
+        console.log(`Friend Code generated for new user: ${friendCode}`);  // Log generated friend code
 
         const newUser = new User({
             firstName,
@@ -33,12 +37,12 @@ router.post('/register', async (req, res) => {
             email,
             password: hashedPassword,
             verified,
-            friendCode,
+            friendCode, // Ensure friend code is correctly assigned here
         });
 
         const verificationToken = crypto.randomBytes(32).toString('hex');
         newUser.verificationToken = verificationToken;
-        newUser.verificationExpires = new Date(Date.now() + 3600000);
+        newUser.verificationExpires = new Date(Date.now() + 3600000); // Token expires in 1 hour
 
         await newUser.save();
 
@@ -51,12 +55,10 @@ router.post('/register', async (req, res) => {
 
         return res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
-        // Check if error is an instance of the Error class
         if (error instanceof Error) {
             console.error('Error registering user:', error.message);
             return res.status(500).json({ message: 'Internal server error' });
         } else {
-            // Handle unknown error types
             console.error('Unexpected error:', error);
             return res.status(500).json({ message: 'An unexpected error occurred' });
         }
@@ -83,6 +85,7 @@ router.post('/login', async (req, res) => {
                         user: {
                             firstName: user.firstName,
                             lastName: user.lastName,
+                            friendCode: user.friendCode,
                         },
                     });
                 } else {
