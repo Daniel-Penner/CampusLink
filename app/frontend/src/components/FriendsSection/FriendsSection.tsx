@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import styles from './FriendsSection.module.css';
 
 interface Friend {
@@ -10,10 +11,10 @@ interface Friend {
 }
 
 const FriendsSection: React.FC<{ friends: Friend[], setFriends: React.Dispatch<React.SetStateAction<Friend[]>> }> = ({ friends, setFriends }) => {
+    const navigate = useNavigate(); // Initialize useNavigate for page redirection
 
-    // Function to handle the unfriend request
     const handleUnfriend = async (friendId: string) => {
-        const token = localStorage.getItem('token'); // Retrieve the auth token from localStorage
+        const token = localStorage.getItem('token');
 
         if (!token) {
             console.error('No token found, please log in.');
@@ -21,20 +22,19 @@ const FriendsSection: React.FC<{ friends: Friend[], setFriends: React.Dispatch<R
         }
 
         try {
-            const response = await fetch('/auth/connections/delete', {
+            const response = await fetch('/api/connections/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}` // Include the token for authentication
+                    Authorization: `Bearer ${token}`
                 },
-                body: JSON.stringify({ user2Id: friendId }) // Send the friend's ID as user2Id
+                body: JSON.stringify({ user2Id: friendId })
             });
 
             if (response.ok) {
                 const result = await response.json();
                 console.log(result.message);
 
-                // Update the friends list in the UI after unfriending
                 setFriends((prevFriends) => prevFriends.filter(friend => friend._id !== friendId));
             } else {
                 console.error('Failed to unfriend');
@@ -42,6 +42,12 @@ const FriendsSection: React.FC<{ friends: Friend[], setFriends: React.Dispatch<R
         } catch (error) {
             console.error('Error unfriending:', error);
         }
+    };
+
+    // Function to handle messaging a friend
+    const handleMessage = (friend: Friend) => {
+        // Navigate to the messages page and pass the selected friend through state
+        navigate('/messages', { state: { selectedFriend: friend } });
     };
 
     return (
@@ -60,7 +66,7 @@ const FriendsSection: React.FC<{ friends: Friend[], setFriends: React.Dispatch<R
                         </div>
                     </div>
                     <div className={styles.actions}>
-                        <button className={styles.messageButton}>Message</button>
+                        <button className={styles.messageButton} onClick={() => handleMessage(friend)}>Message</button>
                         <button className={styles.callButton}>Call</button>
                         <button
                             className={styles.unfriendButton}

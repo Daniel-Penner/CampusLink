@@ -4,7 +4,7 @@
     flex-direction: column;
     justify-content: space-between;
     background-color: var(--secondary-background);
-    padding: 20px 0 20px 20px; /* Add padding for better positioning */
+    padding: 20px 0 20px 20px;
     border-left: 1px solid var(--border-color);
 }
 
@@ -21,6 +21,7 @@
     display: flex;
     align-items: flex-start;
     margin-bottom: 10px;
+    position: relative;
 }
 
 .messageProfilePic {
@@ -43,11 +44,39 @@
     color: var(--button-text);
     margin-left: auto;
     margin-right: 20px;
+    cursor: pointer;
 }
 
 .receivedMessage p {
     background-color: var(--lighter-grey);
     color: var(--text-color);
+    cursor: pointer;
+}
+
+.sentMessage .timestamp {
+    display: none; /* Hide by default */
+    position: absolute;
+    right: 10px;
+    bottom: -10px;
+    font-size: 0.8em;
+    color: gray;
+}
+
+.receivedMessage .timestamp {
+    display: none; /* Hide by default */
+    position: absolute;
+    left: 10px;
+    bottom: -10px;
+    font-size: 0.8em;
+    color: gray;
+}
+
+.sentMessage p:hover .timestamp, .receivedMessage p:hover .timestamp {
+    display: block; /* Show on hover */
+}
+
+.sentMessage p:hover, .receivedMessage p:hover{
+    margin-bottom: 10px;
 }
 
 .inputContainer {
@@ -73,9 +102,13 @@
 .sendButton {
     background-color: var(--primary-color);
     color: var(--button-text);
-    padding: 7px 8px 5px 8px;
-    margin-right: 5px;
+    padding: 8px;
+    margin-right: 8px;
     border: none;
     border-radius: 50px;
     cursor: pointer;
+}
+
+.sendButton:hover {
+    background-color: var(--button-hover);
 }

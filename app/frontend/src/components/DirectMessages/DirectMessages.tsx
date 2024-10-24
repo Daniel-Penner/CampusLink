@@ -8,8 +8,8 @@ interface DirectMessagesProps {
         name: string;
         profilePic: string;
     }[];
-    setSelectedUser: React.Dispatch<React.SetStateAction<string | null>>;
-    selectedUser: string | null;
+    setSelectedUser: React.Dispatch<React.SetStateAction<{ _id: string; name: string; profilePic: string } | null>>; // Expect full user object
+    selectedUser: { _id: string; name: string; profilePic: string } | null;
 }
 
 const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser, selectedUser }) => {
@@ -45,11 +45,11 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser,
                     <li
                         key={user._id}
                         className={
-                            user._id === selectedUser
+                            user._id === selectedUser?._id
                                 ? `${styles.messageItem} ${styles.messageItemSelected}`
                                 : styles.messageItem
                         }
-                        onClick={() => setSelectedUser(user._id)} // Set selected user by their _id
+                        onClick={() => setSelectedUser(user)} // Pass the full user object, including profilePic
                     >
                         <img src={user.profilePic} alt={user.name} className={styles.profilePic} />
                         <div className={styles.userInfo}>

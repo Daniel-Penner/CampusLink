@@ -19,22 +19,23 @@ const Homepage: React.FC = () => {
     const authContext = useContext(AuthContext);
 
     const handleSignUp = () => {
-        navigate('/register', { state: { email1 } });
+        navigate('/register', { state: { email: email1 } });
     };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        let email = email2;
         try {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email2, password }),
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await response.json();
             if (response.ok && authContext) {
-                authContext.login(data.token, `${data.user.firstName} ${data.user.lastName}`);
-                navigate('/dashboard'); // Redirect to dashboard after login
+                authContext.login(data.token, data.user.id,`${data.user.firstName} ${data.user.lastName}`, data.user.friendCode);
+                navigate('/dashboard');
             } else {
                 setError(data.message || 'Error logging in');
             }

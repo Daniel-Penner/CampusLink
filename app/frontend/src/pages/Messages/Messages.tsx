@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import DirectMessages from '../../components/DirectMessages/DirectMessages';
 import ChatWindow from '../../components/ChatWindow/ChatWindow';
 import styles from './Messages.module.css';
+import { AuthContext } from "../../contexts/AuthContext.tsx";
 
 interface Friend {
     _id: string;
@@ -24,16 +25,28 @@ interface Message {
     timestamp: Date;
 }
 
+interface SelectedUser {
+    _id: string;
+    name: string;
+    profilePic: string; // Include profilePic in SelectedUser
+}
+
 const MessagesPage: React.FC = () => {
-    const [friends, setFriends] = useState<MappedFriend[]>([]); // Use MappedFriend type
-    const [selectedUser, setSelectedUser] = useState<string | null>(null);
+    const [friends, setFriends] = useState<MappedFriend[]>([]);
+    const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null); // Now storing the entire user object
     const [messages, setMessages] = useState<Message[]>([]);
 
-    // Fetch friends from the /api/connections/friends endpoint
+    const authContext = useContext(AuthContext);
+    if (!authContext) {
+        throw new Error('AuthContext is not provided.');
+    }
+
+    const { id } = authContext;
+
     useEffect(() => {
         const token = localStorage.getItem('token');
 
-        fetch('/api/connections/friends', {
+        fetch('/api/direct-messages/messageable-friends', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,7 +55,6 @@ const MessagesPage: React.FC = () => {
         })
             .then(res => res.json())
             .then((data: Friend[]) => {
-                // Map the friends to include the combined `name` field
                 const mappedFriends = data.map(friend => ({
                     _id: friend._id,
                     name: `${friend.firstName} ${friend.lastName}`, // Combine firstName and lastName into name
@@ -53,16 +65,14 @@ const MessagesPage: React.FC = () => {
             .catch(err => console.log('Error fetching friends:', err));
     }, []);
 
-    // Fetch messages when a user (friend) is selected
     useEffect(() => {
         if (selectedUser) {
-            const token = localStorage.getItem('token'); // Use token if authentication is required
-            const userId = 'loggedInUserId'; // Replace this with the actual logged-in user's ID
-            fetch(`/api/direct-messages/messages/${userId}/${selectedUser}`, {
+            const token = localStorage.getItem('token');
+            fetch(`/api/direct-messages/messages/${id}/${selectedUser._id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`, // Include the token in headers
+                    Authorization: `Bearer ${token}`,
                 },
             })
                 .then(res => res.json())
