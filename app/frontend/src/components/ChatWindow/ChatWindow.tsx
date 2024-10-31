@@ -1,23 +1,30 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { FaArrowUp } from 'react-icons/fa';
 import styles from './ChatWindow.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
+import { io } from 'socket.io-client';
+
+const socket = io('https://localhost', {
+    path: '/socket.io',
+    withCredentials: true,
+    transports: ['websocket', 'polling']
+});
 
 interface Message {
     sender: string;
+    recipient: string;
     content: string;
     timestamp: Date;
 }
 
 interface ChatWindowProps {
     messages: Message[];
-    selectedUser: { _id: string; name: string; profilePic: string } | null; // Ensure profilePic is part of selectedUser
+    selectedUser: { _id: string; name: string; profilePic: string } | null;
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMessages }) => {
-    const [newMessage, setNewMessage] = useState(''); // State for new message
-
+    const [newMessage, setNewMessage] = useState('');
     const authContext = useContext(AuthContext);
     if (!authContext) {
         throw new Error('AuthContext is not provided.');
@@ -25,20 +32,42 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
 
     const { id } = authContext;
 
+    // Reference for the message area div
+    const messageAreaRef = useRef<HTMLDivElement>(null);
+
+    // Listen for real-time incoming messages
+    useEffect(() => {
+        socket.on('new-message', (newMessage: Message) => {
+            if (
+                (newMessage.sender === selectedUser?._id && newMessage.recipient === id) ||
+                (newMessage.sender === id && newMessage.recipient === selectedUser?._id)
+            ) {
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+            }
+        });
+
+        return () => {
+            socket.off('new-message');
+        };
+    }, [selectedUser, id, setMessages]);
+
+    // Scroll to the bottom of the message area when messages change
+    useEffect(() => {
+        if (messageAreaRef.current) {
+            messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
+        }
+    }, [messages]);
+
     if (!selectedUser) {
         return <div className={styles.chatContainer}>Select a user to chat with.</div>;
     }
 
     const sendMessage = () => {
-        const timestamp = new Date(); // Add timestamp when sending the message
+        if (!newMessage.trim()) return;
+        const timestamp = new Date();
 
-        if (!id) {
-            console.error("No valid user ID found.");
-            return;
-        }
-
-        const messageData = {
-            sender: id,
+        const messageData: Message = {
+            sender: id as string,
             recipient: selectedUser._id,
             content: newMessage,
             timestamp,
@@ -56,14 +85,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
             .then(() => {
                 setMessages(prevMessages => [
                     ...prevMessages,
-                    { sender: id, content: newMessage, timestamp }
                 ]);
-                setNewMessage(''); // Clear the input field
+                setNewMessage('');
             })
             .catch(err => console.log('Error sending message:', err));
     };
 
-    // Handle "Enter" key press to send message
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -75,7 +102,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
 
     return (
         <div className={styles.chatContainer}>
-            <div className={styles.messageArea}>
+            <div className={styles.messageArea} ref={messageAreaRef}>
                 {messages.map((msg, index) => {
                     const isOwnMessage = msg.sender === id;
                     const showProfilePic = !isOwnMessage && previousSender !== msg.sender;
@@ -85,7 +112,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
                         <div key={index} className={isOwnMessage ? styles.sentMessage : styles.receivedMessage}>
                             {!isOwnMessage && showProfilePic && (
                                 <img
-                                    src={selectedUser.profilePic} // Use profilePic from selectedUser
+                                    src={selectedUser.profilePic}
                                     alt={selectedUser.name}
                                     className={styles.messageProfilePic}
                                 />

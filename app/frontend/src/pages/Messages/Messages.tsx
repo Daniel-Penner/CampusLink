@@ -1,9 +1,17 @@
 import React, {useState, useEffect, useContext} from 'react';
+import { io } from 'socket.io-client';
 import Navbar from '../../components/Navbar/Navbar';
 import DirectMessages from '../../components/DirectMessages/DirectMessages';
 import ChatWindow from '../../components/ChatWindow/ChatWindow';
 import styles from './Messages.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
+
+const socket = io('https://localhost', {
+    path: '/socket.io',
+    withCredentials: true,
+    transports: ['websocket', 'polling']
+});
+
 
 interface Friend {
     _id: string;
@@ -21,6 +29,7 @@ interface MappedFriend {
 
 interface Message {
     sender: string;
+    recipient: string;
     content: string;
     timestamp: Date;
 }
@@ -50,7 +59,7 @@ const MessagesPage: React.FC = () => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`, // Include the token in headers
+                Authorization: `Bearer ${token}`,
             },
         })
             .then(res => res.json())
@@ -63,7 +72,25 @@ const MessagesPage: React.FC = () => {
                 setFriends(mappedFriends); // Set the mapped friends data
             })
             .catch(err => console.log('Error fetching friends:', err));
-    }, []);
+
+    // Join the user's room on connection
+        socket.emit('join', id);
+
+        // Listen for new messages
+        socket.on('new-message', (newMessage: Message) => {
+            // Only add the message if it’s from or to the selected user
+            if (
+                newMessage.sender === selectedUser?._id ||
+                newMessage.recipient === selectedUser?._id
+            ) {
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+            }
+        });
+
+        return () => {
+            socket.off('new-message');
+        };
+    }, [id, selectedUser]);
 
     useEffect(() => {
         if (selectedUser) {
