@@ -8,6 +8,7 @@ const ConnectionsNavbar: React.FC<{ searchTerm: string; setSearchTerm: (term: st
     const navigate = useNavigate();
     const location = useLocation(); // Get the current route to highlight the active page
     const [showModal, setShowModal] = useState(false);
+    const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
     const addFriend = async (friendCode: string) => {
         try {
@@ -22,9 +23,9 @@ const ConnectionsNavbar: React.FC<{ searchTerm: string; setSearchTerm: (term: st
 
             const data = await response.json();
             if (response.ok) {
-                console.log('Friend request sent:', data.message);
+                setStatusMessage(data.message || 'Friend request sent successfully');
             } else {
-                console.error('Error sending friend request:', data.message);
+                setStatusMessage(data.message || 'Error sending friend request');
             }
         } catch (error) {
             console.error('Network error:', error);
@@ -64,11 +65,18 @@ const ConnectionsNavbar: React.FC<{ searchTerm: string; setSearchTerm: (term: st
             </div>
 
             {/* Add Friend Button */}
-            <button className={styles.addFriendButton} onClick={() => setShowModal(true)}>
+            <button className={styles.addFriendButton} onClick={() => {
+                setStatusMessage(null);
+                setShowModal(true);
+            }}>
                 Add Friend
             </button>
 
-            {showModal && <AddFriendModal closeModal={() => setShowModal(false)} addFriend={addFriend} />}
+            {showModal && <AddFriendModal
+                closeModal={() => setShowModal(false)}
+                addFriend={addFriend}
+                statusMessage={statusMessage}
+            />}
         </div>
     );
 };
