@@ -10,6 +10,7 @@ const User_1 = __importDefault(require("../models/User"));
 const crypto_1 = __importDefault(require("crypto"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const SendEmails_1 = require("../utils/SendEmails");
+const FriendCode_1 = require("../utils/FriendCode");
 const Emails_1 = require("../data/Emails");
 const router = express_1.default.Router();
 dotenv_1.default.config();
@@ -22,16 +23,21 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
         const hashedPassword = await bcryptjs_1.default.hash(password, 10);
+        console.log("Generating friend code...");
+        // Ensure that the friend code is being awaited correctly
+        const friendCode = await (0, FriendCode_1.generateUniqueFriendCode)();
+        console.log(`Friend Code generated for new user: ${friendCode}`); // Log generated friend code
         const newUser = new User_1.default({
             firstName,
             lastName,
             email,
             password: hashedPassword,
             verified,
+            friendCode, // Ensure friend code is correctly assigned here
         });
         const verificationToken = crypto_1.default.randomBytes(32).toString('hex');
         newUser.verificationToken = verificationToken;
-        newUser.verificationExpires = new Date(Date.now() + 3600000);
+        newUser.verificationExpires = new Date(Date.now() + 3600000); // Token expires in 1 hour
         await newUser.save();
         const verificationLink = `http://localhost/verify-email/${verificationToken}`;
         const subject = 'Verify Your Email';
@@ -41,13 +47,11 @@ router.post('/register', async (req, res) => {
         return res.status(201).json({ message: 'User registered successfully', user: newUser });
     }
     catch (error) {
-        // Check if error is an instance of the Error class
         if (error instanceof Error) {
             console.error('Error registering user:', error.message);
             return res.status(500).json({ message: 'Internal server error' });
         }
         else {
-            // Handle unknown error types
             console.error('Unexpected error:', error);
             return res.status(500).json({ message: 'An unexpected error occurred' });
         }
@@ -70,6 +74,8 @@ router.post('/login', async (req, res) => {
                         user: {
                             firstName: user.firstName,
                             lastName: user.lastName,
+                            friendCode: user.friendCode,
+                            id: user._id,
                         },
                     });
                 }
@@ -145,6 +151,37 @@ router.post('/reset-password/:token', async (req, res) => {
         return res.status(200).json({ message: 'Password successfully reset' });
     }
     catch (error) {
+        return res.status(500).json({ message: 'Server error' });
+    }
+});
+router.post('/resend-verification', async (req, res) => {
+    const { email } = req.body;
+    try {
+        // Find the user by email
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Check if the user is already verified
+        if (user.verified) {
+            return res.status(400).json({ message: 'This account is already verified' });
+        }
+        // Generate a new verification token
+        const verificationToken = crypto_1.default.randomBytes(32).toString('hex');
+        user.verificationToken = verificationToken;
+        user.verificationExpires = new Date(Date.now() + 3600000); // 1 hour expiry
+        // Save the updated user with the new token
+        await user.save();
+        // Send the verification email again
+        const verificationLink = `http://localhost/verify-email/${verificationToken}`;
+        const subject = 'Verify Your Email';
+        const text = `To log in to the site, verify your email: ${verificationLink}`;
+        const html = Emails_1.emailTemplates.verifyEmail(verificationLink, user.firstName);
+        await (0, SendEmails_1.sendEmail)(user.email, subject, text, html);
+        return res.status(200).json({ message: 'Verification email sent successfully' });
+    }
+    catch (error) {
+        console.error('Error resending verification email:', error);
         return res.status(500).json({ message: 'Server error' });
     }
 });

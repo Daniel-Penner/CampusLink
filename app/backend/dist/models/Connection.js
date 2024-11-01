@@ -24,18 +24,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const UserSchema = new mongoose_1.Schema({
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, unique: true, required: true },
-    password: { type: String, required: true },
-    friendCode: { type: String, unique: true, required: true },
-    profilePicture: { type: String, required: true, default: "C:\\Users\\danie\\OneDrive\\Documents\\GitHub\\CampusLink\\app\\frontend\\src\\assets\\profile.png" },
-    resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date },
-    verificationToken: { type: String },
-    verificationExpires: { type: Date },
-    verified: { type: Boolean, default: false },
+const ConnectionSchema = new mongoose_1.Schema({
+    sender: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
+    recipient: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
+    accepted: { type: Boolean, required: true, default: false },
 });
-const User = mongoose_1.default.model('User', UserSchema);
-exports.default = User;
+const Message = mongoose_1.default.model('Connection', ConnectionSchema);
+exports.default = Message;

@@ -1,0 +1,22 @@
+.navbar {
+    display: flex;
+    background-color: var(--secondary-background);
+    color: #ccc;
+    border-bottom: 2px solid var(--border-color);
+    padding: 0 30px;
+    gap: 30px;
+    height: 50px;
+}
+
+.channel {
+    cursor: pointer;
+    color: var(--text-color);
+    font-size: 18px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.channel:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}

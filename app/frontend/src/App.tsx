@@ -13,6 +13,7 @@ import Verification from "./pages/Verification/Verification.tsx";
 import Friends from "./pages/Connections/Friends/Friends.tsx";
 import OutgoingRequests from "./pages/Connections/OutgoingRequests/OutgoingRequests.tsx";
 import IncomingRequests from "./pages/Connections/IncomingRequests/IncomingRequests.tsx";
+import Servers from "./pages/Servers/Servers.tsx";
 
 function App() {
     return (
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/connections" element={<Friends/>}/>
                 <Route path="/incoming-requests" element={<IncomingRequests/>}/>
                 <Route path="/outgoing-requests" element={<OutgoingRequests/>}/>
+                <Route path="/servers" element={<Servers/>}/>
             </Routes>
         </Router>
         </AuthProvider>

@@ -25,11 +25,11 @@ const NavMenu: React.FC<NavMenuProps> = ({ isClosing }) => {
             <button onClick={() => handleNavigation('/messages')} className={styles.navButton}>
                 Messages
             </button>
+            <button onClick={() => handleNavigation('/servers')} className={styles.navButton}>
+                Servers
+            </button>
             <button onClick={() => handleNavigation('/explore')} className={styles.navButton}>
                 Explore
-            </button>
-            <button onClick={() => handleNavigation('/forums')} className={styles.navButton}>
-                Forums
             </button>
             <button onClick={() => handleNavigation('/supports')} className={styles.navButton}>
                 Support
