@@ -6,7 +6,7 @@ interface Message {
     sender: string;
     content: string;
     timestamp: Date;
-    recipient?: string;
+    profilePic?: string;
     channel?: string;
 }
 
@@ -25,7 +25,6 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
     const [newMessage, setNewMessage] = useState('');
     const messageAreaRef = useRef<HTMLDivElement>(null);
 
-    // Scroll to the bottom of the message area whenever new messages are added
     useEffect(() => {
         if (messageAreaRef.current) {
             messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
@@ -40,29 +39,57 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
             content: newMessage,
             timestamp: new Date(),
             channel: selectedChannel._id,
+            profilePic: 'your-profile-pic-url', // Replace with actual profile pic URL
         };
 
-        // Update messages with the new message
         setMessages(prevMessages => [...prevMessages, messageData]);
         setNewMessage('');
     };
 
+    if (!selectedChannel) {
+        return <div className={styles.noChannelSelected}>No channel selected</div>;
+    }
+
+    let previousSender: string | null = null;
+
     return (
         <div className={styles.serverContainer}>
             <div className={styles.messageArea} ref={messageAreaRef}>
-                {messages.map((msg, index) => (
-                    <div key={index} className={msg.sender === 'You' ? styles.sentMessage : styles.receivedMessage}>
-                        <p className={styles.messageContent}>
-                            <strong>{msg.sender}:</strong> {msg.content}
-                            <span className={styles.timestamp}>{new Date(msg.timestamp).toLocaleTimeString()}</span>
-                        </p>
-                    </div>
-                ))}
+                {messages.map((msg, index) => {
+                    const isOwnMessage = msg.sender === 'You';
+                    const showProfilePic = !isOwnMessage && previousSender !== msg.sender;
+                    previousSender = msg.sender;
+
+                    return (
+                        <div
+                            key={index}
+                            className={`${styles.messageContainer} ${
+                                isOwnMessage ? styles.sentMessage : styles.receivedMessage
+                            }`}
+                        >
+                            {!isOwnMessage && showProfilePic && (
+                                <img src={msg.profilePic || 'default-profile-pic.png'} alt={msg.sender} className={styles.messageProfilePic} />
+                            )}
+                            {!showProfilePic && (
+                                <div className={styles.blocker}></div>
+                            )}
+                            <div className={styles.messageContent}>
+                                {!isOwnMessage && showProfilePic && (
+                                    <span className={styles.senderName}>{msg.sender}</span>
+                                )}
+                                <p className={styles.textContainer}>
+                                    {msg.content}
+                                    <span className={styles.timestamp}>{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                                </p>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
             <div className={styles.inputContainer}>
                 <input
                     type="text"
-                    placeholder={`Message #${selectedChannel?.name || ''}...`}
+                    placeholder={`Message #${selectedChannel.name}...`}
                     className={styles.messageInput}
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
