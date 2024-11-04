@@ -1,6 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { FaArrowUp } from 'react-icons/fa';
 import styles from './ServerWindow.module.css';
+import { io } from 'socket.io-client';
+import { AuthContext } from '../../contexts/AuthContext';
+
+const socket = io('https://localhost', {
+    path: '/socket.io',
+    withCredentials: true,
+    transports: ['websocket', 'polling']
+});
 
 interface Message {
     sender: string;
@@ -19,11 +27,14 @@ interface ServerWindowProps {
     messages: Message[];
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
     selectedChannel: Channel | null;
+    selectedServer: any;
 }
 
-const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, selectedChannel }) => {
+const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, selectedChannel, selectedServer }) => {
     const [newMessage, setNewMessage] = useState('');
     const messageAreaRef = useRef<HTMLDivElement>(null);
+    const authContext = useContext(AuthContext);
+    const { id: userId } = authContext || {};
 
     useEffect(() => {
         if (messageAreaRef.current) {
@@ -31,65 +42,77 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
         }
     }, [messages]);
 
+    useEffect(() => {
+        if (selectedChannel) {
+            // Join the channel's room on Socket.IO
+            socket.emit('join-channel', selectedChannel._id);
+
+            // Fetch messages for the selected channel
+            const token = localStorage.getItem('token');
+            fetch(`/api/servers/${selectedServer._id}/channels/${selectedChannel._id}/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then((res) => res.json())
+                .then((data) => setMessages(data))
+                .catch((err) => console.error('Error fetching messages:', err));
+        }
+
+        return () => {
+            if (selectedChannel) {
+                socket.emit('leave-channel', selectedChannel._id);
+            }
+        };
+    }, [selectedChannel, selectedServer, setMessages]);
+
     const sendMessage = () => {
-        if (!newMessage.trim() || !selectedChannel) return;
+        if (!newMessage.trim() || !selectedChannel || !selectedServer || !userId) return;
 
         const messageData: Message = {
-            sender: 'You',
+            sender: userId, // Use the authenticated user's ID
             content: newMessage,
             timestamp: new Date(),
             channel: selectedChannel._id,
-            profilePic: 'your-profile-pic-url', // Replace with actual profile pic URL
+            profilePic: 'your-profile-pic-url'
         };
 
-        setMessages(prevMessages => [...prevMessages, messageData]);
-        setNewMessage('');
+        const token = localStorage.getItem('token');
+
+        // Send message to the backend API
+        fetch(`/api/servers/${selectedServer._id}/channels/${selectedChannel._id}/message`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(messageData)
+        })
+            .then((res) => res.json())
+            .then((savedMessage) => {
+                // Emit the message via Socket.IO for real-time update
+                socket.emit('send-channel-message', savedMessage);
+                setNewMessage('');
+            })
+            .catch((err) => console.error('Error sending message:', err));
     };
-
-    if (!selectedChannel) {
-        return <div className={styles.noChannelSelected}>No channel selected</div>;
-    }
-
-    let previousSender: string | null = null;
 
     return (
         <div className={styles.serverContainer}>
             <div className={styles.messageArea} ref={messageAreaRef}>
-                {messages.map((msg, index) => {
-                    const isOwnMessage = msg.sender === 'You';
-                    const showProfilePic = !isOwnMessage && previousSender !== msg.sender;
-                    previousSender = msg.sender;
-
-                    return (
-                        <div
-                            key={index}
-                            className={`${styles.messageContainer} ${
-                                isOwnMessage ? styles.sentMessage : styles.receivedMessage
-                            }`}
-                        >
-                            {!isOwnMessage && showProfilePic && (
-                                <img src={msg.profilePic || 'default-profile-pic.png'} alt={msg.sender} className={styles.messageProfilePic} />
-                            )}
-                            {!showProfilePic && (
-                                <div className={styles.blocker}></div>
-                            )}
-                            <div className={styles.messageContent}>
-                                {!isOwnMessage && showProfilePic && (
-                                    <span className={styles.senderName}>{msg.sender}</span>
-                                )}
-                                <p className={styles.textContainer}>
-                                    {msg.content}
-                                    <span className={styles.timestamp}>{new Date(msg.timestamp).toLocaleTimeString()}</span>
-                                </p>
-                            </div>
-                        </div>
-                    );
-                })}
+                {messages.map((msg, index) => (
+                    <div key={index} className={`${styles.messageContainer} ${msg.sender === userId ? styles.sentMessage : styles.receivedMessage}`}>
+                        <p className={styles.messageContent}>
+                            {msg.content}
+                            <span className={styles.timestamp}>{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                        </p>
+                    </div>
+                ))}
             </div>
             <div className={styles.inputContainer}>
                 <input
                     type="text"
-                    placeholder={`Message #${selectedChannel.name}...`}
+                    placeholder={`Message #${selectedChannel?.name}...`}
                     className={styles.messageInput}
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}

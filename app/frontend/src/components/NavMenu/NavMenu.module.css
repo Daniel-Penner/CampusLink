@@ -20,7 +20,7 @@
     position: absolute;
     top: 100px;
     left: 20px;
-    z-index: 101;
+    z-index: 150;
 }
 
 /* Slide in when menu opens */

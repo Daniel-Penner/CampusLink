@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import http from 'http';
-import { Server as SocketIOServer } from 'socket.io'; // Import Socket.IO as SocketIOServer
+import { Server as SocketIOServer } from 'socket.io';
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 const io = new SocketIOServer(server, {
     cors: {
-        origin: 'https://localhost', // Set the correct frontend URL with HTTPS
+        origin: 'https://localhost', // Replace with the correct frontend URL
         methods: ['GET', 'POST'],
         credentials: true
     }
@@ -26,8 +26,27 @@ const io = new SocketIOServer(server, {
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
+    // Join a personal room for direct messages
     socket.on('join', (userId) => {
         socket.join(userId);
+    });
+
+    // Join a server channel
+    socket.on('join-channel', (channelId) => {
+        socket.join(channelId);
+        console.log(`User joined channel: ${channelId}`);
+    });
+
+    // Leave a server channel
+    socket.on('leave-channel', (channelId) => {
+        socket.leave(channelId);
+        console.log(`User left channel: ${channelId}`);
+    });
+
+    // Broadcast a message to a specific channel
+    socket.on('send-channel-message', (message) => {
+        const { channel } = message;
+        io.to(channel).emit('channel-message', message); // Send to all users in the channel
     });
 
     socket.on('disconnect', () => {
@@ -50,7 +69,7 @@ mongoose.connect(databaseUrl)
 // Middleware setup
 app.use(express.json());
 app.use(cors({
-    origin: 'https://localhost', // Match the HTTPS frontend URL here
+    origin: 'https://localhost',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
@@ -59,6 +78,7 @@ app.use(cors({
 import authRoutes from './routes/auth';
 import directMessagesRoutes from './routes/direct-messages';
 import connectionRoutes from './routes/connections';
+import serverRoutes from './routes/servers'; // Import server routes
 
 // Attach `io` to `req` object for usage in routes
 app.use((req, res, next) => {
@@ -69,6 +89,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/direct-messages', directMessagesRoutes);
 app.use('/api/connections', connectionRoutes);
+app.use('/api/servers', serverRoutes); // Add server routes
 
 // Start the server
 server.listen(port, () => {

@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { User } from './User';
 
-interface IMessage extends Document {
+export interface IMessage extends Document {
     sender: User['_id'];
     recipient: User['_id'];
     content: string;
