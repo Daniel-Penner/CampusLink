@@ -8,6 +8,7 @@ interface ServersSidebarProps {
     setSelectedServer: (server: any) => void;
     onHover: () => void;
     onLeave: () => void;
+    onCreateServer: () => void;
 }
 
 const ServersSidebar: React.FC<ServersSidebarProps> = ({
@@ -15,14 +16,16 @@ const ServersSidebar: React.FC<ServersSidebarProps> = ({
                                                            selectedServer,
                                                            setSelectedServer,
                                                            onHover,
-                                                           onLeave
+                                                           onLeave,
+                                                           onCreateServer
                                                        }) => (
     <div
         className={styles.sidebar}
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
     >
-        <div className={styles.box} onClick={() => console.log('Add Server')}>
+        {/* Add Server button triggers the modal open */}
+        <div className={styles.box} onClick={onCreateServer}>
             <div className={styles.serverIcon} style={{ backgroundColor: 'var(--primary-color)' }}>
                 <FaPlus />
             </div>

@@ -7,14 +7,17 @@ export interface IServer extends Document {
     owner: User['_id'];
     members: User['_id'][];
     channels: IChannel['_id'][];
+    public: boolean;
 }
 
 const ServerSchema: Schema = new Schema({
     name: { type: String, required: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array of User IDs for members
-    channels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }] // Array of Channel IDs
+    members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    channels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }],
+    public: { type: Boolean, default: true } // Adding the public field with a default value
 });
+
 
 const Server = mongoose.model<IServer>('Server', ServerSchema);
 export default Server;

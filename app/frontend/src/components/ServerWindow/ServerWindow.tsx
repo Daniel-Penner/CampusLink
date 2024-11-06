@@ -12,8 +12,9 @@ const socket = io('https://localhost', {
 
 interface Message {
     sender: string;
+    senderName?: string;
     content: string;
-    timestamp: Date;
+    timestamp?: Date;
     profilePic?: string;
     channel?: string;
 }
@@ -44,10 +45,8 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
 
     useEffect(() => {
         if (selectedChannel) {
-            // Join the channel's room on Socket.IO
             socket.emit('join-channel', selectedChannel._id);
 
-            // Fetch messages for the selected channel
             const token = localStorage.getItem('token');
             fetch(`/api/servers/${selectedServer._id}/channels/${selectedChannel._id}/messages`, {
                 headers: {
@@ -55,7 +54,20 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
                 }
             })
                 .then((res) => res.json())
-                .then((data) => setMessages(data))
+                .then(async (data) => {
+                    // Fetch sender names and format timestamps
+                    const formattedMessages = await Promise.all(
+                        data.map(async (msg: any) => {
+                            const senderName = await fetchSenderName(msg.sender); // Fetch sender's name
+                            return {
+                                ...msg,
+                                senderName,
+                                timestamp: msg.timestamp ? new Date(msg.timestamp) : undefined
+                            };
+                        })
+                    );
+                    setMessages(formattedMessages);
+                })
                 .catch((err) => console.error('Error fetching messages:', err));
         }
 
@@ -66,11 +78,42 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
         };
     }, [selectedChannel, selectedServer, setMessages]);
 
+    useEffect(() => {
+        if (selectedChannel) {
+            socket.on('channel-message', (newMessage) => {
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { ...newMessage, timestamp: new Date(newMessage.timestamp) }
+                ]);
+            });
+        }
+
+        return () => {
+            socket.off('channel-message');
+        };
+    }, [selectedChannel]);
+
+    const fetchSenderName = async (senderId: string): Promise<string> => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/api/users/${senderId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            return data.name || 'Unknown';
+        } catch (error) {
+            console.error('Error fetching sender name:', error);
+            return 'Unknown';
+        }
+    };
+
     const sendMessage = () => {
         if (!newMessage.trim() || !selectedChannel || !selectedServer || !userId) return;
 
         const messageData: Message = {
-            sender: userId, // Use the authenticated user's ID
+            sender: userId,
             content: newMessage,
             timestamp: new Date(),
             channel: selectedChannel._id,
@@ -79,7 +122,6 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
 
         const token = localStorage.getItem('token');
 
-        // Send message to the backend API
         fetch(`/api/servers/${selectedServer._id}/channels/${selectedChannel._id}/message`, {
             method: 'POST',
             headers: {
@@ -89,8 +131,12 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
             body: JSON.stringify(messageData)
         })
             .then((res) => res.json())
-            .then((savedMessage) => {
-                // Emit the message via Socket.IO for real-time update
+            .then(async (savedMessage) => {
+                const senderName = await fetchSenderName(savedMessage.sender); // Fetch sender's name
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { ...savedMessage, senderName, timestamp: new Date(savedMessage.timestamp) }
+                ]);
                 socket.emit('send-channel-message', savedMessage);
                 setNewMessage('');
             })
@@ -103,8 +149,11 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
                 {messages.map((msg, index) => (
                     <div key={index} className={`${styles.messageContainer} ${msg.sender === userId ? styles.sentMessage : styles.receivedMessage}`}>
                         <p className={styles.messageContent}>
+                            <strong>{msg.senderName || 'Unknown'}: </strong>
                             {msg.content}
-                            <span className={styles.timestamp}>{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                            <span className={styles.timestamp}>
+                                {msg.timestamp ? msg.timestamp.toLocaleTimeString() : 'Invalid date'}
+                            </span>
                         </p>
                     </div>
                 ))}

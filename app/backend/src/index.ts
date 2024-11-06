@@ -79,6 +79,7 @@ import authRoutes from './routes/auth';
 import directMessagesRoutes from './routes/direct-messages';
 import connectionRoutes from './routes/connections';
 import serverRoutes from './routes/servers'; // Import server routes
+import userRoutes from './routes/users';
 
 // Attach `io` to `req` object for usage in routes
 app.use((req, res, next) => {
@@ -86,6 +87,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/api/users', userRoutes)
 app.use('/api/auth', authRoutes);
 app.use('/api/direct-messages', directMessagesRoutes);
 app.use('/api/connections', connectionRoutes);

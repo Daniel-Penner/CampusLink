@@ -7,6 +7,56 @@ import mongoose from "mongoose";
 
 const router = express.Router();
 
+router.post('/create', authenticateToken, async (req, res) => {
+    const { name, isPublic, channels } = req.body;
+    const userId = req.user.userId;
+
+    try {
+        // Create the server
+        const newServer = new Server({
+            name,
+            owner: userId,
+            public: isPublic,
+            members: [userId]
+        });
+
+        // Save the server
+        await newServer.save();
+
+        // Create channels and add to the server
+        const createdChannels = await Promise.all(
+            channels.map(async (channelData: { name: string }) => {
+                const newChannel = new Channel({ name: channelData.name, server: newServer._id });
+                await newChannel.save();
+                newServer.channels.push(newChannel._id);
+                return newChannel;
+            })
+        );
+
+        // Save the server with updated channels
+        await newServer.save();
+
+        // Populate channels for the response
+        const populatedServer = await Server.findById(newServer._id).populate('channels');
+
+        res.status(201).json(populatedServer);
+    } catch (error) {
+        console.error('Error creating server:', error);
+        res.status(500).json({ message: 'Error creating server' });
+    }
+});
+
+router.get('/', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const servers = await Server.find({ members: userId }).populate('channels');
+        res.status(200).json(servers);
+    } catch (error) {
+        console.error('Error fetching servers:', error);
+        res.status(500).json({ message: 'Error fetching servers' });
+    }
+});
+
 // Join a Server
 router.post('/join', authenticateToken, async (req, res) => {
     const { serverId } = req.body;

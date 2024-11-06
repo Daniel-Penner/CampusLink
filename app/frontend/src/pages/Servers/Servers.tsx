@@ -1,80 +1,38 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import ServersSidebar from '../../components/ServersSidebar/ServersSidebar';
 import ServerWindow from '../../components/ServerWindow/ServerWindow';
-import ChannelsNavbar from "../../components/ChannelsNavbar/ChannelsNavbar";
+import ChannelsNavbar from '../../components/ChannelsNavbar/ChannelsNavbar';
+import CreateServerModal from '../../components/CreateServerModal/CreateServerModal';
 import styles from './Servers.module.css';
 
 const ServersPage: React.FC = () => {
-    const servers = [
-        {
-            _id: '64e94be6819100db1866031a', // Example of a valid ObjectId string
-            name: 'Casual',
-            color: 'red',
-            channels: [
-                {
-                    _id: '64e94be6819100db1866031b', // Valid ObjectId for channel
-                    name: 'general',
-                    messages: [
-                        {
-                            sender: 'Alice',
-                            content: 'Hello!',
-                            timestamp: new Date()
-                        },
-                        {
-                            sender: 'Alice',
-                            content: 'Hello!',
-                            timestamp: new Date()
-                        }
-                    ]
-                },
-                {
-                    _id: '64e94be6819100db1866031c', // Another valid ObjectId
-                    name: 'random',
-                    messages: [
-                        {
-                            sender: 'Bob',
-                            content: 'Random chat',
-                            timestamp: new Date()
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            _id: '64e94be6819100db1866031d',
-            name: 'Announcements',
-            color: 'blue',
-            channels: [
-                {
-                    _id: '64e94be6819100db1866031e',
-                    name: 'updates',
-                    messages: [
-                        {
-                            sender: 'System',
-                            content: 'New update released!',
-                            timestamp: new Date()
-                        }
-                    ]
-                },
-                {
-                    _id: '64e94be6819100db1866031f',
-                    name: 'news',
-                    messages: [
-                        {
-                            sender: 'Admin',
-                            content: 'Company news',
-                            timestamp: new Date()
-                        }
-                    ]
-                }
-            ]
-        }
-    ];
-
+    const [servers, setServers] = useState<any[]>([]);
     const [selectedServer, setSelectedServer] = useState<any | null>(null);
     const [selectedChannel, setSelectedChannel] = useState<any | null>(null);
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+    const [isCreatingServer, setIsCreatingServer] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        fetch('/api/servers', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setServers(data);
+                // Optionally select the first server and its first channel
+                if (data.length > 0) {
+                    setSelectedServer(data[0]);
+                    setSelectedChannel(data[0].channels[0] || null);
+                }
+            })
+            .catch(error => console.error('Error fetching servers:', error));
+    }, []);
 
     const handleServerSelect = (server: any) => {
         setSelectedServer(server);
@@ -83,6 +41,27 @@ const ServersPage: React.FC = () => {
 
     const handleChannelSelect = (channel: any) => {
         setSelectedChannel(channel);
+    };
+
+    const handleCreateServer = (serverData: { name: string; isPublic: boolean; channels: { name: string }[] }) => {
+        const token = localStorage.getItem('token');
+
+        fetch('/api/servers/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(serverData)
+        })
+            .then(response => response.json())
+            .then(newServer => {
+                setServers([...servers, newServer]);
+                setSelectedServer(newServer);
+                setSelectedChannel(newServer.channels[0] || null);
+                setIsCreatingServer(false); // Close the modal after creating the server
+            })
+            .catch(error => console.error('Error creating server:', error));
     };
 
     return (
@@ -95,12 +74,9 @@ const ServersPage: React.FC = () => {
                     setSelectedServer={handleServerSelect}
                     onHover={() => setIsSidebarExpanded(true)}
                     onLeave={() => setIsSidebarExpanded(false)}
+                    onCreateServer={() => setIsCreatingServer(true)} // Open modal on click
                 />
-                <div
-                    className={`${styles.mainColumn} ${
-                        isSidebarExpanded ? styles.shiftRight : ''
-                    }`}
-                >
+                <div className={`${styles.mainColumn} ${isSidebarExpanded ? styles.shiftRight : ''}`}>
                     <ChannelsNavbar
                         channels={selectedServer ? selectedServer.channels : []}
                         selectedChannel={selectedChannel}
@@ -114,6 +90,12 @@ const ServersPage: React.FC = () => {
                     />
                 </div>
             </div>
+            {isCreatingServer && (
+                <CreateServerModal
+                    onClose={() => setIsCreatingServer(false)} // Close modal on cancel
+                    onCreateServer={handleCreateServer} // Handle server creation
+                />
+            )}
         </div>
     );
 };
