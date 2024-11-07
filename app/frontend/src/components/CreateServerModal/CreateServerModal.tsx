@@ -41,9 +41,9 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ onClose, onCreate
                     placeholder="Server Name"
                     value={serverName}
                     onChange={(e) => setServerName(e.target.value)}
+                    className={styles.inputField}
                 />
                 <div className={styles.channelList}>
-                    <h3>Channels</h3>
                     {channels.map((channel, index) => (
                         <div key={index} className={styles.channelItem}>
                             <input
@@ -51,24 +51,23 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ onClose, onCreate
                                 placeholder={`Channel ${index + 1} Name`}
                                 value={channel.name}
                                 onChange={(e) => handleChannelNameChange(index, e.target.value)}
+                                className={styles.inputField}
                             />
                             <button onClick={() => handleRemoveChannel(index)}>Remove</button>
                         </div>
                     ))}
                     <button onClick={handleAddChannel}>Add Channel</button>
                 </div>
-                <div className={styles.toggleContainer}>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={isPublic}
-                            onChange={() => setIsPublic(!isPublic)}
-                        />
-                        Public Server
-                    </label>
-                </div>
-                <button onClick={handleCreateServer} disabled={!serverName.trim()}>Create Server</button>
-                <button onClick={onClose}>Cancel</button>
+                <label className={styles.toggleContainer}>
+                    <input
+                        type="checkbox"
+                        checked={isPublic}
+                        onChange={() => setIsPublic(!isPublic)}
+                    />
+                    Public Server
+                </label>
+                <button onClick={handleCreateServer} disabled={!serverName.trim()} className={styles.createButton}>Create Server</button>
+                <button onClick={onClose} className={styles.cancelButton}>Cancel</button>
             </div>
         </div>
     );

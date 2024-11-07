@@ -19,37 +19,28 @@
     text-align: center;
 }
 
-.channelList, .toggleContainer {
-    margin-top: 10px;
-}
-
-.channelItem {
+.buttonContainer {
     display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.inputField {
-    width: 100%;
-    padding: 0.5rem;
+    gap: 1rem;
+    justify-content: center;
     margin-top: 1rem;
-    border-radius: 0.25rem;
-    border: 1px solid #ccc;
 }
 
-.createButton, .cancelButton {
+.choiceButton {
+    flex: 1;
     padding: 0.75rem;
+    background-color: var(--primary-color);
+    color: var(--button-text);
     border: none;
     border-radius: 0.25rem;
     cursor: pointer;
-    margin-top: 1rem;
-}
-
-.createButton {
-    background-color: var(--primary-color);
-    color: var(--button-text);
 }
 
 .cancelButton {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
     background-color: #ccc;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
 }

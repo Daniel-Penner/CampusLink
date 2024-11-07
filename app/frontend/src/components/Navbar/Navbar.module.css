@@ -7,7 +7,7 @@
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);  /* Optional darker overlay */
     backdrop-filter: blur(5px);      /* Apply the blur effect */
-    z-index: 101;                    /* Ensure overlay is below the navbar and menu */
+    z-index: 149;                    /* Ensure overlay is below the navbar and menu */
 }
 
 .profileContainer {
@@ -39,7 +39,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 102; /* Ensure navbar is above the blur overlay */
+    z-index: 150; /* Ensure navbar is above the blur overlay */
 }
 
 /* Hamburger button */

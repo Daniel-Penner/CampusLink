@@ -57,6 +57,19 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/public', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        // Find public servers where the user is not a member
+        const publicServers = await Server.find({ public: true, members: { $ne: userId } });
+        res.status(200).json(publicServers);
+    } catch (error) {
+        console.error('Error fetching public servers:', error);
+        res.status(500).json({ message: 'Error fetching public servers' });
+    }
+});
+
 // Join a Server
 router.post('/join', authenticateToken, async (req, res) => {
     const { serverId } = req.body;

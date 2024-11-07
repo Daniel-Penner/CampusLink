@@ -1,8 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import ServersSidebar from '../../components/ServersSidebar/ServersSidebar';
 import ServerWindow from '../../components/ServerWindow/ServerWindow';
 import ChannelsNavbar from '../../components/ChannelsNavbar/ChannelsNavbar';
+import ServerChoiceModal from '../../components/ServerChoiceModal/ServerChoiceModal';
+import JoinServerModal from '../../components/ServerJoinModal/ServerJoinModal';
 import CreateServerModal from '../../components/CreateServerModal/CreateServerModal';
 import styles from './Servers.module.css';
 
@@ -10,7 +12,10 @@ const ServersPage: React.FC = () => {
     const [servers, setServers] = useState<any[]>([]);
     const [selectedServer, setSelectedServer] = useState<any | null>(null);
     const [selectedChannel, setSelectedChannel] = useState<any | null>(null);
+    const [messages, setMessages] = useState<any[]>([]);
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+    const [isServerChoiceOpen, setIsServerChoiceOpen] = useState(false);
+    const [isJoiningServer, setIsJoiningServer] = useState(false);
     const [isCreatingServer, setIsCreatingServer] = useState(false);
 
     useEffect(() => {
@@ -25,10 +30,10 @@ const ServersPage: React.FC = () => {
             .then(response => response.json())
             .then(data => {
                 setServers(data);
-                // Optionally select the first server and its first channel
                 if (data.length > 0) {
                     setSelectedServer(data[0]);
                     setSelectedChannel(data[0].channels[0] || null);
+                    setMessages(data[0].channels[0]?.messages || []);
                 }
             })
             .catch(error => console.error('Error fetching servers:', error));
@@ -37,15 +42,16 @@ const ServersPage: React.FC = () => {
     const handleServerSelect = (server: any) => {
         setSelectedServer(server);
         setSelectedChannel(server.channels[0] || null);
+        setMessages(server.channels[0]?.messages || []);
     };
 
     const handleChannelSelect = (channel: any) => {
         setSelectedChannel(channel);
+        setMessages(channel.messages || []);
     };
 
     const handleCreateServer = (serverData: { name: string; isPublic: boolean; channels: { name: string }[] }) => {
         const token = localStorage.getItem('token');
-
         fetch('/api/servers/create', {
             method: 'POST',
             headers: {
@@ -59,9 +65,29 @@ const ServersPage: React.FC = () => {
                 setServers([...servers, newServer]);
                 setSelectedServer(newServer);
                 setSelectedChannel(newServer.channels[0] || null);
-                setIsCreatingServer(false); // Close the modal after creating the server
+                setMessages(newServer.channels[0]?.messages || []);
+                setIsCreatingServer(false);
             })
             .catch(error => console.error('Error creating server:', error));
+    };
+
+    const handleJoinServer = (joinCode: string) => {
+        const token = localStorage.getItem('token');
+        fetch(`/api/servers/join/${joinCode}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(joinedServer => {
+                setServers([...servers, joinedServer]);
+                setSelectedServer(joinedServer);
+                setSelectedChannel(joinedServer.channels[0] || null);
+                setMessages(joinedServer.channels[0]?.messages || []);
+                setIsJoiningServer(false);
+            })
+            .catch(error => console.error('Error joining server:', error));
     };
 
     return (
@@ -74,7 +100,7 @@ const ServersPage: React.FC = () => {
                     setSelectedServer={handleServerSelect}
                     onHover={() => setIsSidebarExpanded(true)}
                     onLeave={() => setIsSidebarExpanded(false)}
-                    onCreateServer={() => setIsCreatingServer(true)} // Open modal on click
+                    onCreateServer={() => setIsServerChoiceOpen(true)} // Open server choice modal
                 />
                 <div className={`${styles.mainColumn} ${isSidebarExpanded ? styles.shiftRight : ''}`}>
                     <ChannelsNavbar
@@ -83,17 +109,41 @@ const ServersPage: React.FC = () => {
                         setSelectedChannel={handleChannelSelect}
                     />
                     <ServerWindow
-                        messages={selectedChannel ? selectedChannel.messages : []}
-                        setMessages={() => {}}
+                        messages={messages}
+                        setMessages={setMessages}
                         selectedChannel={selectedChannel}
                         selectedServer={selectedServer}
                     />
                 </div>
             </div>
+
+            {/* Render modals based on modal state */}
+            {isServerChoiceOpen && (
+                <ServerChoiceModal
+                    onClose={() => setIsServerChoiceOpen(false)}
+                    onJoin={() => {
+                        setIsServerChoiceOpen(false);
+                        setIsJoiningServer(true);
+                    }}
+                    onCreate={() => {
+                        setIsServerChoiceOpen(false);
+                        setIsCreatingServer(true);
+                    }}
+                />
+            )}
+
+            {isJoiningServer && (
+                <JoinServerModal
+                    onClose={() => setIsJoiningServer(false)}
+                    onJoinCode={handleJoinServer}
+                    publicServers={servers.filter(server => server.isPublic)}
+                />
+            )}
+
             {isCreatingServer && (
                 <CreateServerModal
-                    onClose={() => setIsCreatingServer(false)} // Close modal on cancel
-                    onCreateServer={handleCreateServer} // Handle server creation
+                    onClose={() => setIsCreatingServer(false)}
+                    onCreateServer={handleCreateServer}
                 />
             )}
         </div>
