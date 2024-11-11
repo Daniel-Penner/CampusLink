@@ -1,55 +1,180 @@
 .modalBackdrop {
     position: fixed;
-    top: 0;
+    top: 80px;
     left: 0;
-    right: 0;
-    bottom: 0;
+    height: calc(100% - 80px);
+    width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 }
 
 .modalContent {
     background-color: var(--secondary-background);
-    padding: 2rem;
-    border-radius: 0.5rem;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-}
-
-.channelList, .toggleContainer {
-    margin-top: 10px;
-}
-
-.channelItem {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
+    padding: 20px;
+    border-radius: 8px;
+    width: 600px;
+    max-width: 90%;
 }
 
 .inputField {
     width: 100%;
-    padding: 0.5rem;
-    margin-top: 1rem;
-    border-radius: 0.25rem;
-    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-background);
+    color: var(--text-color);
 }
 
-.createButton, .cancelButton {
-    padding: 0.75rem;
+.channelList {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+.channelItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.addChannelButton {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    padding: 8px;
+    margin-top: 10px;
     border: none;
-    border-radius: 0.25rem;
+    border-radius: 4px;
     cursor: pointer;
-    margin-top: 1rem;
+}
+
+.removeChannelButton {
+    color: var(--text-color);
+    padding: 10px;
+    margin-top: 15px;
+    border: none;
+    margin-left: 10px;
+    background-color: var(--error-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.toggleContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
 }
 
 .createButton {
     background-color: var(--primary-color);
     color: var(--button-text);
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 100%;
 }
 
 .cancelButton {
-    background-color: #ccc;
+    background-color: var(--secondary-background);
+    color: var(--text-color);
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+
+
+.checkboxWrapper {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.checkboxWrapper input[type="checkbox"] {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.customCheckbox {
+    width: 100%;
+    height: 100%;
+    background-color: var(--border-color);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+}
+
+.checkboxWrapper {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.checkboxWrapper input[type="checkbox"] {
+    opacity: 0;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.customCheckbox {
+    width: 100%;
+    height: 100%;
+    background-color: var(--border-color);
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.checkboxHoverFill {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background-color: var(--primary-color);
+    border-radius: 3px; /* Matches the border radius of the outer box */
+    transition: width 0.2s ease, height 0.2s ease, top 0.2s ease, left 0.2s ease;
+}
+
+/* Hover animation: scales the inner fill to 50% */
+.checkboxWrapper:hover .checkboxHoverFill {
+    top: 30%;
+    left: 30%;
+    width: 40%;
+    height: 40%;
+    transition: width 0.2s ease, height 0.2s ease, left 0.2s ease, top 0.2s ease;
+}
+
+/* Checked state: scales the inner fill to 80% */
+input[type="checkbox"]:checked + .customCheckbox .checkboxHoverFill {
+    top: 15%;
+    left: 15%;
+    width: 70%;
+    height: 70%;
+    transition: width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
 }

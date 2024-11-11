@@ -1,6 +1,6 @@
 .modalBackdrop {
     position: fixed;
-    top: 0;
+    top: 80px;
     left: 0;
     right: 0;
     bottom: 0;
@@ -36,11 +36,16 @@
     cursor: pointer;
 }
 
+.choiceButton:hover{
+    background-color: var(--button-hover);
+}
+
 .cancelButton {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #ccc;
-    border: none;
+    margin-top: 15px;
+    width: 100%;
+    background-color: var(--secondary-background);
     border-radius: 0.25rem;
     cursor: pointer;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
 }

@@ -3,6 +3,7 @@
     --background-color: #131313;    /* Dark background */
     --secondary-background: #1E1E1E;/* background for containers */
     --lighter-grey: #353535;        /* for some buttons directly against the dark background color*/
+    --lighter-grey-hover: #2c2c2c;
     --text-color: #E0E0E0;          /* text against the background and buttons */
     --input-background: #131313;    /* Dark grey background for input fields */
     --input-text-color: #5A5A5A;    /* Light gray for input text */
