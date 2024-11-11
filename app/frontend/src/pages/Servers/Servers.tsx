@@ -18,8 +18,10 @@ const ServersPage: React.FC = () => {
     const [isJoiningServer, setIsJoiningServer] = useState(false);
     const [isCreatingServer, setIsCreatingServer] = useState(false);
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+
+    // Fetch servers function
+    const fetchServers = () => {
         fetch('/api/servers', {
             method: 'GET',
             headers: {
@@ -37,6 +39,10 @@ const ServersPage: React.FC = () => {
                 }
             })
             .catch(error => console.error('Error fetching servers:', error));
+    };
+
+    useEffect(() => {
+        fetchServers();
     }, []);
 
     const handleServerSelect = (server: any) => {
@@ -51,7 +57,6 @@ const ServersPage: React.FC = () => {
     };
 
     const handleCreateServer = (serverData: { name: string; isPublic: boolean; channels: { name: string }[] }) => {
-        const token = localStorage.getItem('token');
         fetch('/api/servers/create', {
             method: 'POST',
             headers: {
@@ -61,33 +66,11 @@ const ServersPage: React.FC = () => {
             body: JSON.stringify(serverData)
         })
             .then(response => response.json())
-            .then(newServer => {
-                setServers([...servers, newServer]);
-                setSelectedServer(newServer);
-                setSelectedChannel(newServer.channels[0] || null);
-                setMessages(newServer.channels[0]?.messages || []);
+            .then(() => {
+                fetchServers(); // Refresh the server list after creating a new server
                 setIsCreatingServer(false);
             })
             .catch(error => console.error('Error creating server:', error));
-    };
-
-    const handleJoinServer = (joinCode: string) => {
-        const token = localStorage.getItem('token');
-        fetch(`/api/servers/join/${joinCode}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => response.json())
-            .then(joinedServer => {
-                setServers([...servers, joinedServer]);
-                setSelectedServer(joinedServer);
-                setSelectedChannel(joinedServer.channels[0] || null);
-                setMessages(joinedServer.channels[0]?.messages || []);
-                setIsJoiningServer(false);
-            })
-            .catch(error => console.error('Error joining server:', error));
     };
 
     return (
@@ -134,9 +117,9 @@ const ServersPage: React.FC = () => {
 
             {isJoiningServer && (
                 <JoinServerModal
+                    userId="userIdFromContext"
                     onClose={() => setIsJoiningServer(false)}
-                    onJoinCode={handleJoinServer}
-                    publicServers={servers.filter(server => server.isPublic)}
+                    onJoinSuccess={() => fetchServers()} // Re-fetch servers on successful join
                 />
             )}
 

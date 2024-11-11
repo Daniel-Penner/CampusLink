@@ -104,10 +104,12 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
 
     useEffect(() => {
         if (selectedChannel) {
-            socket.on('channel-message', (newMessage) => {
+            socket.on('channel-message', async (newMessage) => {
+                // Fetch the sender's name for the new message
+                const senderName = await fetchSenderName(newMessage.sender);
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { ...newMessage, timestamp: new Date(newMessage.timestamp) }
+                    { ...newMessage, senderName, timestamp: new Date(newMessage.timestamp) }
                 ]);
             });
         }
