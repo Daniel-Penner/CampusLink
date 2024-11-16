@@ -1,11 +1,18 @@
 .navbar {
     display: flex;
+    justify-content: space-between; /* Align items to the left and right */
+    align-items: center;
     background-color: var(--secondary-background);
     color: #ccc;
     border-bottom: 2px solid var(--border-color);
     padding: 0 30px;
     gap: 30px;
     height: 50px;
+}
+
+.channelContainer {
+    display: flex;
+    gap: 30px;
 }
 
 .channel {
@@ -26,4 +33,21 @@
     padding-left: 10px;
     color: var(--primary-color);
     font-weight: bold;
+}
+
+.settingsButton {
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+    gap: 5px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.settingsButton:hover {
+    background-color: var(--primary-color);
+    color: var(--button-text);
 }

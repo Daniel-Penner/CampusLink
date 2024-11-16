@@ -195,5 +195,79 @@ router.post('/:serverId/channels/:channelId/message', authenticateToken, async (
     }
 });
 
+router.delete('/:serverId', authenticateToken, async (req, res) => {
+    const { serverId } = req.params;
+    const userId = req.user.userId;
+
+    try {
+        const server = await Server.findById(serverId);
+        if (!server) {
+            return res.status(404).json({ message: 'Server not found' });
+        }
+
+        if (server.owner.toString() !== userId) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        await Channel.deleteMany({ server: server._id });
+        await Server.findByIdAndDelete(serverId);
+
+        res.status(200).json({ message: 'Server deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting server:', error);
+        res.status(500).json({ message: 'Failed to delete server' });
+    }
+});
+
+router.delete('/:serverId', authenticateToken, async (req, res) => {
+    const { serverId } = req.params;
+    const userId = req.user.userId;
+
+    try {
+        const server = await Server.findById(serverId);
+        if (!server) {
+            return res.status(404).json({ message: 'Server not found' });
+        }
+
+        if (server.owner.toString() !== userId) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        await Channel.deleteMany({ server: server._id });
+        await Server.findByIdAndDelete(serverId);
+
+        res.status(200).json({ message: 'Server deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting server:', error);
+        res.status(500).json({ message: 'Failed to delete server' });
+    }
+});
+
+router.post('/:serverId/leave', authenticateToken, async (req, res) => {
+    const { serverId } = req.params;
+    const userId = req.user.userId;
+
+    try {
+        const server = await Server.findById(serverId);
+        if (!server) {
+            return res.status(404).json({ message: 'Server not found' });
+        }
+
+        if (server.owner.toString() === userId) {
+            return res.status(400).json({
+                message: 'Owner cannot leave the server. Delete it instead.',
+            });
+        }
+
+        server.members = server.members.filter((memberId) => memberId.toString() !== userId);
+        await server.save();
+
+        res.status(200).json({ message: 'Successfully left the server' });
+    } catch (error) {
+        console.error('Error leaving server:', error);
+        res.status(500).json({ message: 'Failed to leave server' });
+    }
+});
+
 export default router;
 

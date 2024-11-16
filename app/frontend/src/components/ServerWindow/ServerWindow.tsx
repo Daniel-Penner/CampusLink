@@ -28,16 +28,17 @@ interface ServerWindowProps {
     messages: Message[];
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
     selectedChannel: Channel | null;
-    selectedServer: any;
+    selectedServer: any | null;
 }
 
 const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, selectedChannel, selectedServer }) => {
     const [newMessage, setNewMessage] = useState('');
-    const [loading, setLoading] = useState(true); // Loading state to delay rendering until messages are fetched
+    const [loading, setLoading] = useState(false);
     const messageAreaRef = useRef<HTMLDivElement>(null);
     const authContext = useContext(AuthContext);
     const { id: userId } = authContext || {};
 
+    // Scroll to the bottom when messages update
     useEffect(() => {
         if (messageAreaRef.current) {
             messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
@@ -66,8 +67,9 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
         }
     };
 
+    // Fetch messages when the channel changes
     useEffect(() => {
-        if (selectedChannel) {
+        if (selectedChannel && selectedServer) {
             setLoading(true);
             socket.emit('join-channel', selectedChannel._id);
 
@@ -102,10 +104,10 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
         };
     }, [selectedChannel, selectedServer, setMessages]);
 
+    // Handle real-time messages
     useEffect(() => {
         if (selectedChannel) {
             socket.on('channel-message', async (newMessage) => {
-                // Fetch the sender's name for the new message
                 const senderName = await fetchSenderName(newMessage.sender);
                 setMessages((prevMessages) => [
                     ...prevMessages,
@@ -143,6 +145,22 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
             .then(() => setNewMessage(''))
             .catch((err) => console.error('Error sending message:', err));
     };
+
+    if (!selectedServer) {
+        return (
+            <div className={styles.placeholder}>
+                Please select a server to start chatting.
+            </div>
+        );
+    }
+
+    if (!selectedChannel) {
+        return (
+            <div className={styles.placeholder}>
+                Please select a channel within the server to view messages.
+            </div>
+        );
+    }
 
     if (loading) {
         return <div className={styles.loadingIndicator}>Loading messages...</div>;

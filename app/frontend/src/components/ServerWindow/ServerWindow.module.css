@@ -127,3 +127,26 @@
 .sendButton:hover {
     background-color: var(--button-hover);
 }
+
+.placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--secondary-background);
+    border: 1px dashed var(--border-color);
+}
+
+.loadingIndicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    background-color: var(--secondary-background);
+}
