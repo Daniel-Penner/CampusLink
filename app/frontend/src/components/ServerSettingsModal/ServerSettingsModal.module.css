@@ -53,6 +53,15 @@
     cursor: pointer;
 }
 
+.addChannelButton {
+    background-color: var(--primary-color);
+    margin-top: 10px;
+}
+
+.removeChannelButton {
+    background-color: var(--error-color);
+}
+
 .deleteButton {
     background-color: var(--error-color);
     color: var(--button-text);
@@ -61,3 +70,26 @@
     border-radius: 4px;
     cursor: pointer;
 }
+
+.photoUpload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.serverPhoto {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+
+.fileInput {
+    flex-grow: 1;
+    padding: 5px;
+    cursor: pointer;
+}
+
+

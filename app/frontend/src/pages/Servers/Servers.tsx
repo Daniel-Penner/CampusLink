@@ -5,6 +5,8 @@ import ServerWindow from '../../components/ServerWindow/ServerWindow';
 import ChannelsNavbar from '../../components/ChannelsNavbar/ChannelsNavbar';
 import ServerSettingsModal from '../../components/ServerSettingsModal/ServerSettingsModal';
 import CreateServerModal from '../../components/CreateServerModal/CreateServerModal';
+import ServerChoiceModal from '../../components/ServerChoiceModal/ServerChoiceModal';
+import JoinServerModal from '../../components/ServerJoinModal/ServerJoinModal';
 import styles from './Servers.module.css';
 
 const ServersPage: React.FC = () => {
@@ -14,10 +16,18 @@ const ServersPage: React.FC = () => {
     const [messages, setMessages] = useState<any[]>([]);
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
     const [isCreatingServer, setIsCreatingServer] = useState(false);
+    const [isJoiningServer, setIsJoiningServer] = useState(false);
+    const [isChoiceModalOpen, setIsChoiceModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+    const token = localStorage.getItem('token');
+    const storedId = localStorage.getItem('id');
+
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        fetchServers();
+    }, []);
+
+    const fetchServers = () => {
         fetch('/api/servers', {
             method: 'GET',
             headers: {
@@ -35,7 +45,7 @@ const ServersPage: React.FC = () => {
                 }
             })
             .catch((error) => console.error('Error fetching servers:', error));
-    }, []);
+    };
 
     const handleServerSelect = (server: any) => {
         setSelectedServer(server);
@@ -48,12 +58,30 @@ const ServersPage: React.FC = () => {
         setMessages([]);
     };
 
-    const handleServerCreated = (newServer: any) => {
-        setServers([...servers, newServer]);
-        setSelectedServer(newServer);
-        setSelectedChannel(newServer.channels[0] || null);
+    const handleServerCreated = (serverData: { name: string; isPublic: boolean; channels: { name: string }[] }) => {
+        fetch('/api/servers/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(serverData),
+        })
+            .then((response) => response.json())
+            .then(() => {
+                fetchServers(); // Refresh the server list after creating a new server
+                setIsCreatingServer(false);
+            })
+            .catch((error) => console.error('Error creating server:', error));
+    };
+
+    const handleJoinSuccess = (joinedServer: any) => {
+        setServers([...servers, joinedServer]);
+        setSelectedServer(joinedServer);
+        setSelectedChannel(joinedServer.channels[0] || null);
         setMessages([]);
-        setIsCreatingServer(false);
+        setIsJoiningServer(false);
+        window.location.reload();
     };
 
     const handleServerUpdated = (updatedServer: any) => {
@@ -71,6 +99,30 @@ const ServersPage: React.FC = () => {
         setIsSettingsOpen(false);
     };
 
+    const handleLeaveServer = () => {
+        if (!selectedServer) return;
+
+        fetch(`/api/servers/${selectedServer._id}/leave`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((response) => {
+                if (response.ok) {
+                    setServers(servers.filter((server) => server._id !== selectedServer._id));
+                    setSelectedServer(null);
+                    setSelectedChannel(null);
+                    setMessages([]);
+                } else {
+                    console.error('Failed to leave server.');
+                }
+            })
+            .catch((error) => console.error('Error leaving server:', error));
+    };
+
+
     return (
         <div className={styles.pageContainer}>
             <Navbar />
@@ -81,7 +133,7 @@ const ServersPage: React.FC = () => {
                     setSelectedServer={handleServerSelect}
                     onHover={() => setIsSidebarExpanded(true)}
                     onLeave={() => setIsSidebarExpanded(false)}
-                    onCreateServer={() => setIsCreatingServer(true)}
+                    onCreateServer={() => setIsChoiceModalOpen(true)}
                 />
                 <div
                     className={`${styles.mainColumn} ${isSidebarExpanded ? styles.shiftRight : ''}`}
@@ -94,6 +146,8 @@ const ServersPage: React.FC = () => {
                                 setSelectedChannel={handleChannelSelect}
                                 selectedServer={selectedServer}
                                 onSettings={() => setIsSettingsOpen(true)}
+                                onLeave={handleLeaveServer}
+                                isOwner={selectedServer?.owner === storedId}
                             />
                             <ServerWindow
                                 messages={messages}
@@ -107,12 +161,36 @@ const ServersPage: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            {isChoiceModalOpen && (
+                <ServerChoiceModal
+                    onClose={() => setIsChoiceModalOpen(false)}
+                    onJoin={() => {
+                        setIsChoiceModalOpen(false);
+                        setIsJoiningServer(true);
+                    }}
+                    onCreate={() => {
+                        setIsChoiceModalOpen(false);
+                        setIsCreatingServer(true);
+                    }}
+                />
+            )}
+
+            {isJoiningServer && (
+                <JoinServerModal
+                    userId="currentUserId" // Replace with actual user ID logic
+                    onClose={() => setIsJoiningServer(false)}
+                    onJoinSuccess={handleJoinSuccess}
+                />
+            )}
+
             {isCreatingServer && (
                 <CreateServerModal
                     onClose={() => setIsCreatingServer(false)}
-                    onServerCreated={handleServerCreated}
+                    onCreateServer={handleServerCreated}
                 />
             )}
+
             {isSettingsOpen && selectedServer && (
                 <ServerSettingsModal
                     server={selectedServer}

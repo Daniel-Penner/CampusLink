@@ -82,3 +82,40 @@
 .sidebar:hover .serverName {
     opacity: 1;
 }
+
+/* Server Icon */
+.serverIcon {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--primary-color);
+}
+
+/* Server Image */
+.serverImage {
+    width: 50px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Default Server Icon (fallback when no image is provided) */
+.defaultServerIcon {
+    font-size: 20px;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+

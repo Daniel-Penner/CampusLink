@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './ServerSettingsModal.module.css';
+import DefaultServerPhoto from '../../assets/logoSmall.svg'; // Import the SVG
 
 interface ServerSettingsModalProps {
     server: any;
@@ -17,10 +18,11 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
     const [serverName, setServerName] = useState(server.name);
     const [channels, setChannels] = useState(server.channels);
     const [newChannelName, setNewChannelName] = useState('');
+    const [serverPhoto, setServerPhoto] = useState(server.photo || DefaultServerPhoto);
 
     const handleAddChannel = () => {
         if (!newChannelName.trim()) return;
-        setChannels([...channels, { _id: Date.now().toString(), name: newChannelName }]);
+        setChannels([...channels, { name: newChannelName }]);
         setNewChannelName('');
     };
 
@@ -30,15 +32,32 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
 
     const handleSaveChanges = () => {
         const token = localStorage.getItem('token');
+
+        const formData = new FormData();
+        formData.append('name', serverName);
+        formData.append(
+            'channels',
+            JSON.stringify(
+                channels.map((channel: any) => ({
+                    _id: channel._id,
+                    name: channel.name,
+                }))
+            )
+        );
+
         fetch(`/api/servers/${server._id}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ name: serverName, channels }),
+            body: formData,
         })
-            .then((res) => res.json())
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`Error: ${res.statusText}`);
+                }
+                return res.json();
+            })
             .then((updatedServer) => {
                 onServerUpdated(updatedServer);
                 onClose();
@@ -59,6 +78,23 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             .catch((err) => console.error('Error deleting server:', err));
     };
 
+    const handlePhotoUpload = (file: File) => {
+        const formData = new FormData();
+        formData.append('photo', file);
+
+        fetch(`/api/servers/server/${server._id}/photo`, {
+            method: 'POST',
+            body: formData,
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.photo) {
+                    setServerPhoto(data.photo); // Update the state
+                }
+            })
+            .catch((err) => console.error('Error uploading photo:', err));
+    };
+
     return (
         <div className={styles.modalBackdrop} onClick={onClose}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -73,11 +109,36 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                     />
                 </div>
                 <div className={styles.section}>
+                    <label>Server Photo:</label>
+                    <div className={styles.photoUpload}>
+                        <img
+                            src={`${process.env.REACT_APP_API_URL}${serverPhoto}`}
+                            alt="Server"
+                            className={styles.serverPhoto}
+                        />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                    handlePhotoUpload(e.target.files[0]);
+                                }
+                            }}
+                            className={styles.fileInput}
+                        />
+                    </div>
+                </div>
+                <div className={styles.section}>
                     <label>Channels:</label>
                     {channels.map((channel: any) => (
                         <div key={channel._id} className={styles.channelItem}>
-                            <span>{channel.name}</span>
-                            <button onClick={() => handleRemoveChannel(channel._id)}>Remove</button>
+                        <span>{channel.name}</span>
+                            <button
+                                className={styles.removeChannelButton}
+                                onClick={() => handleRemoveChannel(channel._id)}
+                            >
+                                Remove
+                            </button>
                         </div>
                     ))}
                     <input
@@ -87,7 +148,9 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                         placeholder="New Channel Name"
                         className={styles.inputField}
                     />
-                    <button onClick={handleAddChannel}>Add Channel</button>
+                    <button onClick={handleAddChannel} className={styles.addChannelButton}>
+                        Add Channel
+                    </button>
                 </div>
                 <div className={styles.section}>
                     <label>Server Code:</label>

@@ -51,3 +51,17 @@
     background-color: var(--primary-color);
     color: var(--button-text);
 }
+
+.leaveButton {
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    background-color: var(--error-color);
+    gap: 5px;
+    padding: 5px;
+    border-radius: 4px;
+    color: var(--text-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
