@@ -116,6 +116,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                             alt="Server"
                             className={styles.serverPhoto}
                         />
+
                         <input
                             type="file"
                             accept="image/*"

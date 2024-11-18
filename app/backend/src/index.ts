@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import staticMiddleware from './middleware/staticMiddleware';
 
 dotenv.config();
 
@@ -18,8 +19,8 @@ const io = new SocketIOServer(server, {
     cors: {
         origin: 'https://localhost', // Replace with the correct frontend URL
         methods: ['GET', 'POST'],
-        credentials: true
-    }
+        credentials: true,
+    },
 });
 
 // Setup Socket.IO events
@@ -58,21 +59,27 @@ io.on('connection', (socket) => {
 mongoose.set('strictQuery', false);
 const databaseUrl = process.env.DATABASE_URL || 'mongodb://root:rootpassword@mongo:27017/campuslink_db?authSource=admin';
 
-mongoose.connect(databaseUrl)
+mongoose
+    .connect(databaseUrl)
     .then(() => {
         console.log('Connected to MongoDB');
     })
-    .catch(err => {
+    .catch((err) => {
         console.error('Error connecting to MongoDB:', err.message);
     });
 
 // Middleware setup
 app.use(express.json());
-app.use(cors({
-    origin: 'https://localhost',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
+app.use(
+    cors({
+        origin: 'https://localhost',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        credentials: true,
+    })
+);
+
+// Add static middleware for serving uploaded files
+staticMiddleware(app);
 
 // Import and configure routes
 import authRoutes from './routes/auth';
@@ -87,7 +94,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api/users', userRoutes)
+// Define routes
+app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/direct-messages', directMessagesRoutes);
 app.use('/api/connections', connectionRoutes);

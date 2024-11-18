@@ -330,6 +330,9 @@ router.post('/server/:serverId/photo', upload.single('photo'), async (req, res) 
             return res.status(400).json({ message: 'No file uploaded' });
         }
 
+        // Log the file path
+        console.log('Uploaded file path:', req.file.path);
+
         server.photo = `/uploads/${req.file.filename}`;
         await server.save();
 
