@@ -2,6 +2,7 @@ import express from 'express';
 import Server from '../models/Server';
 import Channel from '../models/Channel';
 import ServerMessage from '../models/ServerMessage';
+import multer from 'multer';
 import authenticateToken from '../middleware/authMiddleware';
 import mongoose from "mongoose";
 
@@ -156,14 +157,13 @@ router.get('/:serverId/channels/:channelId/messages', authenticateToken, async (
     }
 });
 
-// Send a new server message to a specific channel
 router.post('/:serverId/channels/:channelId/message', authenticateToken, async (req, res) => {
     const { channelId } = req.params;
     const { sender, content, timestamp, profilePic } = req.body;
 
     try {
         console.log(`Attempting to send message to channel ID: ${channelId}`);
-        console.log(`Payload received:`, { sender, content, timestamp, profilePic });
+        console.log(`Payload received:, { sender, content, timestamp, profilePic }`);
 
         // Convert channelId to ObjectId
         const objectIdChannelId = new mongoose.Types.ObjectId(channelId);
@@ -219,30 +219,6 @@ router.delete('/:serverId', authenticateToken, async (req, res) => {
     }
 });
 
-router.delete('/:serverId', authenticateToken, async (req, res) => {
-    const { serverId } = req.params;
-    const userId = req.user.userId;
-
-    try {
-        const server = await Server.findById(serverId);
-        if (!server) {
-            return res.status(404).json({ message: 'Server not found' });
-        }
-
-        if (server.owner.toString() !== userId) {
-            return res.status(403).json({ message: 'Unauthorized' });
-        }
-
-        await Channel.deleteMany({ server: server._id });
-        await Server.findByIdAndDelete(serverId);
-
-        res.status(200).json({ message: 'Server deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting server:', error);
-        res.status(500).json({ message: 'Failed to delete server' });
-    }
-});
-
 router.post('/:serverId/leave', authenticateToken, async (req, res) => {
     const { serverId } = req.params;
     const userId = req.user.userId;
@@ -269,5 +245,103 @@ router.post('/:serverId/leave', authenticateToken, async (req, res) => {
     }
 });
 
-export default router;
+router.put('/:serverId', authenticateToken, async (req, res) => {
+    const { serverId } = req.params;
+    const { name, channels }: { name: string; channels: { _id?: string; name: string }[] } = req.body;
+    const userId = req.user.userId;
 
+    try {
+        const server = await Server.findById(serverId);
+        if (!server) {
+            return res.status(404).json({ message: 'Server not found' });
+        }
+
+        // Ensure only the owner can update the server
+        if (server.owner.toString() !== userId) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        // Update server name
+        if (name) server.name = name;
+
+        // Process channels
+        if (channels) {
+            const updatedChannels = await Promise.all(
+                channels.map(async (channel: { _id?: string; name: string }) => {
+                    if (channel._id) {
+                        // Validate that _id is a valid ObjectId
+                        if (!mongoose.Types.ObjectId.isValid(channel._id)) {
+                            throw new Error(`Invalid ObjectId for channel: ${channel._id}`);
+                        }
+
+                        // Update existing channel
+                        const updatedChannel = await Channel.findByIdAndUpdate(
+                            channel._id,
+                            { name: channel.name },
+                            { new: true }
+                        );
+
+                        if (!updatedChannel) {
+                            throw new Error(`Channel with ID ${channel._id} not found`);
+                        }
+
+                        return updatedChannel;
+                    } else {
+                        // Create a new channel without an _id
+                        const newChannel = new Channel({ name: channel.name, server: server._id });
+                        await newChannel.save();
+                        server.channels.push(newChannel._id); // Use MongoDB-generated ObjectId
+                        return newChannel;
+                    }
+                })
+            );
+
+            // Filter out deleted channels
+            const updatedChannelIds = updatedChannels.map((channel) => channel._id.toString());
+            server.channels = server.channels.filter((channelId) =>
+                updatedChannelIds.includes(channelId.toString())
+            );
+        }
+
+        await server.save();
+        const updatedServer = await Server.findById(server._id).populate('channels');
+        res.status(200).json(updatedServer);
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error updating server:', error.message);
+            res.status(500).json({ message: 'Failed to update server: ' + error.message });
+        } else {
+            console.error('Unknown error updating server:', error);
+            res.status(500).json({ message: 'Failed to update server due to an unknown error.' });
+        }
+    }
+});
+
+const upload = multer({ dest: 'uploads/' });
+
+router.post('/server/:serverId/photo', upload.single('photo'), async (req, res) => {
+    const { serverId } = req.params;
+
+    try {
+        const server = await Server.findById(serverId);
+        if (!server) return res.status(404).json({ message: 'Server not found' });
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        server.photo = `/uploads/${req.file.filename}`;
+        await server.save();
+
+        res.status(200).json({ message: 'Server photo updated', photo: server.photo });
+    } catch (error) {
+        console.error('Failed to upload server photo:', error);
+        res.status(500).json({ message: 'Failed to upload server photo', error });
+    }
+});
+
+
+
+
+
+export default router;

@@ -8,6 +8,7 @@ export interface IServer extends Document {
     members: User['_id'][];
     channels: IChannel['_id'][];
     public: boolean;
+    photo?: string;
 }
 
 const ServerSchema: Schema = new Schema({
@@ -15,9 +16,9 @@ const ServerSchema: Schema = new Schema({
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     channels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }],
-    public: { type: Boolean, default: true } // Adding the public field with a default value
+    public: { type: Boolean, default: true }, // Adding the public field with a default value
+    photo: { type: String }, // Default path for server photos
 });
-
 
 const Server = mongoose.model<IServer>('Server', ServerSchema);
 export default Server;
