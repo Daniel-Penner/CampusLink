@@ -2,7 +2,6 @@ import express from 'express';
 import Server from '../models/Server';
 import Channel from '../models/Channel';
 import ServerMessage from '../models/ServerMessage';
-import multer from 'multer';
 import authenticateToken from '../middleware/authMiddleware';
 import mongoose from "mongoose";
 
@@ -77,9 +76,8 @@ router.post('/join', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     try {
-        const server = await Server.findById(serverId);
+        const server = await Server.findById(serverId).populate('channels');
         if (!server) {
-            console.error(`Server with ID ${serverId} not found`);
             return res.status(404).json({ message: 'Server not found' });
         }
 
@@ -90,7 +88,9 @@ router.post('/join', authenticateToken, async (req, res) => {
         server.members.push(userId);
         await server.save();
 
-        return res.status(201).json({ message: 'Successfully joined the server' });
+        // Return the full server details, including `_id` and channels
+        const fullServer = await Server.findById(serverId).populate('channels');
+        return res.status(201).json(fullServer);
     } catch (error) {
         console.error('Error joining server:', error);
         return res.status(500).json({ message: 'Server error. Please try again later.' });
@@ -317,34 +317,28 @@ router.put('/:serverId', authenticateToken, async (req, res) => {
     }
 });
 
-const upload = multer({ dest: 'uploads/' });
-
-router.post('/server/:serverId/photo', upload.single('photo'), async (req, res) => {
+router.get('/:serverId', authenticateToken, async (req, res) => {
     const { serverId } = req.params;
 
     try {
-        const server = await Server.findById(serverId);
-        if (!server) return res.status(404).json({ message: 'Server not found' });
-
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
+        // Validate serverId as a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(serverId)) {
+            return res.status(400).json({ message: 'Invalid server ID' });
         }
 
-        // Log the file path
-        console.log('Uploaded file path:', req.file.path);
+        // Find the server by ID and populate its channels
+        const server = await Server.findById(serverId).populate('channels');
+        if (!server) {
+            return res.status(404).json({ message: 'Server not found' });
+        }
 
-        server.photo = `/uploads/${req.file.filename}`;
-        await server.save();
-
-        res.status(200).json({ message: 'Server photo updated', photo: server.photo });
+        // Return the server details
+        res.status(200).json(server);
     } catch (error) {
-        console.error('Failed to upload server photo:', error);
-        res.status(500).json({ message: 'Failed to upload server photo', error });
+        console.error('Error fetching server:', error);
+        res.status(500).json({ message: 'Error fetching server' });
     }
 });
-
-
-
 
 
 export default router;

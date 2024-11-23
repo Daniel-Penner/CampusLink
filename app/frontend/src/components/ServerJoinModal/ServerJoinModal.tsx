@@ -16,17 +16,18 @@ interface JoinServerModalProps {
 const JoinServerModal: React.FC<JoinServerModalProps> = ({ userId, onClose, onJoinSuccess }) => {
     const [publicServers, setPublicServers] = useState<Server[]>([]);
     const [joinCode, setJoinCode] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         fetch('/api/servers/public', {
             headers: {
-                'Authorization': `Bearer ${token}`
-            }
+                Authorization: `Bearer ${token}`,
+            },
         })
-            .then(res => res.json())
-            .then(data => setPublicServers(data))
-            .catch(error => console.error('Error fetching public servers:', error));
+            .then((res) => res.json())
+            .then((data) => setPublicServers(data))
+            .catch((error) => console.error('Error fetching public servers:', error));
     }, []);
 
     const handleJoinServer = (serverId: string) => {
@@ -35,30 +36,44 @@ const JoinServerModal: React.FC<JoinServerModalProps> = ({ userId, onClose, onJo
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ serverId })
+            body: JSON.stringify({ serverId }),
         })
-            .then(response => response.json())
-            .then(joinedServer => {
-                // Update the public server list and call onJoinSuccess with the new server
-                setPublicServers(prev => prev.filter(server => server._id !== serverId));
-                onJoinSuccess(joinedServer);
+            .then(async (response) => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to join server');
+                }
+                return response.json();
             })
-            .catch(error => console.error('Error joining server:', error));
+            .then((joinedServer) => {
+                setErrorMessage(''); // Clear any errors
+                onJoinSuccess(joinedServer); // Call the callback with the joined server
+            })
+            .catch((error) => {
+                console.error('Error joining server:', error);
+                setErrorMessage(error.message);
+            });
     };
 
+
     const handleJoinByCode = () => {
-        if (!joinCode.trim()) return;
+        if (!joinCode.trim()) {
+            setErrorMessage('Join code cannot be empty.');
+            return;
+        }
+        setErrorMessage(''); // Clear any previous errors
         handleJoinServer(joinCode);
     };
 
     return (
         <div className={styles.modalBackdrop} onClick={onClose}>
-            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                 <h2>Join a Server</h2>
+                {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
                 <div className={styles.serverList}>
-                    {publicServers.map(server => {
+                    {publicServers.map((server) => {
                         const isMember = server.members.includes(userId);
                         return (
                             <div key={server._id} className={styles.serverItem}>
@@ -79,14 +94,16 @@ const JoinServerModal: React.FC<JoinServerModalProps> = ({ userId, onClose, onJo
                         type="text"
                         placeholder="Enter Join Code"
                         value={joinCode}
-                        onChange={e => setJoinCode(e.target.value)}
+                        onChange={(e) => setJoinCode(e.target.value)}
                         className={styles.joinCodeInput}
                     />
                     <button onClick={handleJoinByCode} className={styles.joinButton}>
                         Join by Code
                     </button>
                 </div>
-                <button onClick={onClose} className={styles.closeButton}>Close</button>
+                <button onClick={onClose} className={styles.closeButton}>
+                    Close
+                </button>
             </div>
         </div>
     );

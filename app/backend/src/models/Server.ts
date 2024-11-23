@@ -16,8 +16,8 @@ const ServerSchema: Schema = new Schema({
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     channels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }],
-    public: { type: Boolean, default: true }, // Adding the public field with a default value
-    photo: { type: String }, // Default path for server photos
+    public: { type: Boolean, default: true },
+    photo: { type: String },
 });
 
 const Server = mongoose.model<IServer>('Server', ServerSchema);

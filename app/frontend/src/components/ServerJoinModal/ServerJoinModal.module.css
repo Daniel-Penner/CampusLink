@@ -8,44 +8,68 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1000; /* Ensures modal is on top */
 }
 
 .modalContent {
     background-color: var(--secondary-background);
-    padding: 20px;
+    padding: 25px;
     border-radius: 8px;
     width: 600px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease; /* Adds a subtle fade-in effect */
 }
 
 .serverList {
     max-height: 300px;
     overflow-y: auto;
     margin-top: 15px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-background); /* Differentiate server list background */
 }
 
 .serverItem {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
     align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    background-color: var(--secondary-background);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.serverItem:hover {
+    background-color: var(--lighter-grey);
 }
 
 .joinButton {
     background-color: var(--primary-color);
     color: var(--button-text);
-    padding: 5px 10px;
+    padding: 6px 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.joinButton:hover {
+    background-color: var(--button-hover);
+    transform: scale(1.05);
 }
 
 .joinedButton {
     background-color: var(--secondary-background);
     color: var(--text-color);
-    padding: 5px 10px;
+    padding: 6px 12px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     cursor: not-allowed;
+    font-size: 14px;
 }
 
 .joinCodeSection {
@@ -61,15 +85,52 @@
     border: 1px solid var(--border-color);
     background-color: var(--input-background);
     color: var(--text-color);
+    transition: border-color 0.3s ease;
+}
+
+.joinCodeInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
 }
 
 .closeButton {
     margin-top: 15px;
     background-color: var(--secondary-background);
     color: var(--text-color);
-    padding: 8px;
+    padding: 10px;
     width: 100%;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.closeButton:hover {
+    background-color: var(--lighter-grey);
+}
+
+/* New styles for error message */
+.errorMessage {
+    margin-bottom: 20px;
+    color: #ff4d4d; /* Red color for error text */
+    background-color: rgba(255, 77, 77, 0.2); /* Light red background */
+    border: 1px solid #ff4d4d;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Animation for modal */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

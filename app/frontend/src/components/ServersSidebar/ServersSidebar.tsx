@@ -18,38 +18,39 @@ const ServersSidebar: React.FC<ServersSidebarProps> = ({
                                                            setSelectedServer,
                                                            onHover,
                                                            onLeave,
-                                                           onCreateServer
+                                                           onCreateServer,
                                                        }) => (
     <div
         className={styles.sidebar}
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
     >
-        {/* Add Server button triggers the modal open */}
+        {/* Add Server button */}
         <div className={styles.box} onClick={onCreateServer}>
             <div className={styles.serverIcon} style={{ backgroundColor: 'var(--primary-color)' }}>
                 <FaPlus />
             </div>
             <span className={styles.serverName}>Add Server</span>
         </div>
-        {servers.map(server => (
+        {/* Render server list */}
+        {servers.map((server) => (
             <div
-                className={`${styles.box} ${server._id === selectedServer?._id ? styles.active : ''}`}
-                key={server._id}
+                className={`${styles.box} ${server?._id === selectedServer?._id ? styles.active : ''}`}
+                key={server._id || Math.random()} // Fallback key if _id is missing
                 onClick={() => setSelectedServer(server)}
             >
                 <div className={styles.serverIcon}>
-                    {server.photo ? (
+                    {server?.photo ? (
                         <img
                             src={server.photo || defaultLogo}
-                            alt={server.name}
+                            alt={server.name || 'Server'}
                             className={styles.serverImage}
                         />
                     ) : (
-                        <div className={styles.defaultServerIcon}>{server.name[0]}</div>
+                        <div className={styles.defaultServerIcon}>{server.name?.[0] || 'S'}</div>
                     )}
                 </div>
-                <span className={styles.serverName}>{server.name}</span>
+                <span className={styles.serverName}>{server.name || 'Unnamed Server'}</span>
             </div>
         ))}
     </div>

@@ -75,13 +75,43 @@ const ServersPage: React.FC = () => {
             .catch((error) => console.error('Error creating server:', error));
     };
 
-    const handleJoinSuccess = (joinedServer: any) => {
-        setServers([...servers, joinedServer]);
-        setSelectedServer(joinedServer);
-        setSelectedChannel(joinedServer.channels[0] || null);
-        setMessages([]);
-        setIsJoiningServer(false);
-        window.location.reload();
+    const handleJoinSuccess = async (joinedServer: any) => {
+        try {
+            // Verify that the joined server object contains an ID
+            const serverId = joinedServer._id || joinedServer.id; // Use the appropriate field
+            if (!serverId) {
+                throw new Error('Joined server does not have a valid ID');
+            }
+
+            // Fetch full server details
+            const response = await fetch(`/api/servers/${serverId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch server details after joining');
+            }
+
+            const fullServerDetails = await response.json();
+
+            // Update state with the full server data
+            setServers((prevServers) => [...prevServers, fullServerDetails]);
+            setSelectedServer(fullServerDetails);
+
+            if (fullServerDetails.channels && fullServerDetails.channels.length > 0) {
+                setSelectedChannel(fullServerDetails.channels[0]);
+                setMessages([]); // Reset messages for the new channel
+            } else {
+                setSelectedChannel(null);
+                setMessages([]); // No channels yet, so clear messages
+            }
+
+            setIsJoiningServer(false); // Close the modal
+        } catch (error) {
+            console.error('Error handling join success:', error);
+        }
     };
 
     const handleServerUpdated = (updatedServer: any) => {
@@ -121,7 +151,6 @@ const ServersPage: React.FC = () => {
             })
             .catch((error) => console.error('Error leaving server:', error));
     };
-
 
     return (
         <div className={styles.pageContainer}>
