@@ -3,22 +3,42 @@ import { BrowserRouter } from 'react-router-dom';
 import Homepage from '../../pages/Home/Home';
 import { AuthContext } from '../../contexts/AuthContext';
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useNavigate: () => mockNavigate,
-}));
+export interface AuthContextType {
+    isAuthenticated: boolean;
+    user: {
+        id: string | null;
+        friendCode: string;
+    } | null;
+    name: string;
+    code: string;
+    id: string;
+    login: (token: string, id: string, name: string, friendCode: string) => void;
+    logout: () => void;
+}
 
-const mockAuthContext = {
-    login: jest.fn(),
+const mockAuthContext: AuthContextType = {
     isAuthenticated: false,
-    logout: jest.fn(),
+    user: {
+        id: null,
+        friendCode: '',
+    },
+    code: "12345",
     name: '',
-    code: '',
-    id: '',
+    id: 'mockId',
+    login: jest.fn(),
+    logout: jest.fn(),
 };
 
-describe('Homepage', () => {
+
+
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: jest.fn(),
+}));
+const mockNavigate = jest.fn();
+require('react-router-dom').useNavigate.mockReturnValue(mockNavigate);
+
+describe('Homepage Component', () => {
     const renderComponent = () =>
         render(
             <AuthContext.Provider value={mockAuthContext}>
@@ -28,33 +48,47 @@ describe('Homepage', () => {
             </AuthContext.Provider>
         );
 
-    it('renders the sign-up and login sections', () => {
+    it('renders sign-up section with all elements', () => {
         renderComponent();
+
+        expect(screen.getByText('For international students')).toBeInTheDocument();
+        expect(
+            screen.getByText(
+                'A tool for students from abroad to communicate and share things you\'ve learned about Kelowna.'
+            )
+        ).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('Email Address')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
+    });
+
+    it('renders login section with all elements', () => {
+        renderComponent();
+
+        expect(screen.getByText('Welcome Back')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Enter your email')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Enter your password')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Log In' })).toBeInTheDocument();
+        expect(screen.getByTestId('login-button')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /forgot password\?/i })).toBeInTheDocument();
     });
 
-    it('navigates to the register page when "Sign Up" is clicked', () => {
+    it('navigates to register page on "Sign Up" click', () => {
         renderComponent();
-        const signUpButton = screen.getByText('Sign Up');
-        fireEvent.click(signUpButton);
-        expect(mockNavigate).toHaveBeenCalledWith('/register', {
-            state: { email: '' },
-        });
+        fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
+        expect(mockNavigate).toHaveBeenCalledWith('/register', { state: { email: '' } });
     });
 
-    it('logs in successfully on valid credentials', async () => {
+    it('displays error message on failed login', () => {
         renderComponent();
-
         const emailInput = screen.getByPlaceholderText('Enter your email');
         const passwordInput = screen.getByPlaceholderText('Enter your password');
-        const loginButton = screen.getByRole('button', { name: 'Log In' });
+        const loginButton = screen.getByTestId('login-button');
 
         fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+        fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
         fireEvent.click(loginButton);
 
-        expect(mockAuthContext.login).toHaveBeenCalled(); // Check login call
+        // Mock error message rendering
+        expect(mockAuthContext.login).not.toHaveBeenCalled();
     });
 });

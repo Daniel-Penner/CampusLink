@@ -101,6 +101,7 @@ const Homepage: React.FC = () => {
                     />
                     <a href="/password-reset" className="text-primary hover:underline mb-4">Forgot Password?</a>
                     <button
+                        data-testid="login-button"
                         className="w-full p-[3vw] sm:p-[2.5vw] md:p-[2vw] lg:p-[1vw] bg-primary rounded-lg text-white hover:bg-button-hover transition-all"
                     >
                         Log In
