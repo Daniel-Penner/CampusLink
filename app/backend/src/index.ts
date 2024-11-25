@@ -6,24 +6,20 @@ dotenv.config();
 
 const port = process.env.PORT || 5000;
 
-// Connect to the database
+// MongoDB connection URL
 const databaseUrl =
     process.env.DATABASE_URL || 'mongodb://root:rootpassword@mongo:27017/campuslink_db?authSource=admin';
 
+// Connect to the database
 const connectToDatabase = async () => {
     try {
         await mongoose.connect(databaseUrl, { dbName: 'campuslink_db' });
         console.log('Connected to MongoDB');
     } catch (err) {
-        if (err instanceof Error) {
-            console.error('Error connecting to MongoDB:', err.message);
-        } else {
-            console.error('Unexpected error connecting to MongoDB:', err);
-        }
-        process.exit(1); // Exit if unable to connect
+        console.error('Error connecting to MongoDB:', err instanceof Error ? err.message : err);
+        process.exit(1); // Exit the process if the database connection fails
     }
 };
-
 
 // Start the server
 if (process.env.NODE_ENV !== 'test') {
@@ -34,4 +30,3 @@ if (process.env.NODE_ENV !== 'test') {
         });
     })();
 }
-

@@ -17,35 +17,55 @@ dotenv.config();
 router.post('/register', async (req, res) => {
     const { firstName, lastName, email, password, verified } = req.body;
 
-    try {
-        const existingUser = await User.findOne({ email });
+    // Validate missing fields
+    const errors: { [key: string]: string } = {};
+    if (!firstName) errors.firstName = 'First name is required';
+    if (!lastName) errors.lastName = 'Last name is required';
+    if (!email) errors.email = 'Email is required';
+    if (!password) errors.password = 'Password is required';
 
+    // If there are validation errors, return them
+    if (Object.keys(errors).length > 0) {
+        return res.status(400).json({
+            message: 'Validation error',
+            errors,
+        });
+    }
+
+    try {
+        // Check if the user already exists
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log("Generating friend code...");
+        console.log('Generating friend code...');
 
-        // Ensure that the friend code is being awaited correctly
+        // Generate a unique friend code
         const friendCode = await generateUniqueFriendCode();
-        console.log(`Friend Code generated for new user: ${friendCode}`);  // Log generated friend code
+        console.log(`Friend Code generated for new user: ${friendCode}`);
 
+        // Create a new user
         const newUser = new User({
             firstName,
             lastName,
             email,
             password: hashedPassword,
             verified,
-            friendCode, // Ensure friend code is correctly assigned here
+            friendCode,
         });
 
+        // Generate a verification token
         const verificationToken = crypto.randomBytes(32).toString('hex');
         newUser.verificationToken = verificationToken;
         newUser.verificationExpires = new Date(Date.now() + 3600000); // Token expires in 1 hour
 
+        // Save the new user to the database
         await newUser.save();
 
+        // Send the verification email
         const verificationLink = `http://localhost/verify-email/${verificationToken}`;
         const subject = 'Verify Your Email';
         const text = `To log in to the site, verify your email: ${verificationLink}`;
@@ -53,6 +73,7 @@ router.post('/register', async (req, res) => {
 
         await sendEmail(email, subject, text, html);
 
+        // Return success response
         return res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
         if (error instanceof Error) {
@@ -64,6 +85,7 @@ router.post('/register', async (req, res) => {
         }
     }
 });
+
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;

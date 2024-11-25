@@ -17,7 +17,7 @@ router.get('/messageable-friends', authenticateToken, async (req, res) => {
                 { sender: userId, accepted: true },
                 { recipient: userId, accepted: true }
             ]
-        }).populate('sender recipient', 'firstName lastName email profilePic');
+        }).populate('sender recipient', 'firstName lastName email profilePicture');
 
         const messageableFriends = connections.map(connection => {
             const friend = connection.sender._id.toString() === userId
@@ -29,7 +29,7 @@ router.get('/messageable-friends', authenticateToken, async (req, res) => {
                 firstName: friend.firstName,
                 lastName: friend.lastName,
                 email: friend.email,
-                profilePic: friend.profilePic || 'default-profile-pic.png',
+                profilePicture: friend.profilePicture || 'default-profile-pic.png',
             };
         });
 
@@ -70,12 +70,14 @@ router.post('/message', authenticateToken, async (req, res) => {
         });
         await newMessage.save();
 
-        // Emit the new message to the recipient’s room using `req.io`
+        // Emit to the recipient's and sender's rooms
+        console.log(`Emitting message to rooms: ${recipient}, ${sender}`);
         req.io.to(recipient).emit('new-message', newMessage);
         req.io.to(sender).emit('new-message', newMessage);
 
         res.status(201).json(newMessage);
     } catch (err) {
+        console.error('Error saving message:', err);
         res.status(500).json({ message: 'Error saving message' });
     }
 });
