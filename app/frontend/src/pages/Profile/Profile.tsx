@@ -72,7 +72,7 @@ const UpdateProfile: React.FC = () => {
 
             const data = await response.json();
             if (response.ok) {
-                setSuccess("Profile updated successfully!");
+                setSuccess(data.message); // Use the message returned by the route
                 setError(null);
 
                 // Update AuthContext name
@@ -89,6 +89,8 @@ const UpdateProfile: React.FC = () => {
             setSuccess(null);
         }
     };
+
+
 
     return (
         <div

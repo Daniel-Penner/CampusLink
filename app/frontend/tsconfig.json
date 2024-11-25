@@ -6,7 +6,7 @@
     "module": "ESNext",                     // ESNext module support
     "skipLibCheck": true,                   // Skip type checks on .d.ts files
     "moduleResolution": "node",             // Use Node-style module resolution
-    "types": ["vite/client", "node"],       // Include Vite and Node.js types
+    "types": ["jest","vite/client", "node"],       // Include Vite and Node.js types
     "allowImportingTsExtensions": true,     // Allow importing TypeScript files
     "isolatedModules": true,                // Compile each file as an isolated module
     "noEmit": true,                         // Disable emitting JS files

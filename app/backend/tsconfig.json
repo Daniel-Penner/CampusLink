@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["jest", "node"],
     "outDir": "./dist", // Make sure the output directory is set
     "rootDir": "./src", // Source directory
     "module": "commonjs",
