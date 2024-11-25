@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.22% </span>
+                <span class="strong">94.44% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>4/18</span>
+                <span class='fraction'>17/18</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.75% </span>
+                <span class="strong">93.75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/16</span>
+                <span class='fraction'>15/16</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -96,12 +96,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -109,46 +109,46 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import User from "../models/User";
 &nbsp;
 // Function to generate a random 6-character alphanumeric code
-const generateFriendCode = <span class="fstat-no" title="function not covered" >(): string =</span>&gt; {
-    const chars = <span class="cstat-no" title="statement not covered" >'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';</span>
-    let friendCode = <span class="cstat-no" title="statement not covered" >'';</span>
-<span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; 6; i++) {</span>
-<span class="cstat-no" title="statement not covered" >        friendCode += chars[Math.floor(Math.random() * chars.length)];</span>
+const generateFriendCode = (): string =&gt; {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let friendCode = '';
+    for (let i = 0; i &lt; 6; i++) {
+        friendCode += chars[Math.floor(Math.random() * chars.length)];
     }
-<span class="cstat-no" title="statement not covered" >    return friendCode;</span>
+    return friendCode;
 };
 &nbsp;
 // Function to generate a unique friend code by checking the database
-export const generateUniqueFriendCode = <span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;string&gt; =&gt; {
+export const generateUniqueFriendCode = async (): Promise&lt;string&gt; =&gt; {
     let friendCode: string;
     let existingUser: typeof User | null;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    do {</span>
-<span class="cstat-no" title="statement not covered" >        friendCode = generateFriendCode();</span>
-<span class="cstat-no" title="statement not covered" >        console.log(`Generated Friend Code: ${friendCode}`); </span> // Add a log to see the generated code
-<span class="cstat-no" title="statement not covered" >        existingUser = await User.findOne({ friendCode });</span>
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (existingUser) {</span>
+    do {
+        friendCode = generateFriendCode();
+        console.log(`Generated Friend Code: ${friendCode}`);  // Add a log to see the generated code
+        existingUser = await User.findOne({ friendCode });
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (existingUser) {
 <span class="cstat-no" title="statement not covered" >            console.log(`Friend Code ${friendCode} already exists, generating a new one.`);</span>
         }
     } while (existingUser);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    console.log(`Unique Friend Code found: ${friendCode}`);</span>
-<span class="cstat-no" title="statement not covered" >    return friendCode;</span>
+    console.log(`Unique Friend Code found: ${friendCode}`);
+    return friendCode;
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -157,7 +157,7 @@ export const generateUniqueFriendCode = <span class="fstat-no" title="function n
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-25T04:16:32.599Z
+                at 2024-11-25T04:21:10.954Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

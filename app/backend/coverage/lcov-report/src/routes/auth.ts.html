@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.51% </span>
+                <span class="strong">29.83% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/124</span>
+                <span class='fraction'>37/124</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">16.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>1/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.51% </span>
+                <span class="strong">29.83% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>18/124</span>
+                <span class='fraction'>37/124</span>
             </div>
         
             
@@ -330,45 +330,45 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -579,24 +579,24 @@ const router = express.Router();
 dotenv.config();
 &nbsp;
 // Register User
-router.post('/register', <span class="fstat-no" title="function not covered" >async </span>(req, res) =&gt; {
-    const { firstName, lastName, email, password, verified } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+router.post('/register', async (req, res) =&gt; {
+    const { firstName, lastName, email, password, verified } = req.body;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    try {</span>
-        const existingUser = <span class="cstat-no" title="statement not covered" >await User.findOne({ email });</span>
+    try {
+        const existingUser = await User.findOne({ email });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (existingUser) {</span>
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (existingUser) {
 <span class="cstat-no" title="statement not covered" >            return res.status(400).json({ message: 'User already exists' });</span>
         }
 &nbsp;
-        const hashedPassword = <span class="cstat-no" title="statement not covered" >await bcrypt.hash(password, 10);</span>
-<span class="cstat-no" title="statement not covered" >        console.log("Generating friend code...");</span>
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("Generating friend code...");
 &nbsp;
         // Ensure that the friend code is being awaited correctly
-        const friendCode = <span class="cstat-no" title="statement not covered" >await generateUniqueFriendCode();</span>
-<span class="cstat-no" title="statement not covered" >        console.log(`Friend Code generated for new user: ${friendCode}`); </span> // Log generated friend code
+        const friendCode = await generateUniqueFriendCode();
+        console.log(`Friend Code generated for new user: ${friendCode}`);  // Log generated friend code
 &nbsp;
-        const newUser = <span class="cstat-no" title="statement not covered" >new User({</span>
+        const newUser = new User({
             firstName,
             lastName,
             email,
@@ -605,20 +605,20 @@ router.post('/register', <span class="fstat-no" title="function not covered" >as
             friendCode, // Ensure friend code is correctly assigned here
         });
 &nbsp;
-        const verificationToken = <span class="cstat-no" title="statement not covered" >crypto.randomBytes(32).toString('hex');</span>
-<span class="cstat-no" title="statement not covered" >        newUser.verificationToken = verificationToken;</span>
-<span class="cstat-no" title="statement not covered" >        newUser.verificationExpires = new Date(Date.now() + 3600000); </span>// Token expires in 1 hour
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        newUser.verificationToken = verificationToken;
+        newUser.verificationExpires = new Date(Date.now() + 3600000); // Token expires in 1 hour
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        await newUser.save();</span>
+        await newUser.save();
 &nbsp;
-        const verificationLink = <span class="cstat-no" title="statement not covered" >`http://localhost/verify-email/${verificationToken}`;</span>
-        const subject = <span class="cstat-no" title="statement not covered" >'Verify Your Email';</span>
-        const text = <span class="cstat-no" title="statement not covered" >`To log in to the site, verify your email: ${verificationLink}`;</span>
-        const html = <span class="cstat-no" title="statement not covered" >emailTemplates.verifyEmail(verificationLink, firstName);</span>
+        const verificationLink = `http://localhost/verify-email/${verificationToken}`;
+        const subject = 'Verify Your Email';
+        const text = `To log in to the site, verify your email: ${verificationLink}`;
+        const html = emailTemplates.verifyEmail(verificationLink, firstName);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        await sendEmail(email, subject, text, html);</span>
+        await sendEmail(email, subject, text, html);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return res.status(201).json({ message: 'User registered successfully', user: newUser });</span>
+        return res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >        if (error instanceof Error) {</span>
 <span class="cstat-no" title="statement not covered" >            console.error('Error registering user:', error.message);</span>
@@ -820,7 +820,7 @@ export default router;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-25T04:16:32.599Z
+                at 2024-11-25T04:21:10.954Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -15,15 +15,23 @@ const connectToDatabase = async () => {
         await mongoose.connect(databaseUrl, { dbName: 'campuslink_db' });
         console.log('Connected to MongoDB');
     } catch (err) {
-        console.error('Error connecting to MongoDB:', err.message);
+        if (err instanceof Error) {
+            console.error('Error connecting to MongoDB:', err.message);
+        } else {
+            console.error('Unexpected error connecting to MongoDB:', err);
+        }
         process.exit(1); // Exit if unable to connect
     }
 };
 
+
 // Start the server
-(async () => {
-    await connectToDatabase();
-    server.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-    });
-})();
+if (process.env.NODE_ENV !== 'test') {
+    (async () => {
+        await connectToDatabase();
+        server.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+    })();
+}
+

@@ -1,16 +1,13 @@
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import { app } from '../../index';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import request from 'supertest';
+import { app } from '../../app'; // Import the app, not the server
 
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
-
-    // Mock the database connection
-    await mongoose.disconnect();
     await mongoose.connect(uri, { dbName: 'test' });
 });
 
