@@ -46,26 +46,26 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
     }, [messages]);
 
     const fetchSenderName = async (senderId: string): Promise<string> => {
+        if (!senderId) return 'Unknown'; // Handle empty sender ID edge case
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`/api/users/${senderId}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
-
             if (!response.ok) {
                 console.error(`Error fetching user ${senderId}:`, response.statusText);
                 return 'Unknown';
             }
-
             const data = await response.json();
-            return data.name || 'Unknown';
+            return data.firstName + ' ' + data.lastName || 'Unknown'; // Ensure field matches your API response
         } catch (error) {
             console.error('Error fetching sender name:', error);
             return 'Unknown';
         }
     };
+
 
     // Fetch messages when the channel changes
     useEffect(() => {
