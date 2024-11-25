@@ -1,0 +1,51 @@
+.modalBackdrop {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContent {
+    background-color: var(--secondary-background);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.choiceButton {
+    flex: 1;
+    padding: 0.75rem;
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.choiceButton:hover{
+    background-color: var(--button-hover);
+}
+
+.cancelButton {
+    margin-top: 15px;
+    width: 100%;
+    background-color: var(--secondary-background);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
