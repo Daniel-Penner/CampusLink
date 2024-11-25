@@ -18,7 +18,7 @@ afterAll(async () => {
 });
 
 describe('Auth Routes', () => {
-    it('should register a new user', async () => {
+    it('registers a new user', async () => {
         const response = await request(app)
             .post('/api/auth/register')
             .send({
