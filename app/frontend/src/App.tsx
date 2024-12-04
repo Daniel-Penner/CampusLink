@@ -16,6 +16,7 @@ import IncomingRequests from "./pages/Connections/IncomingRequests/IncomingReque
 import Servers from "./pages/Servers/Servers.tsx";
 import Profile from "./pages/Profile/Profile.tsx";
 import VerifyEmailChange from "./pages/VerifyEmailChange/VerifyEmailChange.tsx";
+import LocationsPage from "./pages/Locations/Locations.tsx";
 
 function App() {
     return (
@@ -36,6 +37,7 @@ function App() {
                 <Route path="/servers" element={<Servers/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="/verify-email-change/:token" element={<VerifyEmailChange/>}/>
+                <Route path="/explore" element={<LocationsPage/>}/>
             </Routes>
         </Router>
         </AuthProvider>
