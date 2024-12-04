@@ -21,7 +21,8 @@ const markerIconSVG = `
 const CustomPopup: React.FC<{
     location: any;
     onClose: () => void;
-}> = ({ location, onClose }) => {
+    handleMoreInfo: (location: any) => void; // Add the handleMoreInfo prop
+}> = ({ location, onClose, handleMoreInfo }) => {
     return (
         <div
             className="custom-popup"
@@ -34,7 +35,9 @@ const CustomPopup: React.FC<{
                 zIndex: 1000,
             }}
         >
-            <h3 style={{ color: 'var(--text-color)', marginBottom: '10px' }}>{location.name}</h3>
+            <h3 style={{ color: 'var(--text-color)', marginBottom: '10px', fontSize: 16 }}>
+                {location.name}
+            </h3>
             <img
                 src={location.image}
                 alt={location.name}
@@ -45,10 +48,10 @@ const CustomPopup: React.FC<{
                     marginBottom: '10px',
                 }}
             />
-            <p style={{ color: 'var(--text-color)', marginBottom: '5px' }}>
+            <p style={{ color: 'var(--text-color)', marginBottom: '5px', fontSize: 12 }}>
                 {location.description}
             </p>
-            <p style={{ color: 'var(--text-color)' }}>
+            <p style={{ color: 'var(--text-color)', fontSize: 14 }}>
                 Rating: {'★'.repeat(location.rating)}{'☆'.repeat(5 - location.rating)}
             </p>
             <button
@@ -65,16 +68,33 @@ const CustomPopup: React.FC<{
             >
                 Close
             </button>
+            <button
+                onClick={() => handleMoreInfo(location)} // Call handleMoreInfo to open the modal
+                style={{
+                    marginTop: '10px',
+                    marginLeft: '10px',
+                    padding: '8px 12px',
+                    backgroundColor: '#10b981',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                }}
+            >
+                More Info
+            </button>
         </div>
     );
 };
+
 
 const MapComponent: React.FC<{
     locations: any[];
     selectedLocation: any | null;
     onMoreInfo: (location: any | null) => void;
-}> = ({ locations, selectedLocation, onMoreInfo }) => {
-    const { isLoaded, loadError } = useLoadScript({
+    handleMoreInfo: (location: any) => void;
+}> = ({locations, selectedLocation, onMoreInfo, handleMoreInfo}) => {
+    const {isLoaded, loadError} = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
         libraries: ['marker'],
         version: 'weekly',
@@ -144,6 +164,7 @@ const MapComponent: React.FC<{
                     <CustomPopup
                         location={selectedLocation}
                         onClose={() => onMoreInfo(null)}
+                        handleMoreInfo={handleMoreInfo}
                     />
                 </OverlayView>
             )}

@@ -43,7 +43,6 @@ const LocationsPage: React.FC = () => {
     };
 
     const handleCloseModal = () => {
-        setSelectedLocation(null);
         setIsModalOpen(false);
     };
 
@@ -78,6 +77,7 @@ const LocationsPage: React.FC = () => {
                         onMoreInfo={handleOpenInfo}
                         handleMoreInfo={handleMoreInfo}
                     />
+
                     <AddLocationButton onClick={handleAddLocation} />
                 </div>
             </div>
