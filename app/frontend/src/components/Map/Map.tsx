@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GoogleMap, useLoadScript, OverlayView } from '@react-google-maps/api';
-import './MarkerStyles.css'; // Import the custom marker CSS styles
+import './MarkerStyles.css';
 
 const mapContainerStyle = {
     width: '100%',
@@ -8,8 +8,8 @@ const mapContainerStyle = {
 };
 
 const defaultCenter = {
-    lat: 49.88, // Default latitude (e.g., Kelowna)
-    lng: -119.50, // Default longitude
+    lat: 49.89, // Default latitude
+    lng: -119.44, // Default longitude
 };
 
 const markerIconSVG = `
@@ -18,11 +18,46 @@ const markerIconSVG = `
     </svg>
 `;
 
+const SelectionPrompt: React.FC<{
+    onCancel: () => void;
+}> = ({ onCancel }) => (
+    <div
+        style={{
+            position: 'absolute',
+            top: '10px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(0, 0, 0, 0.7)',
+            color: '#fff',
+            padding: '10px 20px',
+            borderRadius: '5px',
+            zIndex: 1000,
+        }}
+    >
+        <p>Click on the map to select the location for your new business.</p>
+        <button
+            onClick={onCancel}
+            style={{
+                marginTop: '10px',
+                padding: '8px 12px',
+                backgroundColor: '#ff4d4d',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+            }}
+        >
+            Cancel
+        </button>
+    </div>
+);
+
 const CustomPopup: React.FC<{
     location: any;
     onClose: () => void;
-    handleMoreInfo: (location: any) => void; // Add the handleMoreInfo prop
-}> = ({ location, onClose, handleMoreInfo }) => {
+    handleMoreInfo: (location: any) => void;
+    renderStars: (rating: number) => JSX.Element;
+}> = ({ location, onClose, handleMoreInfo, renderStars }) => {
     return (
         <div
             className="custom-popup"
@@ -48,11 +83,13 @@ const CustomPopup: React.FC<{
                     marginBottom: '10px',
                 }}
             />
-            <p style={{ color: 'var(--text-color)', marginBottom: '5px', fontSize: 12 }}>
+            <p style={{ color: 'var(--text-color)', marginBottom: '10px', fontSize: 12 }}>
                 {location.description}
             </p>
-            <p style={{ color: 'var(--text-color)', fontSize: 14 }}>
-                Rating: {'★'.repeat(location.rating)}{'☆'.repeat(5 - location.rating)}
+            <hr />
+            <p style={{ color: 'var(--text-color)', fontSize: 12, marginTop: '10px' }}>
+                Rating: {location.rating}
+                {renderStars(location.rating)}
             </p>
             <button
                 onClick={onClose}
@@ -69,7 +106,7 @@ const CustomPopup: React.FC<{
                 Close
             </button>
             <button
-                onClick={() => handleMoreInfo(location)} // Call handleMoreInfo to open the modal
+                onClick={() => handleMoreInfo(location)}
                 style={{
                     marginTop: '10px',
                     marginLeft: '10px',
@@ -81,20 +118,32 @@ const CustomPopup: React.FC<{
                     cursor: 'pointer',
                 }}
             >
-                More Info
+                Reviews
             </button>
         </div>
     );
 };
-
 
 const MapComponent: React.FC<{
     locations: any[];
     selectedLocation: any | null;
     onMoreInfo: (location: any | null) => void;
     handleMoreInfo: (location: any) => void;
-}> = ({locations, selectedLocation, onMoreInfo, handleMoreInfo}) => {
-    const {isLoaded, loadError} = useLoadScript({
+    renderStars: (rating: number) => JSX.Element;
+    isAddingLocation: boolean;
+    onNewLocationSelected: (coords: { lat: number; lng: number }) => void;
+    onCancelAddingLocation: () => void;
+}> = ({
+          locations,
+          selectedLocation,
+          onMoreInfo,
+          handleMoreInfo,
+          renderStars,
+          isAddingLocation,
+          onNewLocationSelected,
+          onCancelAddingLocation,
+      }) => {
+    const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
         libraries: ['marker'],
         version: 'weekly',
@@ -102,11 +151,11 @@ const MapComponent: React.FC<{
 
     const mapRef = useRef<google.maps.Map | null>(null);
     const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
+    const [temporaryMarker, setTemporaryMarker] = useState<google.maps.Marker | null>(null);
 
     const initializeMarkers = () => {
         if (!mapRef.current || !window.google) return;
 
-        // Clear existing markers
         markersRef.current.forEach((marker) => (marker.map = null));
         markersRef.current = [];
 
@@ -126,49 +175,93 @@ const MapComponent: React.FC<{
                 content: markerElement,
             });
 
-            // Add click listener to set the selected location
-            advancedMarker.addListener('click', () => {
-                onMoreInfo(location);
-            });
-
+            advancedMarker.addListener('click', () => onMoreInfo(location));
             markersRef.current.push(advancedMarker);
         });
     };
+
+    const handleMapClick = (event: google.maps.MapMouseEvent) => {
+        if (!isAddingLocation || !event.latLng) return;
+
+        const coords = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+        onNewLocationSelected(coords);
+
+        if (temporaryMarker) {
+            temporaryMarker.setPosition(coords);
+        } else if (mapRef.current) {
+            const marker = new google.maps.Marker({
+                position: coords,
+                map: mapRef.current,
+                draggable: true,
+            });
+
+            marker.addListener('dragend', (event: google.maps.MapMouseEvent) => {
+                if (event.latLng) {
+                    const lat = event.latLng.lat();
+                    const lng = event.latLng.lng();
+                    onNewLocationSelected({ lat, lng });
+                }
+            });
+
+            setTemporaryMarker(marker);
+        }
+    };
+
+    useEffect(() => {
+        if (!isAddingLocation && temporaryMarker) {
+            temporaryMarker.setMap(null);
+            setTemporaryMarker(null);
+        }
+    }, [isAddingLocation]);
 
     useEffect(() => {
         if (mapRef.current) initializeMarkers();
     }, [locations]);
 
+    useEffect(() => {
+        if (mapRef.current && selectedLocation) {
+            const offsetLat = -0.009;
+            const offsetLng = 0.015;
+
+            mapRef.current.panTo({
+                lat: selectedLocation.lat + offsetLat,
+                lng: selectedLocation.lng + offsetLng,
+            });
+        }
+    }, [selectedLocation]);
+
     if (loadError) return <div>Error loading maps. Please check your API key.</div>;
     if (!isLoaded) return <div>Loading Maps...</div>;
 
     return (
-        <GoogleMap
-            mapContainerStyle={mapContainerStyle}
-            zoom={12}
-            center={defaultCenter}
-            onLoad={(map) => {
-                mapRef.current = map;
-                initializeMarkers();
-            }}
-            options={{
-                mapId: '3e075ec058fc01f6', // Your Map ID
-            }}
-        >
-            {/* Custom Popup using OverlayView */}
-            {selectedLocation && (
-                <OverlayView
-                    position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
-                    mapPaneName={OverlayView.FLOAT_PANE}
-                >
-                    <CustomPopup
-                        location={selectedLocation}
-                        onClose={() => onMoreInfo(null)}
-                        handleMoreInfo={handleMoreInfo}
-                    />
-                </OverlayView>
-            )}
-        </GoogleMap>
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                zoom={14}
+                center={defaultCenter}
+                onLoad={(map) => {
+                    mapRef.current = map;
+                    initializeMarkers();
+                }}
+                onClick={handleMapClick}
+                options={{ mapId: '3e075ec058fc01f6' }}
+            >
+                {selectedLocation && (
+                    <OverlayView
+                        position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
+                        mapPaneName={OverlayView.FLOAT_PANE}
+                    >
+                        <CustomPopup
+                            location={selectedLocation}
+                            onClose={() => onMoreInfo(null)}
+                            handleMoreInfo={handleMoreInfo}
+                            renderStars={renderStars}
+                        />
+                    </OverlayView>
+                )}
+            </GoogleMap>
+            {isAddingLocation && <SelectionPrompt onCancel={onCancelAddingLocation} />}
+        </div>
     );
 };
 
