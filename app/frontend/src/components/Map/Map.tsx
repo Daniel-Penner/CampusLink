@@ -88,7 +88,7 @@ const CustomPopup: React.FC<{
             </p>
             <hr />
             <p style={{ color: 'var(--text-color)', fontSize: 12, marginTop: '10px' }}>
-                Rating: {location.rating}
+                Rating: {location.rating.toFixed(2)}
                 {renderStars(location.rating)}
             </p>
             <button
@@ -230,6 +230,40 @@ const MapComponent: React.FC<{
         }
     }, [selectedLocation]);
 
+    const mapOptions = {
+        mapId: '3e075ec058fc01f6',
+        styles: [
+            {
+                featureType: 'poi', // General points of interest
+                elementType: 'all',
+                stylers: [{ visibility: 'off' }], // Hides all POIs
+            },
+            {
+                featureType: 'poi.business', // Businesses specifically
+                elementType: 'all',
+                stylers: [{ visibility: 'off' }], // Hides businesses
+            },
+            {
+                featureType: 'transit', // Transit features like bus stops
+                elementType: 'all',
+                stylers: [{ visibility: 'off' }], // Hides transit features
+            },
+            {
+                featureType: 'road.local', // Local roads
+                elementType: 'labels', // Labels on local roads
+                stylers: [{ visibility: 'off' }], // Hides labels on local roads
+            },
+            {
+                featureType: 'administrative.neighborhood', // Neighborhood labels
+                elementType: 'labels.text',
+                stylers: [{ visibility: 'off' }], // Hides neighborhood labels
+            },
+        ],
+        disableDefaultUI: true, // Disable extra UI elements like navigation controls
+        clickableIcons: false, // Disables POI icons being clickable
+    };
+
+
     if (loadError) return <div>Error loading maps. Please check your API key.</div>;
     if (!isLoaded) return <div>Loading Maps...</div>;
 
@@ -239,12 +273,14 @@ const MapComponent: React.FC<{
                 mapContainerStyle={mapContainerStyle}
                 zoom={14}
                 center={defaultCenter}
+                options={mapOptions}
                 onLoad={(map) => {
+                    console.log('Map loaded with options:', mapOptions);
                     mapRef.current = map;
                     initializeMarkers();
                 }}
+
                 onClick={handleMapClick}
-                options={{ mapId: '3e075ec058fc01f6' }}
             >
                 {selectedLocation && (
                     <OverlayView

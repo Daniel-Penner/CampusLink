@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import MapComponent from '../../components/Map/Map';
 import AddLocationButton from '../../components/AddLocationButton/AddLocationButton';
@@ -7,33 +7,27 @@ import CreationModal from "../../components/LocationCreationModal/LocationCreati
 import styles from './Locations.module.css';
 
 const LocationsPage: React.FC = () => {
-    const [locations, setLocations] = useState<any[]>([
-        {
-            id: 1,
-            name: 'John’s Cafe',
-            lat: 49.89,
-            lng: -119.49,
-            rating: 3.75,
-            image: 'https://via.placeholder.com/150',
-            description: 'Cozy cafe with great coffee.',
-            reviews: [
-                { rating: 4, text: 'Great coffee and ambiance!' },
-                { rating: 5, text: 'Amazing service!' },
-            ],
-        },
-        {
-            id: 2,
-            name: 'Raudz Restaurant',
-            lat: 49.88,
-            lng: -119.47,
-            rating: 3.44,
-            image: 'https://via.placeholder.com/150',
-            description: 'Fine dining with local ingredients.',
-            reviews: [
-                { rating: 3, text: 'Good food but pricey.' },
-            ],
-        },
-    ]);
+    const [locations, setLocations] = useState<any[]>([]);
+    const [selectedLocation, setSelectedLocation] = useState<any | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddingLocation, setIsAddingLocation] = useState(false);
+    const [newLocationCoords, setNewLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+    const token = localStorage.getItem('token');
+
+    // Fetch all locations from the server
+    useEffect(() => {
+        fetch('/api/locations', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => setLocations(data))
+            .catch((error) => console.error('Error fetching locations:', error));
+    }, []);
 
     const calculateScore = (location: any) => {
         const { reviews, rating } = location;
@@ -43,11 +37,6 @@ const LocationsPage: React.FC = () => {
     };
 
     const sortedLocations = [...locations].sort((a, b) => calculateScore(b) - calculateScore(a));
-
-    const [selectedLocation, setSelectedLocation] = useState<any | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isAddingLocation, setIsAddingLocation] = useState(false);
-    const [newLocationCoords, setNewLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
 
     const handleStartAddingLocation = () => {
         setIsAddingLocation(true);
@@ -61,21 +50,26 @@ const LocationsPage: React.FC = () => {
 
     const handleSaveNewLocation = (data: { name: string; description: string }) => {
         if (newLocationCoords) {
-            setLocations((prev) => [
-                ...prev,
-                {
-                    id: prev.length + 1,
+            fetch('/api/locations/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
                     name: data.name,
                     description: data.description,
                     lat: newLocationCoords.lat,
                     lng: newLocationCoords.lng,
-                    rating: 0,
-                    reviews: [],
-                    image: 'https://via.placeholder.com/150',
-                },
-            ]);
+                }),
+            })
+                .then((response) => response.json())
+                .then((newLocation) => {
+                    setLocations((prev) => [...prev, newLocation]);
+                    handleCancelAddingLocation();
+                })
+                .catch((error) => console.error('Error creating location:', error));
         }
-        handleCancelAddingLocation();
     };
 
     const handleOpenInfo = (location: any) => setSelectedLocation(location);
@@ -86,22 +80,6 @@ const LocationsPage: React.FC = () => {
     };
 
     const handleCloseModal = () => setIsModalOpen(false);
-
-    const handleAddReview = (id: number, newReview: { rating: number; text: string }) => {
-        setLocations((prev) =>
-            prev.map((loc) =>
-                loc.id === id
-                    ? {
-                        ...loc,
-                        reviews: [...loc.reviews, newReview],
-                        rating:
-                            [...loc.reviews, newReview].reduce((acc, review) => acc + review.rating, 0) /
-                            (loc.reviews.length + 1),
-                    }
-                    : loc
-            )
-        );
-    };
 
     const renderStars = (rating: number) => {
         const fullStars = Math.floor(rating);
@@ -139,8 +117,8 @@ const LocationsPage: React.FC = () => {
                     <h2 className={styles.sidebarHeader}>Top Rated Locations</h2>
                     {sortedLocations.map((location, index) => (
                         <div
-                            key={location.id}
-                            className={`${styles.locationItem} ${selectedLocation?.id === location.id ? styles.active : ''}`}
+                            key={location._id}
+                            className={`${styles.locationItem} ${selectedLocation?._id === location._id ? styles.active : ''}`}
                             onClick={() => handleOpenInfo(location)}
                         >
                             <div className={styles.locationInfo}>
@@ -170,18 +148,14 @@ const LocationsPage: React.FC = () => {
                 </div>
             </div>
             {isModalOpen && selectedLocation && (
-                <LocationModal location={selectedLocation} onClose={handleCloseModal} onAddReview={handleAddReview} />
+                <LocationModal location={selectedLocation} onClose={handleCloseModal}/>
             )}
-            {isAddingLocation && (
-                <>
-                    {newLocationCoords && (
-                        <CreationModal
-                            coords={newLocationCoords}
-                            onSave={handleSaveNewLocation}
-                            onCancel={handleCancelAddingLocation}
-                        />
-                    )}
-                </>
+            {isAddingLocation && newLocationCoords && (
+                <CreationModal
+                    coords={newLocationCoords}
+                    onSave={handleSaveNewLocation}
+                    onCancel={handleCancelAddingLocation}
+                />
             )}
         </div>
     );
