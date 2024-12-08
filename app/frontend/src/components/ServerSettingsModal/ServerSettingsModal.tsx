@@ -1,10 +1,22 @@
 import React, { useState } from 'react';
 import styles from './ServerSettingsModal.module.css';
 
+interface Channel {
+    _id?: string;
+    name: string;
+}
+
+interface Server {
+    _id: string;
+    name: string;
+    channels: Channel[];
+    photo?: string; // New photo field
+}
+
 interface ServerSettingsModalProps {
-    server: any;
+    server: Server;
     onClose: () => void;
-    onServerUpdated: (updatedServer: any) => void;
+    onServerUpdated: (updatedServer: Server) => void;
     onServerDeleted: () => void;
 }
 
@@ -15,61 +27,95 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                                                                      onServerDeleted,
                                                                  }) => {
     const [serverName, setServerName] = useState(server.name);
-    const [channels, setChannels] = useState(server.channels);
+    const [channels, setChannels] = useState<Channel[]>(server.channels);
     const [newChannelName, setNewChannelName] = useState('');
+    const [serverPhoto, setServerPhoto] = useState<string | null>(server.photo || null);
+    const [, setServerPhotoFile] = useState<File | null>(null);
     const [copied, setCopied] = useState(false);
 
     const handleAddChannel = () => {
         if (!newChannelName.trim()) return;
-        setChannels([...channels, { name: newChannelName }]); // No `_id` here
+        setChannels([...channels, { name: newChannelName }]);
         setNewChannelName('');
     };
 
-    const handleRemoveChannel = (channelId: string) => {
-        setChannels(channels.filter((channel: any) => channel._id !== channelId));
+    const handleRemoveChannel = (channelId?: string) => {
+        setChannels(channels.filter((channel) => channel._id !== channelId));
     };
 
-    const handleSaveChanges = () => {
+    const handlePhotoUpload = async (file: File) => {
         const token = localStorage.getItem('token');
+        const formData = new FormData();
+        formData.append('photo', file);
 
-        // Prepare the payload
-        const updatedChannels = channels.map((channel: any) => ({
-            _id: channel._id, // Retain `_id` for existing channels
-            name: channel.name,
-        }));
+        try {
+            const response = await fetch(`/api/servers/${server._id}/upload-photo`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData,
+            });
 
-        fetch(`/api/servers/${server._id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ name: serverName, channels: updatedChannels }),
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`Error: ${res.statusText}`);
-                }
-                return res.json();
-            })
-            .then((updatedServer) => {
-                onServerUpdated(updatedServer);
-                onClose();
-            })
-            .catch((err) => console.error('Error updating server:', err));
+            if (!response.ok) {
+                throw new Error('Failed to upload server photo.');
+            }
+
+            const data = await response.json();
+            setServerPhoto(data.photo); // Update the photo preview with the new photo URL
+        } catch (error) {
+            console.error('Error uploading server photo:', error);
+        }
     };
 
-    const handleDeleteServer = () => {
+    const handleSaveChanges = async () => {
         const token = localStorage.getItem('token');
-        fetch(`/api/servers/${server._id}`, {
-            method: 'DELETE',
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then(() => {
-                onServerDeleted();
-                onClose();
-            })
-            .catch((err) => console.error('Error deleting server:', err));
+
+        const formData = new FormData();
+        formData.append('name', serverName);
+        channels.forEach((channel, index) => {
+            formData.append(`channels[${index}][_id]`, channel._id || '');
+            formData.append(`channels[${index}][name]`, channel.name);
+        });
+
+        try {
+            const response = await fetch(`/api/servers/${server._id}`, {
+                method: 'PUT',
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update server settings.');
+            }
+
+            const updatedServer = await response.json();
+            onServerUpdated(updatedServer);
+            onClose();
+        } catch (error) {
+            console.error('Error updating server:', error);
+        }
+    };
+
+    const handleDeleteServer = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            await fetch(`/api/servers/${server._id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            onServerDeleted();
+            onClose();
+        } catch (error) {
+            console.error('Error deleting server:', error);
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setServerPhotoFile(file);
+            setServerPhoto(URL.createObjectURL(file)); // Preview the selected image
+            handlePhotoUpload(file); // Upload the photo immediately
+        }
     };
 
     const handleCopyCode = () => {
@@ -96,8 +142,24 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                     />
                 </div>
                 <div className={styles.section}>
+                    <label>Server Photo:</label>
+                    {serverPhoto && (
+                        <img
+                            src={serverPhoto}
+                            alt="Server Photo Preview"
+                            className={styles.serverPhotoPreview}
+                        />
+                    )}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className={styles.inputField}
+                    />
+                </div>
+                <div className={styles.section}>
                     <label>Channels:</label>
-                    {channels.map((channel: any, index: number) => (
+                    {channels.map((channel, index) => (
                         <div key={index} className={styles.channelItem}>
                             <span>{channel.name}</span>
                             <button

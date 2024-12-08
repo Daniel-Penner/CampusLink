@@ -80,13 +80,14 @@
     margin-top: 10px;
 }
 
-.serverPhoto {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
+.serverPhotoPreview {
+    width: 100px;
+    height: 100px;
     object-fit: cover;
-    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    margin-bottom: 10px;
 }
+
 
 .fileInput {
     flex-grow: 1;

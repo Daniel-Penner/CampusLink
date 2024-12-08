@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from './ServersSidebar.module.css';
 import { FaPlus } from 'react-icons/fa';
-import defaultLogo from '../../assets/logoSmall.svg';
 
 interface ServersSidebarProps {
     servers: any[];
@@ -36,13 +35,13 @@ const ServersSidebar: React.FC<ServersSidebarProps> = ({
         {servers.map((server) => (
             <div
                 className={`${styles.box} ${server?._id === selectedServer?._id ? styles.active : ''}`}
-                key={server._id || Math.random()} // Fallback key if _id is missing
+                key={server._id || Math.random()}
                 onClick={() => setSelectedServer(server)}
             >
                 <div className={styles.serverIcon}>
                     {server?.photo ? (
                         <img
-                            src={server.photo || defaultLogo}
+                            src={server.photo} // Display server photo
                             alt={server.name || 'Server'}
                             className={styles.serverImage}
                         />
