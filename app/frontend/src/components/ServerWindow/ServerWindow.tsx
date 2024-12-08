@@ -15,7 +15,7 @@ interface Message {
     senderName?: string;
     content: string;
     timestamp?: Date;
-    profilePic?: string;
+    senderProfilePicture?: string;
     channel?: string;
 }
 
@@ -37,6 +37,8 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
     const messageAreaRef = useRef<HTMLDivElement>(null);
     const authContext = useContext(AuthContext);
     const { id: userId } = authContext || {};
+
+    const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png'; // Default path
 
     // Scroll to the bottom when messages update
     useEffect(() => {
@@ -66,6 +68,26 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
         }
     };
 
+    const fetchSenderProfilePicture = async (senderId: string): Promise<string> => {
+        if (!senderId) return 'Unknown'; // Handle empty sender ID edge case
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/api/users/${senderId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                console.error(`Error fetching user ${senderId} picture:`, response.statusText);
+                return 'Unknown';
+            }
+            const data = await response.json();
+            return data.profilePicture; // Ensure field matches your API response
+        } catch (error) {
+            console.error('Error fetching sender picture:', error);
+            return 'Unknown';
+        }
+    };
 
     // Fetch messages when the channel changes
     useEffect(() => {
@@ -84,9 +106,11 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
                     const formattedMessages = await Promise.all(
                         data.map(async (msg: any) => {
                             const senderName = await fetchSenderName(msg.sender);
+                            const senderProfilePicture = await fetchSenderProfilePicture(msg.sender)
                             return {
                                 ...msg,
                                 senderName,
+                                senderProfilePicture,
                                 timestamp: msg.timestamp ? new Date(msg.timestamp) : undefined
                             };
                         })
@@ -109,9 +133,10 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
         if (selectedChannel) {
             socket.on('channel-message', async (newMessage) => {
                 const senderName = await fetchSenderName(newMessage.sender);
+                const senderProfilePicture = await fetchSenderProfilePicture(newMessage.sender);
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { ...newMessage, senderName, timestamp: new Date(newMessage.timestamp) }
+                    { ...newMessage, senderName, senderProfilePicture, timestamp: new Date(newMessage.timestamp) }
                 ]);
             });
         }
@@ -129,7 +154,6 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
             content: newMessage,
             timestamp: new Date(),
             channel: selectedChannel._id,
-            profilePic: 'your-profile-pic-url'
         };
 
         const token = localStorage.getItem('token');
@@ -170,7 +194,15 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
         <div className={styles.serverContainer}>
             <div className={styles.messageArea} ref={messageAreaRef}>
                 {messages.map((msg, index) => (
-                    <div key={index} className={`${styles.messageContainer} ${msg.sender === userId ? styles.sentMessage : styles.receivedMessage}`}>
+                    <div key={index}
+                         className={`${styles.messageContainer} ${msg.sender === userId ? styles.sentMessage : styles.receivedMessage}`}>
+                        {msg.sender !== userId && (
+                            <img
+                                src={msg.senderProfilePicture || defaultProfilePicture}
+                                alt={`profile`}
+                                className={styles.messageProfilePic}
+                            />
+                        )}
                         <p className={styles.messageContent}>
                             {msg.sender !== userId && (
                                 <strong>{msg.senderName || 'Unknown'}: </strong>

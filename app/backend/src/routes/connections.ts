@@ -113,7 +113,7 @@ router.get('/friends', authenticateToken, async (req, res) => {
                 { sender: userId, accepted: true },
                 { recipient: userId, accepted: true }
             ]
-        }).populate('sender recipient', 'firstName lastName email friendCode'); // Populate user details
+        }).populate('sender recipient', 'firstName lastName email friendCode bio profilePicture'); // Populate user details
 
         return res.status(200).json(acceptedConnections);
     } catch (error) {
@@ -130,7 +130,7 @@ router.get('/sent-pending', authenticateToken, async (req, res) => {
         const pendingSentRequests = await Connection.find({
             sender: userId,
             accepted: false
-        }).populate('recipient', 'firstName lastName email friendCode'); // Populate recipient details
+        }).populate('recipient', 'firstName lastName email friendCode profilePicture'); // Populate recipient details
 
         return res.status(200).json(pendingSentRequests);
     } catch (error) {
@@ -147,7 +147,7 @@ router.get('/received-pending', authenticateToken, async (req, res) => {
         const pendingReceivedRequests = await Connection.find({
             recipient: userId,
             accepted: false
-        }).populate('sender', 'firstName lastName email friendCode'); // Populate sender details
+        }).populate('sender', 'firstName lastName email friendCode profilePicture'); // Populate sender details
 
         return res.status(200).json(pendingReceivedRequests);
     } catch (error) {

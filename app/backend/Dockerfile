@@ -13,6 +13,9 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Create the uploads directory
+RUN mkdir -p /app/uploads
+
 # Build TypeScript into JavaScript
 RUN npm run build
 

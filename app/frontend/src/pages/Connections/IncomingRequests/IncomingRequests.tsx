@@ -10,9 +10,8 @@ interface Request {
         _id: string;
         firstName: string;
         lastName: string;
-        profilePic?: string;
+        profilePicture?: string;
     };
-    status?: 'Online' | 'Offline';
 }
 
 const IncomingRequestsPage: React.FC = () => {
@@ -123,7 +122,7 @@ const IncomingRequestsPage: React.FC = () => {
                         <RequestCard
                             key={index}
                             name={`${request.sender.firstName} ${request.sender.lastName}`} // Full name
-                            profilePic={request.sender.profilePic || 'default-profile-pic.png'} // Fallback profile picture
+                            profilePicture={request.sender.profilePicture} // Fallback profile picture
                             onAccept={() => acceptRequest(request.sender._id)} // Pass sender's ID to accept function
                             onDecline={() => declineRequest(request.sender._id)} // Pass sender's ID to decline function
                         />

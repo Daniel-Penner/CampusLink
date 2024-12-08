@@ -9,6 +9,7 @@ import connectionRoutes from './routes/connections';
 import serverRoutes from './routes/servers';
 import userRoutes from './routes/users';
 import locationRoutes from './routes/locations';
+import path from 'path';
 
 // Create an Express app and an HTTP server
 const app = express();
@@ -84,6 +85,9 @@ app.use(
 
 // Static middleware
 staticMiddleware(app);
+
+// Serve static files for uploads
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Define routes
 app.use('/api/users', userRoutes);

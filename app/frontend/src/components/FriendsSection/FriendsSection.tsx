@@ -5,13 +5,15 @@ interface Friend {
     _id: string;
     firstName: string;
     lastName: string;
-    profilePic?: string;
+    profilePicture?: string;
     status?: 'Online' | 'Offline';
     description?: string;
 }
 
 const FriendsSection: React.FC<{ friends: Friend[], setFriends: React.Dispatch<React.SetStateAction<Friend[]>> }> = ({ friends, setFriends }) => {
     const navigate = useNavigate(); // Initialize useNavigate for page redirection
+
+    const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png';
 
     const handleUnfriend = async (friendId: string) => {
         const token = localStorage.getItem('token');
@@ -56,7 +58,7 @@ const FriendsSection: React.FC<{ friends: Friend[], setFriends: React.Dispatch<R
                 <div key={friend._id} className={styles.friendCard}>
                     <div className={styles.infoRow}>
                         <img
-                            src={friend.profilePic || 'default-profile-pic.png'} // Fallback to a default profile picture if not provided
+                            src={friend.profilePicture || defaultProfilePicture} // Fallback to a default profile picture if not provided
                             alt={`${friend.firstName} ${friend.lastName} profile`}
                             className={styles.profilePic}
                         />
@@ -74,11 +76,6 @@ const FriendsSection: React.FC<{ friends: Friend[], setFriends: React.Dispatch<R
                         >
                             Unfriend
                         </button>
-                    </div>
-                    <div className={styles.activeStatus}>
-                        <span className={friend.status === 'Online' ? styles.online : styles.offline}>
-                            {friend.status}
-                        </span>
                     </div>
                 </div>
             ))}

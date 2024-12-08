@@ -1,10 +1,9 @@
 import React from 'react';
 import styles from './RequestCard.module.css';
-import profile from '../../assets/profile.png'
 
 interface RequestCardProps {
     name: string;
-    profilePic?: string;
+    profilePicture?: string;
     status?: 'Online' | 'Offline';
     isOutgoing?: boolean;
     onAccept?: () => void;
@@ -14,19 +13,23 @@ interface RequestCardProps {
 
 const RequestCard: React.FC<RequestCardProps> = ({
                                                      name,
-                                                     profilePic,
-                                                     status,
+                                                     profilePicture,
                                                      isOutgoing,
                                                      onAccept,
                                                      onDecline,
                                                      onRevoke,
                                                  }) => {
+    const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png'; // Default path
+
     return (
         <div className={styles.requestCard}>
-            <img src={profilePic || profile} alt={`${name} profile`} className={styles.profilePic}/>
+            <img
+                src={profilePicture || defaultProfilePicture}
+                alt={`${name} profile`}
+                className={styles.profilePic}
+            />
             <div className={styles.info}>
                 <h3>{name}</h3>
-                <span className={status === 'Online' ? styles.online : styles.offline}>{status || 'online'}</span>
             </div>
             <div className={styles.actions}>
                 {isOutgoing ? (
@@ -44,7 +47,6 @@ const RequestCard: React.FC<RequestCardProps> = ({
                     </>
                 )}
             </div>
-
         </div>
     );
 };

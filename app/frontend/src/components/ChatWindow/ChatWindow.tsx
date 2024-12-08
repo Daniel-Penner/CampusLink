@@ -19,7 +19,7 @@ interface Message {
 
 interface ChatWindowProps {
     messages: Message[];
-    selectedUser: { _id: string; name: string; profilePic: string } | null;
+    selectedUser: { _id: string; name: string; profilePicture?: string } | null;
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
@@ -31,6 +31,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
     }
 
     const { id } = authContext;
+    const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png';
 
     // Reference for the message area div
     const messageAreaRef = useRef<HTMLDivElement>(null);
@@ -83,9 +84,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
             body: JSON.stringify(messageData)
         })
             .then(() => {
-                setMessages(prevMessages => [
-                    ...prevMessages,
-                ]);
+                setMessages(prevMessages => [...prevMessages]);
                 setNewMessage('');
             })
             .catch(err => console.log('Error sending message:', err));
@@ -105,14 +104,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
             <div className={styles.messageArea} ref={messageAreaRef}>
                 {messages.map((msg, index) => {
                     const isOwnMessage = msg.sender === id;
-                    const showProfilePic = !isOwnMessage && previousSender !== msg.sender;
+                    const showProfilePicture = !isOwnMessage && previousSender !== msg.sender;
                     previousSender = msg.sender;
 
                     return (
                         <div key={index} className={isOwnMessage ? styles.sentMessage : styles.receivedMessage}>
-                            {!isOwnMessage && showProfilePic && (
+                            {!isOwnMessage && showProfilePicture && (
                                 <img
-                                    src={selectedUser.profilePic}
+                                    src={selectedUser.profilePicture || defaultProfilePicture}
                                     alt={selectedUser.name}
                                     className={styles.messageProfilePic}
                                 />

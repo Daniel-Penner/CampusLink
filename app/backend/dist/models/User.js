@@ -30,7 +30,7 @@ const UserSchema = new mongoose_1.Schema({
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     friendCode: { type: String, unique: true, required: true },
-    profilePicture: { type: String, required: true, default: "C:\\Users\\danie\\OneDrive\\Documents\\GitHub\\CampusLink\\app\\frontend\\src\\assets\\profile.png" },
+    profilePicture: { type: String, required: true, default: "C:\\Users\\danie\\OneDrive\\Documents\\GitHub\\CampusLink\\app\\frontend\\src\\assets\\default-profile.png" },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     verificationToken: { type: String },

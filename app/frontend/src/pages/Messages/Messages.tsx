@@ -17,14 +17,13 @@ interface Friend {
     _id: string;
     firstName: string;
     lastName: string;
-    profilePic?: string;
-    status?: 'Online' | 'Offline';
+    profilePicture: string;
 }
 
 interface MappedFriend {
     _id: string;
     name: string;
-    profilePic: string;
+    profilePicture: string;
 }
 
 interface Message {
@@ -37,7 +36,7 @@ interface Message {
 interface SelectedUser {
     _id: string;
     name: string;
-    profilePic: string; // Include profilePic in SelectedUser
+    profilePicture?: string;
 }
 
 const MessagesPage: React.FC = () => {
@@ -67,7 +66,7 @@ const MessagesPage: React.FC = () => {
                 const mappedFriends = data.map(friend => ({
                     _id: friend._id,
                     name: `${friend.firstName} ${friend.lastName}`, // Combine firstName and lastName into name
-                    profilePic: friend.profilePic || 'default-profile-pic.png', // Default profile picture if not provided
+                    profilePicture: friend.profilePicture, // Default profile picture if not provided
                 }));
                 setFriends(mappedFriends); // Set the mapped friends data
             })

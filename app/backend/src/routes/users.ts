@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import User from '../models/User'; // Adjust the path based on your project structure
 import authenticateToken from '../middleware/authMiddleware';
@@ -7,6 +8,29 @@ import {sendEmail} from "../utils/SendEmails";
 import { emailTemplates } from '../data/Emails'
 
 const router = express.Router();
+
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/profile_pictures'); // Directory to save profile pictures
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+        cb(null, `${file.fieldname}-${uniqueSuffix}${file.originalname}`);
+    },
+});
+
+const upload = multer({
+    storage,
+    fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type. Only JPEG, PNG, and JPG are allowed.'));
+        }
+    },
+});
 
 // GET /api/users/:userId - Fetch user by ID
 router.get('/:userId', authenticateToken, async (req, res) => {
@@ -130,7 +154,43 @@ router.get('/verify-email-change/:token', async (req, res) => {
     }
 });
 
+// Route to upload a profile picture
+router.post(
+    '/:userId/upload-profile-picture',
+    authenticateToken,
+    upload.single('profilePicture'),
+    async (req, res) => {
+        const { userId } = req.params;
 
+        try {
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Check if the authenticated user matches the target user
+            if (req.user.userId !== userId) {
+                return res.status(403).json({ message: 'Unauthorized' });
+            }
+
+            if (!req.file) {
+                return res.status(400).json({ message: 'No file uploaded' });
+            }
+
+            // Update the user's profilePicture field
+            user.profilePicture = `/uploads/profile_pictures/${req.file.filename}`;
+            await user.save();
+
+            res.status(200).json({
+                message: 'Profile picture uploaded successfully.',
+                profilePicture: user.profilePicture,
+            });
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+);
 
 
 

@@ -10,6 +10,8 @@ const UpdateProfile: React.FC = () => {
     const [lastName, setLastName] = useState("");
     const [bio, setBio] = useState("");
     const [email, setEmail] = useState("");
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
+    const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -34,6 +36,7 @@ const UpdateProfile: React.FC = () => {
                     setLastName(data.lastName);
                     setBio(data.bio || "");
                     setEmail(data.email);
+                    setProfilePicture(data.profilePicture);
                     setError(null); // Clear any errors if successful
                 } else {
                     setError(data.message || "Failed to load profile.");
@@ -43,7 +46,6 @@ const UpdateProfile: React.FC = () => {
             }
         };
 
-        // Wrap the async call in an IIFE (Immediately Invoked Function Expression)
         (async () => {
             await fetchProfile();
         })();
@@ -56,6 +58,28 @@ const UpdateProfile: React.FC = () => {
             return;
         }
         const token = localStorage.getItem("token");
+
+        // Upload the profile picture if a new file is selected
+        if (profilePictureFile) {
+            const formData = new FormData();
+            formData.append("profilePicture", profilePictureFile);
+
+            try {
+                const response = await fetch(`/api/users/${userId}/upload-profile-picture`, {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` },
+                    body: formData,
+                });
+                if (!response.ok) {
+                    throw new Error("Failed to upload profile picture");
+                }
+            } catch (error) {
+                setError("Error uploading profile picture");
+                return;
+            }
+        }
+
+        // Update other profile fields
         try {
             const response = await fetch(`/api/users/${userId}`, {
                 method: "PUT",
@@ -90,7 +114,13 @@ const UpdateProfile: React.FC = () => {
         }
     };
 
-
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setProfilePictureFile(file);
+            setProfilePicture(URL.createObjectURL(file)); // Preview the selected image
+        }
+    };
 
     return (
         <div
@@ -103,6 +133,21 @@ const UpdateProfile: React.FC = () => {
                 {error && <p className="text-error-color mb-4">{error}</p>}
                 {success && <p className="text-green-500 mb-4">{success}</p>}
                 <form className="flex flex-col w-full" onSubmit={handleUpdateProfile}>
+                    <div className="mb-4">
+                        {profilePicture && (
+                            <img
+                                src={profilePicture}
+                                alt="Profile Preview"
+                                className="w-24 h-24 rounded-full mx-auto mb-2"
+                            />
+                        )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="w-full text-sm"
+                            onChange={handleFileChange}
+                        />
+                    </div>
                     <input
                         type="text"
                         placeholder="First Name"

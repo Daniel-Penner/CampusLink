@@ -9,9 +9,8 @@ interface Friend {
     _id: string;
     firstName: string;
     lastName: string;
-    profilePic?: string;
-    status?: 'Online' | 'Offline';
-    description?: string;
+    profilePicture?: string;
+    bio?: string;
 }
 
 const FriendsPage: React.FC = () => {
@@ -50,9 +49,8 @@ const FriendsPage: React.FC = () => {
                             _id: friendData._id,
                             firstName: friendData.firstName,
                             lastName: friendData.lastName,
-                            profilePic: friendData.profilePic || 'default-profile-pic.png',
-                            status: friendData.status || 'Offline',
-                            description: friendData.description,
+                            profilePicture: friendData.profilePicture || 'default-profile-pic.png',
+                            bio: friendData.bio,
                         };
                     });
                     setFriends(friendsData);

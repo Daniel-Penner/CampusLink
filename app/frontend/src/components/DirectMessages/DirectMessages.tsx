@@ -6,14 +6,17 @@ interface DirectMessagesProps {
     users: {
         _id: string;
         name: string;
-        profilePic: string;
+        profilePicture?: string;
     }[];
-    setSelectedUser: React.Dispatch<React.SetStateAction<{ _id: string; name: string; profilePic: string } | null>>; // Expect full user object
-    selectedUser: { _id: string; name: string; profilePic: string } | null;
+    setSelectedUser: React.Dispatch<
+        React.SetStateAction<{ _id: string; name: string; profilePicture?: string } | null>
+    >;
+    selectedUser: { _id: string; name: string; profilePicture?: string } | null;
 }
 
 const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser, selectedUser }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png';
 
     // Filter users based on the search term
     const filteredUsers = users.filter((user) =>
@@ -51,7 +54,11 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser,
                         }
                         onClick={() => setSelectedUser(user)} // Pass the full user object, including profilePic
                     >
-                        <img src={user.profilePic} alt={user.name} className={styles.profilePic} />
+                        <img
+                            src={user.profilePicture || defaultProfilePicture}
+                            alt={user.name}
+                            className={styles.profilePic}
+                        />
                         <div className={styles.userInfo}>
                             <div className={styles.userName}>{user.name}</div>
                         </div>

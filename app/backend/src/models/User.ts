@@ -29,7 +29,7 @@ const UserSchema: Schema = new Schema({
         type: String,
         required: true,
         default:
-            "C:\\Users\\danie\\OneDrive\\Documents\\GitHub\\CampusLink\\app\\frontend\\src\\assets\\profile.png",
+            '/uploads/profile_pictures/default-default-profile.png',
     },
     bio: { type: String, default: '' },
     resetPasswordToken: { type: String },

@@ -11,7 +11,7 @@ interface Recipient {
     lastName: string;
     email: string;
     friendCode: string;
-    profilePic?: string;
+    profilePicture?: string;
 }
 
 interface ConnectionRequest {
@@ -99,7 +99,7 @@ const OutgoingRequestsPage: React.FC = () => {
                         <RequestCard
                             key={index}
                             name={`${request.recipient.firstName} ${request.recipient.lastName}`} // Full name
-                            profilePic={request.recipient.profilePic || 'default-profile-pic.png'} // Handle missing profilePic
+                            profilePicture={request.recipient.profilePicture || 'default-profile-pic.png'} // Handle missing profilePic
                             isOutgoing
                             onRevoke={() => revokeRequest(request.recipient._id)} // Pass the recipient _id for revocation
                         />

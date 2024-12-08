@@ -1,25 +1,47 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import styles from './Navbar.module.css';
 import logo from '../../assets/logoLarge.svg';
 import NavMenu from "../NavMenu/NavMenu";
 import ProfileMenu from "../ProfileMenu/ProfileMenu";  // New ProfileMenu component
-import profilePic from '../../assets/profile.png';
 import { AuthContext } from '../../contexts/AuthContext';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
     const authContext = useContext(AuthContext);
 
-    // Ensure that authContext is not undefined
     if (!authContext) {
         throw new Error('AuthContext is not provided. Make sure you are wrapping your component tree with AuthProvider.');
     }
+
     const navigate = useNavigate();
     const { isAuthenticated } = authContext;
     const [menuOpen, setMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [hamburgerOpen, setHamburgerOpen] = useState(false);
-    const [profileMenuOpen, setProfileMenuOpen] = useState(false); // Track profile menu state
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            const fetchProfilePicture = async () => {
+                const token = localStorage.getItem('token');
+                const userId = authContext.id || localStorage.getItem('id');
+                try {
+                    const response = await fetch(`/api/users/${userId}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        setProfilePicture(data.profilePicture);
+                    }
+                } catch (error) {
+                    console.error('Error fetching profile picture:', error);
+                }
+            };
+
+            fetchProfilePicture();
+        }
+    }, [isAuthenticated, authContext.id]);
 
     const toggleMenu = () => {
         if (menuOpen) {
@@ -53,9 +75,9 @@ const Navbar: React.FC = () => {
                         <div></div>
                     </button>
                     {isAuthenticated ? (
-                    <a href="/dashboard" className={styles.logoContainer}>
-                        <img src={logo} alt="Logo" className={styles.logo} />
-                    </a>
+                        <a href="/dashboard" className={styles.logoContainer}>
+                            <img src={logo} alt="Logo" className={styles.logo} />
+                        </a>
                     ) : (
                         <a href="/" className={styles.logoContainer}>
                             <img src={logo} alt="Logo" className={styles.logo}/>
@@ -66,7 +88,7 @@ const Navbar: React.FC = () => {
                     {isAuthenticated ? (
                         <div className={styles.profileContainer}>
                             <img
-                                src={profilePic}
+                                src={profilePicture || '/path-to-default-placeholder.png'} // Fallback to default
                                 alt="Profile"
                                 className={styles.profilePic}
                                 onClick={toggleProfileMenu}
