@@ -57,22 +57,24 @@ const CustomPopup: React.FC<{
     onClose: () => void;
     handleMoreInfo: (location: any) => void;
     renderStars: (rating: number) => JSX.Element;
-}> = ({ location, onClose, handleMoreInfo, renderStars }) => {
-    return (
-        <div
-            className="custom-popup"
-            style={{
-                backgroundColor: 'var(--secondary-background)',
-                padding: '10px',
-                borderRadius: '10px',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                width: '170px',
-                zIndex: 1000,
-            }}
-        >
-            <h3 style={{ color: 'var(--text-color)', marginBottom: '10px', fontSize: 16 }}>
-                {location.name}
-            </h3>
+    onEdit: (location: any) => void;
+    isOwner: boolean;
+}> = ({ location, onClose, handleMoreInfo, renderStars, onEdit, isOwner }) => (
+    <div
+        className="custom-popup"
+        style={{
+            backgroundColor: 'var(--secondary-background)',
+            padding: '10px',
+            borderRadius: '10px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            width: '200px',
+            zIndex: 1000,
+        }}
+    >
+        <h3 style={{color: 'var(--text-color)', marginBottom: '10px', fontSize: 16}}>
+            {location.name}
+        </h3>
+        {location.image && (
             <img
                 src={location.image}
                 alt={location.name}
@@ -83,16 +85,18 @@ const CustomPopup: React.FC<{
                     marginBottom: '10px',
                 }}
             />
-            <p style={{ color: 'var(--text-color)', marginBottom: '10px', fontSize: 12 }}>
-                {location.description}
-            </p>
-            <hr />
-            <p style={{ color: 'var(--text-color)', fontSize: 12, marginTop: '10px' }}>
-                Rating: {location.rating.toFixed(2)}
-                {renderStars(location.rating)}
-            </p>
+        )}
+        <p style={{color: 'var(--text-color)', marginBottom: '10px', fontSize: 12}}>
+            {location.description}
+        </p>
+        <hr/>
+        <p style={{color: 'var(--text-color)', fontSize: 12, marginTop: '10px'}}>
+            Rating: {location.rating.toFixed(2)}
+            {renderStars(location.rating)}
+        </p>
+        {isOwner && (
             <button
-                onClick={onClose}
+                onClick={() => onEdit(location)}
                 style={{
                     marginTop: '10px',
                     padding: '8px 12px',
@@ -101,28 +105,43 @@ const CustomPopup: React.FC<{
                     border: 'none',
                     borderRadius: '4px',
                     cursor: 'pointer',
+                    marginRight: '10px'
                 }}
             >
-                Close
+                Edit
             </button>
-            <button
-                onClick={() => handleMoreInfo(location)}
-                style={{
-                    marginTop: '10px',
-                    marginLeft: '10px',
-                    padding: '8px 12px',
-                    backgroundColor: '#10b981',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                }}
-            >
-                Reviews
-            </button>
-        </div>
-    );
-};
+        )}
+        <button
+            onClick={() => handleMoreInfo(location)}
+            style={{
+                marginTop: '10px',
+                padding: '8px 12px',
+                backgroundColor: '#10b981',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+            }}
+        >
+            Reviews
+        </button>
+        <button
+            onClick={onClose}
+            style={{
+                marginTop: '10px',
+                marginLeft: '10px',
+                padding: '8px 12px',
+                backgroundColor: '#10b981',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+            }}
+        >
+            Close
+        </button>
+    </div>
+);
 
 const MapComponent: React.FC<{
     locations: any[];
@@ -133,6 +152,8 @@ const MapComponent: React.FC<{
     isAddingLocation: boolean;
     onNewLocationSelected: (coords: { lat: number; lng: number }) => void;
     onCancelAddingLocation: () => void;
+    onEdit: (location: any) => void;
+    isOwner: (location: any) => boolean;
 }> = ({
           locations,
           selectedLocation,
@@ -142,6 +163,8 @@ const MapComponent: React.FC<{
           isAddingLocation,
           onNewLocationSelected,
           onCancelAddingLocation,
+          onEdit,
+          isOwner,
       }) => {
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
@@ -233,36 +256,15 @@ const MapComponent: React.FC<{
     const mapOptions = {
         mapId: '3e075ec058fc01f6',
         styles: [
-            {
-                featureType: 'poi', // General points of interest
-                elementType: 'all',
-                stylers: [{ visibility: 'off' }], // Hides all POIs
-            },
-            {
-                featureType: 'poi.business', // Businesses specifically
-                elementType: 'all',
-                stylers: [{ visibility: 'off' }], // Hides businesses
-            },
-            {
-                featureType: 'transit', // Transit features like bus stops
-                elementType: 'all',
-                stylers: [{ visibility: 'off' }], // Hides transit features
-            },
-            {
-                featureType: 'road.local', // Local roads
-                elementType: 'labels', // Labels on local roads
-                stylers: [{ visibility: 'off' }], // Hides labels on local roads
-            },
-            {
-                featureType: 'administrative.neighborhood', // Neighborhood labels
-                elementType: 'labels.text',
-                stylers: [{ visibility: 'off' }], // Hides neighborhood labels
-            },
+            { featureType: 'poi', elementType: 'all', stylers: [{ visibility: 'off' }] },
+            { featureType: 'poi.business', elementType: 'all', stylers: [{ visibility: 'off' }] },
+            { featureType: 'transit', elementType: 'all', stylers: [{ visibility: 'off' }] },
+            { featureType: 'road.local', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+            { featureType: 'administrative.neighborhood', elementType: 'labels.text', stylers: [{ visibility: 'off' }] },
         ],
-        disableDefaultUI: true, // Disable extra UI elements like navigation controls
-        clickableIcons: false, // Disables POI icons being clickable
+        disableDefaultUI: true,
+        clickableIcons: false,
     };
-
 
     if (loadError) return <div>Error loading maps. Please check your API key.</div>;
     if (!isLoaded) return <div>Loading Maps...</div>;
@@ -275,11 +277,9 @@ const MapComponent: React.FC<{
                 center={defaultCenter}
                 options={mapOptions}
                 onLoad={(map) => {
-                    console.log('Map loaded with options:', mapOptions);
                     mapRef.current = map;
                     initializeMarkers();
                 }}
-
                 onClick={handleMapClick}
             >
                 {selectedLocation && (
@@ -292,6 +292,8 @@ const MapComponent: React.FC<{
                             onClose={() => onMoreInfo(null)}
                             handleMoreInfo={handleMoreInfo}
                             renderStars={renderStars}
+                            onEdit={onEdit}
+                            isOwner={isOwner(selectedLocation)}
                         />
                     </OverlayView>
                 )}

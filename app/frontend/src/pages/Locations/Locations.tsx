@@ -3,7 +3,8 @@ import Navbar from '../../components/Navbar/Navbar';
 import MapComponent from '../../components/Map/Map';
 import AddLocationButton from '../../components/AddLocationButton/AddLocationButton';
 import LocationModal from '../../components/LocationModal/LocationModal';
-import CreationModal from "../../components/LocationCreationModal/LocationCreationModal";
+import CreationModal from '../../components/LocationCreationModal/LocationCreationModal';
+import LocationEditModal from '../../components/LocationEditModal/LocationEditModal'; // Ensure this is imported
 import styles from './Locations.module.css';
 
 const LocationsPage: React.FC = () => {
@@ -11,6 +12,7 @@ const LocationsPage: React.FC = () => {
     const [selectedLocation, setSelectedLocation] = useState<any | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddingLocation, setIsAddingLocation] = useState(false);
+    const [isEditingLocation, setIsEditingLocation] = useState(false); // Track if editing
     const [newLocationCoords, setNewLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
 
     const token = localStorage.getItem('token');
@@ -79,6 +81,25 @@ const LocationsPage: React.FC = () => {
         setIsModalOpen(true);
     };
 
+    const handleEditLocation = (location: any) => {
+        setSelectedLocation(location);
+        setIsEditingLocation(true);
+    };
+
+    const handleUpdateLocation = (updatedLocation: any) => {
+        setLocations((prev) =>
+            prev.map((location) => (location._id === updatedLocation._id ? updatedLocation : location))
+        );
+        setIsEditingLocation(false);
+        setSelectedLocation(null);
+    };
+
+    const handleDeleteLocation = (deletedLocationId: string) => {
+        setLocations((prev) => prev.filter((location) => location._id !== deletedLocationId));
+        setIsEditingLocation(false);
+        setSelectedLocation(null);
+    };
+
     const handleCloseModal = () => setIsModalOpen(false);
 
     const renderStars = (rating: number) => {
@@ -118,7 +139,9 @@ const LocationsPage: React.FC = () => {
                     {sortedLocations.map((location, index) => (
                         <div
                             key={location._id}
-                            className={`${styles.locationItem} ${selectedLocation?._id === location._id ? styles.active : ''}`}
+                            className={`${styles.locationItem} ${
+                                selectedLocation?._id === location._id ? styles.active : ''
+                            }`}
                             onClick={() => handleOpenInfo(location)}
                         >
                             <div className={styles.locationInfo}>
@@ -143,18 +166,28 @@ const LocationsPage: React.FC = () => {
                         isAddingLocation={isAddingLocation}
                         onNewLocationSelected={(coords) => setNewLocationCoords(coords)}
                         onCancelAddingLocation={handleCancelAddingLocation}
+                        onEdit={handleEditLocation}
+                        isOwner={(location) => location.owner === localStorage.getItem('id')}
                     />
                     <AddLocationButton onClick={handleStartAddingLocation} />
                 </div>
             </div>
             {isModalOpen && selectedLocation && (
-                <LocationModal location={selectedLocation} onClose={handleCloseModal}/>
+                <LocationModal location={selectedLocation} onClose={handleCloseModal} />
             )}
             {isAddingLocation && newLocationCoords && (
                 <CreationModal
                     coords={newLocationCoords}
                     onSave={handleSaveNewLocation}
                     onCancel={handleCancelAddingLocation}
+                />
+            )}
+            {isEditingLocation && selectedLocation && (
+                <LocationEditModal
+                    location={selectedLocation}
+                    onClose={() => setIsEditingLocation(false)}
+                    onLocationDeleted={handleDeleteLocation}
+                    onLocationUpdated={handleUpdateLocation}
                 />
             )}
         </div>
