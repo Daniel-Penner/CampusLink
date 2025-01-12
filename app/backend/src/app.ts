@@ -10,6 +10,7 @@ import serverRoutes from './routes/servers';
 import userRoutes from './routes/users';
 import locationRoutes from './routes/locations';
 import path from 'path';
+import queries from "./routes/queries";
 
 // Create an Express app and an HTTP server
 const app = express();
@@ -96,5 +97,6 @@ app.use('/api/direct-messages', directMessagesRoutes);
 app.use('/api/connections', connectionRoutes);
 app.use('/api/servers', serverRoutes);
 app.use('/api/locations', locationRoutes);
+app.use('/api/queries', queries);
 
 export { app, server, io }; // Export app, server, and io

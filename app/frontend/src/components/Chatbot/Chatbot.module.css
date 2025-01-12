@@ -1,0 +1,62 @@
+.chatbotContainer {
+    width: 100%;
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: var(--secondary-background);
+    border-radius: 10px;
+    padding: 20px;
+    color: var(--text-color);
+}
+
+.chatBox {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.inputField {
+    width: 100%;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: var(--input-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    resize: none;
+}
+
+.sendButton {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.sendButton:hover {
+    background-color: var(--button-hover);
+    transform: scale(1.05);
+}
+
+.sendButton:disabled {
+    background-color: var(--lighter-grey);
+    cursor: not-allowed;
+}
+
+.responseBox {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    font-size: 16px;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    white-space: pre-wrap;
+}
+
+.responseBox p {
+    margin: 0;
+}
