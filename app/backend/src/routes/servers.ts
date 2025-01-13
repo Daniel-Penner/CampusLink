@@ -369,5 +369,44 @@ router.post(
     }
 );
 
+router.get('/recent-server', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        // Fetch the most recent message timestamp for each server the user is a member of
+        const servers = await Server.find({ members: userId });
+        if (servers.length === 0) {
+            return res.status(404).json({ message: 'No servers found for this user.' });
+        }
+
+        const serverIds = servers.map(server => server._id);
+        const recentMessages = await ServerMessage.find({
+            channel: { $in: serverIds }
+        }).sort({ timestamp: -1 }).limit(1).populate('channel');
+
+        if (recentMessages.length === 0) {
+            return res.status(404).json({ message: 'No recent activity found.' });
+        }
+
+        const recentMessage = recentMessages[0];
+        const server = await Server.findById(recentMessage.channel.server);
+
+        if (!server) {
+            return res.status(404).json({ message: 'Server not found for the recent message.' });
+        }
+
+        res.status(200).json({
+            _id: server._id,
+            name: server.name,
+            lastActivity: recentMessage.timestamp
+        });
+    } catch (error) {
+        console.error('Error fetching recent server activity:', error);
+        res.status(500).json({ message: 'Error fetching recent server activity' });
+    }
+});
+
+
+
 
 export default router;
