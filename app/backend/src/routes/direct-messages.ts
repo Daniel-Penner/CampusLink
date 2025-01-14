@@ -82,28 +82,4 @@ router.post('/message', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/recent/:userId', authenticateToken, async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const messages = await Message.find({ recipient: userId })
-            .sort({ timestamp: -1 })
-            .limit(5)
-            .populate('sender', 'name');
-        res.status(200).json(
-            messages.map((msg) => ({
-                content: msg.content,
-                senderName: msg.sender.name,
-                timestamp: msg.timestamp,
-            }))
-        );
-    } catch (error) {
-        console.error("Error fetching recent messages:", error);
-        res.status(500).json({ message: "Server error." });
-    }
-});
-
-
-
-
-
 export default router;

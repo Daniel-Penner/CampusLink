@@ -11,6 +11,7 @@ import userRoutes from './routes/users';
 import locationRoutes from './routes/locations';
 import path from 'path';
 import queries from "./routes/queries";
+import dashboardRoutes from './routes/dashboard';
 
 // Create an Express app and an HTTP server
 const app = express();
@@ -98,5 +99,6 @@ app.use('/api/connections', connectionRoutes);
 app.use('/api/servers', serverRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/queries', queries);
+app.use('/api/dashboard', dashboardRoutes);
 
 export { app, server, io }; // Export app, server, and io

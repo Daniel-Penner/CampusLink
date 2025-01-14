@@ -16,7 +16,7 @@ const NavMenu: React.FC<NavMenuProps> = ({ isClosing }) => {
 
     return (
         <div className={`${styles.navMenu} ${isClosing ? styles.slideOut : styles.slideIn}`}>
-            <button onClick={() => handleNavigation('/')} className={styles.navButton}>
+            <button onClick={() => handleNavigation('/dashboard')} className={styles.navButton}>
                 Home
             </button>
             <button onClick={() => handleNavigation('/connections')} className={styles.navButton}>
@@ -28,14 +28,8 @@ const NavMenu: React.FC<NavMenuProps> = ({ isClosing }) => {
             <button onClick={() => handleNavigation('/servers')} className={styles.navButton}>
                 Servers
             </button>
-            <button onClick={() => handleNavigation('/explore')} className={styles.navButton}>
+            <button onClick={() => handleNavigation('/locations')} className={styles.navButton}>
                 Explore
-            </button>
-            <button onClick={() => handleNavigation('/supports')} className={styles.navButton}>
-                Support
-            </button>
-            <button onClick={() => handleNavigation('/notifications')} className={styles.navButton}>
-                Notifications
             </button>
         </div>
     );

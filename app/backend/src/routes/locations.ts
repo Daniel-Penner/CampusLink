@@ -229,28 +229,4 @@ router.post('/:locationId/upload-image', authenticateToken, upload.single('image
     }
 });
 
-router.get('/top-locations', authenticateToken, async (req, res) => {
-    try {
-        const locations = await Location.find().sort({ rating: -1 }).limit(5);
-        if (locations.length === 0) {
-            return res.status(404).json({ message: 'No top-rated locations found.' });
-        }
-
-        res.status(200).json(locations.map(loc => ({
-            _id: loc._id,
-            name: loc.name,
-            rating: loc.rating
-        })));
-    } catch (error) {
-        console.error("Error fetching top-rated locations:", error);
-        res.status(500).json({ message: "Server error." });
-    }
-});
-
-
-
-
-
-
-
 export default router;
