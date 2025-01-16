@@ -25,7 +25,7 @@ router.post("/chat", async (req: Request, res: Response) => {
     try {
         const chatResponse = await axios.post("http://ollama:11434/api/chat", {
             model,
-            messages: [{ role: "user", content: prompt }],
+            messages: [{ role: "user", content: "Respond as a helpful chat bot on a social networking website. Your answer should be short. One or two sentences max. (40 words max)"+prompt }],
         }, { responseType: "stream" }); // Use streaming response
 
         res.setHeader("Content-Type", "text/plain");

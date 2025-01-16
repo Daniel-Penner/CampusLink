@@ -37,7 +37,7 @@ function App() {
                 <Route path="/servers" element={<Servers/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="/verify-email-change/:token" element={<VerifyEmailChange/>}/>
-                <Route path="/explore" element={<LocationsPage/>}/>
+                <Route path="/locations" element={<LocationsPage/>}/>
             </Routes>
         </Router>
         </AuthProvider>
