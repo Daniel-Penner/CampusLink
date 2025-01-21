@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import styles from './Dashboard.module.css';
 import Navbar from '../../components/Navbar/Navbar';
 import { AuthContext } from '../../contexts/AuthContext';
-import Chatbot from '../../components/Chatbot/Chatbot';
 
 interface Message {
     content: string;
@@ -56,29 +54,22 @@ const Dashboard: React.FC = () => {
     }, [isAuthenticated]);
 
     return (
-        <div className={styles.pageContainer}>
+        <div className="flex flex-col w-screen h-screen bg-secondaryBackground text-textColor">
             <Navbar />
             {isAuthenticated ? (
                 <>
-                    <h1 className={styles.pageTitle}>Welcome, {name}</h1>
-                    <div className={styles.dashboardGrid}>
+                    <h1 className="text-3xl font-bold text-center mt-8">Welcome, {name}</h1>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
                         {/* Recent Messages Section */}
-                        <div className={styles.section}>
-                            <h2>Recent Messages</h2>
-                            <div className={styles.messageArea}>
+                        <div className="bg-background rounded-lg p-6 flex flex-col">
+                            <h2 className="text-xl font-semibold mb-4">Recent Messages</h2>
+                            <div className="flex-grow overflow-y-auto">
                                 {recentMessages.length > 0 ? (
                                     recentMessages.map((msg, index) => (
-                                        <div
-                                            key={index}
-                                            className={`${styles.messageContainer} ${styles.receivedMessage}`}
-                                        >
-                                            <p className={styles.messageContent}>
-                                                <strong>{msg.channelName}: </strong>
-                                                {msg.content}
-                                                <br/>
-                                                <span className={styles.timestamp}>
-                                                    {new Date(msg.timestamp).toLocaleString()}
-                                                </span>
+                                        <div key={index} className="bg-lighterGrey p-4 rounded-lg mb-4">
+                                            <strong>{msg.channelName}:</strong> {msg.content}
+                                            <p className="text-sm text-gray-500 mt-2">
+                                                {new Date(msg.timestamp).toLocaleString()}
                                             </p>
                                         </div>
                                     ))
@@ -87,7 +78,7 @@ const Dashboard: React.FC = () => {
                                 )}
                             </div>
                             <button
-                                className={styles.sectionButton}
+                                className="mt-4 bg-primary text-white py-2 px-4 rounded hover:bg-buttonHover"
                                 onClick={() => (window.location.href = '/messages')}
                             >
                                 View All Messages
@@ -95,14 +86,12 @@ const Dashboard: React.FC = () => {
                         </div>
 
                         {/* Most Active Server Section */}
-                        <div className={styles.section}>
-                            <h2>Most Active Server</h2>
+                        <div className="bg-background rounded-lg p-6 flex flex-col">
+                            <h2 className="text-xl font-semibold mb-4">Most Active Server</h2>
                             {mostActiveServer ? (
                                 <div>
-                                    <p>
-                                        <strong>{mostActiveServer.name}</strong>
-                                    </p>
-                                    <p className={styles.timestamp}>
+                                    <p className="font-bold">{mostActiveServer.name}</p>
+                                    <p className="text-sm text-gray-500">
                                         Last activity: {new Date(mostActiveServer.lastActivity).toLocaleString()}
                                     </p>
                                 </div>
@@ -110,7 +99,7 @@ const Dashboard: React.FC = () => {
                                 <p>No active servers!</p>
                             )}
                             <button
-                                className={styles.sectionButton}
+                                className="mt-4 bg-primary text-white py-2 px-4 rounded hover:bg-buttonHover"
                                 onClick={() => (window.location.href = '/servers')}
                             >
                                 View All Servers
@@ -118,22 +107,17 @@ const Dashboard: React.FC = () => {
                         </div>
 
                         {/* Top Rated Locations Section */}
-                        <div className={styles.section}>
-                            <h2>Top Rated Locations</h2>
-                            <div className={styles.locationList}>
+                        <div className="bg-background rounded-lg p-6 flex flex-col">
+                            <h2 className="text-xl font-semibold mb-4">Top Rated Locations</h2>
+                            <div className="flex-grow overflow-y-auto">
                                 {topLocations.length > 0 ? (
                                     topLocations.map((location, index) => (
                                         <div
                                             key={index}
-                                            className={styles.locationItem}
-                                            onClick={() => console.log(`Viewing ${location.name}`)}
+                                            className="bg-lighterGrey p-4 rounded-lg mb-4 hover:bg-lighterGreyHover cursor-pointer"
                                         >
-                                            <p>
-                                                <strong>{location.name}</strong>
-                                            </p>
-                                            <p className={styles.rating}>
-                                                Rating: {location.rating.toFixed(1)}
-                                            </p>
+                                            <p className="font-bold">{location.name}</p>
+                                            <p className="text-sm text-gray-500">Rating: {location.rating.toFixed(1)}</p>
                                         </div>
                                     ))
                                 ) : (
@@ -141,24 +125,16 @@ const Dashboard: React.FC = () => {
                                 )}
                             </div>
                             <button
-                                className={styles.sectionButton}
+                                className="mt-4 bg-primary text-white py-2 px-4 rounded hover:bg-buttonHover"
                                 onClick={() => (window.location.href = '/locations')}
                             >
                                 View All Locations
                             </button>
                         </div>
-
-                        {/* Chatbot Section */}
-                        <div className={styles.section}>
-                            <h2>Chatbot</h2>
-                            <div className={styles.chatbotContainer}>
-                                <Chatbot />
-                            </div>
-                        </div>
                     </div>
                 </>
             ) : (
-                <h1>Please log in or create an account before attempting to access this page.</h1>
+                <h1 className="text-center mt-20">Please log in or create an account before attempting to access this page.</h1>
             )}
         </div>
     );

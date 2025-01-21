@@ -131,7 +131,6 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                 <button className={styles.closeButton} onClick={onClose}>
                     &times;
                 </button>
-                <h2>Server Settings</h2>
                 <div className={styles.section}>
                     <label>Server Name:</label>
                     <input

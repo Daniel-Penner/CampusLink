@@ -132,8 +132,8 @@ const UpdateProfile: React.FC = () => {
                 <h1 className="text-4xl font-bold mb-6 text-primary-color">Update Profile</h1>
                 {error && <p className="text-error-color mb-4">{error}</p>}
                 {success && <p className="text-green-500 mb-4">{success}</p>}
-                <form className="flex flex-col w-full" onSubmit={handleUpdateProfile}>
-                    <div className="mb-4">
+                <form className="flex flex-wrap gap-4 w-full" onSubmit={handleUpdateProfile}>
+                    <div className="w-full flex justify-center items-center mb-4">
                         {profilePicture && (
                             <img
                                 src={profilePicture}
@@ -151,20 +151,20 @@ const UpdateProfile: React.FC = () => {
                     <input
                         type="text"
                         placeholder="First Name"
-                        className="w-full p-3 mb-4 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
                     <input
                         type="text"
                         placeholder="Last Name"
-                        className="w-full p-3 mb-4 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
                     <textarea
                         placeholder="Bio"
-                        className="w-full p-3 mb-4 bg-input-background text-text-color rounded-md resize-none"
+                        className="w-full min-w-[48%] p-3 bg-input-background text-text-color rounded-md resize-none"
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
                         rows={3}
@@ -172,21 +172,21 @@ const UpdateProfile: React.FC = () => {
                     <input
                         type="email"
                         placeholder="Email Address"
-                        className="w-full p-3 mb-4 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Current Password"
-                        className="w-full p-3 mb-4 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="New Password"
-                        className="w-full p-3 mb-6 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                     />

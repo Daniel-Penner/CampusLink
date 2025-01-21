@@ -1,62 +1,98 @@
-.chatbotContainer {
-    width: 100%;
-    max-width: 600px;
-    margin: 50px auto;
-    background-color: var(--secondary-background);
-    border-radius: 10px;
-    padding: 20px;
-    color: var(--text-color);
+.chatbotWrapper {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000; /* Ensure it's above other elements */
 }
 
-.chatBox {
+.chatIcon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+
+.chatIcon:hover {
+    transform: scale(1.1);
+}
+
+.chatWindow {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background-color: var(--secondary-background);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    overflow: hidden;
+    z-index: 1001; /* Ensure it's above the icon */
+}
+
+.chatHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chatContent {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
 .inputField {
     width: 100%;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 16px;
-    background-color: var(--input-background);
-    color: var(--text-color);
+    padding: 10px;
+    border-radius: 5px;
     border: 1px solid var(--border-color);
     resize: none;
+    background-color: var(--input-background);
+    color: var(--text-color);
 }
 
 .sendButton {
-    padding: 10px 20px;
+    padding: 10px;
     background-color: var(--primary-color);
     color: var(--button-text);
     border: none;
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: transform 0.2s;
 }
 
 .sendButton:hover {
-    background-color: var(--button-hover);
     transform: scale(1.05);
-}
-
-.sendButton:disabled {
-    background-color: var(--lighter-grey);
-    cursor: not-allowed;
+    background-color: var(--button-hover);
 }
 
 .responseBox {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: var(--background-color);
-    border-radius: 8px;
-    font-size: 16px;
+    padding: 10px;
+    background-color: var(--lighter-grey);
+    border-radius: 5px;
     color: var(--text-color);
-    border: 1px solid var(--border-color);
     white-space: pre-wrap;
 }
 
-.responseBox p {
-    margin: 0;
+.closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
 }
