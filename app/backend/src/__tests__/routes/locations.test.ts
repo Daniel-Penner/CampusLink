@@ -7,7 +7,6 @@ import path from "path";
 import * as fs from "node:fs";
 
 let mongoServer: MongoMemoryServer;
-let token: string;
 let userId: mongoose.Types.ObjectId;
 
 jest.mock('../../middleware/authMiddleware', () => {
