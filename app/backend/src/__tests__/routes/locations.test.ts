@@ -3,6 +3,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import request from 'supertest';
 import { app } from '../../app'; // Import your Express app
 import Location from '../../models/Location';
+import path from "path";
+import * as fs from "node:fs";
 
 let mongoServer: MongoMemoryServer;
 let token: string;
@@ -249,5 +251,64 @@ describe('Locations API', () => {
             expect(response.body).toHaveProperty('message', 'Unauthorized to delete this location');
         });
     });
+
+    describe('POST /api/locations/:locationId/upload-image', () => {
+        it('should upload an image successfully', async () => {
+            const location = await Location.create({
+                name: 'Location 1',
+                description: 'Test 1',
+                lat: 10,
+                lng: -10,
+                owner: userId,
+            });
+            const filePath = path.join(__dirname, '../test-files/test-image.jpg');
+            fs.writeFileSync(filePath, 'Test Image Content');
+
+            const response = await request(app)
+                .post(`/api/locations/${location._id}/upload-image`)
+                .attach('image', filePath);
+
+            expect(response.status).toBe(200);
+            expect(response.body).toHaveProperty('message', 'Image uploaded successfully');
+            expect(response.body.image).toContain('/uploads/location_images/');
+
+            // Cleanup
+            fs.unlinkSync(filePath);
+        });
+        it('should return 400 if no file is uploaded', async () => {
+            const location = await Location.create({
+                name: 'Location 1',
+                description: 'Test 1',
+                lat: 10,
+                lng: -10,
+                owner: userId,
+            });
+
+            const response = await request(app)
+                .post(`/api/locations/${location._id}/upload-image`);
+
+            expect(response.status).toBe(400);
+            expect(response.body).toHaveProperty('message', 'No file uploaded');
+        });
+
+        it('should return an error for invalid location', async () => {
+            const location = await Location.create({
+                name: 'Location 1',
+                description: 'Test 1',
+                lat: 10,
+                lng: -10,
+                owner: userId,
+            });
+
+            await Location.deleteMany({name: 'Location 1'});
+
+            const response = await request(app)
+                .post(`/api/locations/${location._id}/upload-image`);
+
+            expect(response.status).toBe(404);
+            expect(response.body).toHaveProperty('message', 'Location not found');
+        });
+    });
+
 
 });
