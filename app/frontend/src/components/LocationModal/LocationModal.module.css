@@ -1,0 +1,158 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: var(--secondary-background);
+    padding: 20px;
+    border-radius: 10px;
+    color: var(--text-color);
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    max-height: 90vh;
+}
+
+.closeButton {
+    position: absolute;
+    top: -5px;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modalContent h2{
+    font-weight: bold;
+    font-size: 2.5rem;
+}
+
+.modalContent h3{
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.modalContent h4{
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.description {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.reviewSection {
+    padding: 10px 0;
+    margin-bottom: 20px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+}
+
+.reviewInput {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.ratingSelect {
+    width: 100%;
+    max-width: 200px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--input-background);
+    color: var(--text-color);
+}
+
+.reviewTextarea {
+    width: 100%;
+    max-width: 500px;
+    height: 100px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--input-background);
+    color: var(--text-color);
+    resize: none;
+}
+
+.addReviewButton {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #10b981;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.addReviewButton:hover {
+    background-color: #0e8d6d;
+}
+
+.reviewsList {
+    margin-top: 0;
+    overflow-y: scroll;
+    max-height: 25vh;
+}
+
+.reviewItem {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: var(--input-background);
+    border-radius: 5px;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rating {
+    font-size: 1rem;
+    color: #ffd700;
+    margin-bottom: 5px;
+}
+
+.reviewItem p {
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.addReviewToggleButton {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background-color: #10b981;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.addReviewToggleButton:hover {
+    background-color: #0e8d6d;
+}
+

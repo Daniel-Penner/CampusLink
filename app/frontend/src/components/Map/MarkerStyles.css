@@ -1,0 +1,46 @@
+/* Circular Markers */
+.custom-marker {
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color); /* Default green, can be customized */
+    border: 2px solid var(--button-text);
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.custom-marker:hover {
+    transform: scale(1.2); /* Slight zoom effect on hover */
+    background-color: var(--button-hover); /* Darker green for hover state */
+}
+
+.custom-marker::after {
+    content: attr(data-name); /* Display the marker name */
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: black;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    display: none; /* Hidden by default */
+}
+
+.custom-marker:hover::after {
+    display: block; /* Show the label on hover */
+}
+
+/* Icon in the marker */
+.custom-marker-icon {
+    font-size: 16px;
+    color: white;
+}

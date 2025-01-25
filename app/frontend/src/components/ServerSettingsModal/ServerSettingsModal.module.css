@@ -1,0 +1,137 @@
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContent {
+    background-color: var(--secondary-background);
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative; /* Added this line */
+}
+
+
+.section {
+    margin-bottom: 20px;
+}
+
+.inputField {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.channelItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.saveButton {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.addChannelButton {
+    background-color: var(--primary-color);
+    margin-top: 10px;
+}
+
+.removeChannelButton {
+    background-color: var(--error-color);
+}
+
+.deleteButton {
+    background-color: var(--error-color);
+    color: var(--button-text);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.photoUpload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.serverPhotoPreview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+
+.fileInput {
+    flex-grow: 1;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.closeButton {
+    position: absolute;
+    top: 0;
+    right: 5px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.closeButton:hover {
+    color: var(--primary-color);
+}
+
+
+.codeContainer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.copyButton {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.copyButton:hover {
+    background-color: var(--button-hover);
+}
+
+
+

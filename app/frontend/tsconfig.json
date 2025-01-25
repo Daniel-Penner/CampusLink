@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                     // Specifies the ECMAScript target version
+    "useDefineForClassFields": true,        // Class field definitions
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],  // Include standard libraries
+    "module": "ESNext",                     // ESNext module support
+    "skipLibCheck": true,                   // Skip type checks on .d.ts files
+    "moduleResolution": "node",             // Use Node-style module resolution
+    "types": ["jest","vite/client", "node"],       // Include Vite and Node.js types
+    "allowImportingTsExtensions": true,     // Allow importing TypeScript files
+    "isolatedModules": true,                // Compile each file as an isolated module
+    "noEmit": true,                         // Disable emitting JS files
+    "jsx": "react-jsx",                     // Enable React JSX support
+    "strict": true,                         // Enable all strict type checking options
+    "noUnusedLocals": true,                 // Warn on unused local variables
+    "noUnusedParameters": true,             // Warn on unused function parameters
+    "noFallthroughCasesInSwitch": true,
+    // Ensure every switch statement handles all cases
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "./src"  // Include the source code
+  ]
+}
