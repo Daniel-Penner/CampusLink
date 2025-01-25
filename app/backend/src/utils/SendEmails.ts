@@ -1,10 +1,16 @@
 import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
+import path from "path";
 
-dotenv.config();
+// Load environment variables from .env file
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // Set the SendGrid API key
-sgMail.setApiKey(process.env.SENDGRID_API_KEY as string || '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');
+if (!process.env.SENDGRID_API_KEY) {
+    throw new Error('SENDGRID_API_KEY is not set in the environment variables.');
+}
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Function to send an email
 export const sendEmail = async (to: string, subject: string, text: string, html: string) => {
@@ -20,8 +26,8 @@ export const sendEmail = async (to: string, subject: string, text: string, html:
 
     try {
         await sgMail.send(msg);
+        console.log(`Email sent to ${to}`);
     } catch (error) {
-        // Type guard to check if the error has a 'response' property
         if (error instanceof Error) {
             if ((error as any).response && (error as any).response.body) {
                 console.error('SendGrid Error Response:', (error as any).response.body);
