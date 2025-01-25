@@ -4,7 +4,6 @@ services:
     type: web
     runtime: docker
     dockerfilePath: ./app/nginx/Dockerfile
-    startCommand: nginx -g 'daemon off;'
     autoDeploy: true
     envVars:
       - key: PORT
@@ -14,7 +13,6 @@ services:
   - name: mongo
     type: worker
     runtime: docker
-    startCommand: mongod
     autoDeploy: true
     envVars:
       - key: MONGO_INITDB_ROOT_USERNAME
@@ -27,7 +25,6 @@ services:
     type: web
     runtime: docker
     dockerfilePath: ./app/backend/Dockerfile
-    startCommand: npm run start
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
@@ -41,7 +38,6 @@ services:
     runtime: docker
     dockerfilePath: ./app/frontend/Dockerfile
     buildCommand: npm run build
-    startCommand: npm run preview
     autoDeploy: true
     envVars:
       - key: NODE_ENV
@@ -52,4 +48,3 @@ services:
     type: worker
     runtime: docker
     autoDeploy: true
-    startCommand: ./ollama
