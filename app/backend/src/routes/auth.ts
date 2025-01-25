@@ -66,7 +66,7 @@ router.post('/register', async (req, res) => {
         await newUser.save();
 
         // Send the verification email
-        const verificationLink = `http://localhost/verify-email/${verificationToken}`;
+        const verificationLink = `http://campuslink.online/verify-email/${verificationToken}`;
         const subject = 'Verify Your Email';
         const text = `To log in to the site, verify your email: ${verificationLink}`;
         const html = emailTemplates.verifyEmail(verificationLink, firstName);
@@ -151,7 +151,7 @@ router.post('/forgot-password', async (req, res) => {
         console.log('Preparing to send email to:', user.email);
 
         // Send the email with the reset link
-        const resetLink = `http://localhost/new-password/${resetToken}`;
+        const resetLink = `http://campuslink.online/new-password/${resetToken}`;
         const subject = 'Password Reset Request';
         const text = `You requested a password reset. Click this link to reset your password: ${resetLink}`;
         const html = emailTemplates.passwordReset(resetLink);
@@ -224,7 +224,7 @@ router.post('/resend-verification', async (req, res) => {
         await user.save();
 
         // Send the verification email again
-        const verificationLink = `http://localhost/verify-email/${verificationToken}`;
+        const verificationLink = `http://campuslink.online/verify-email/${verificationToken}`;
         const subject = 'Verify Your Email';
         const text = `To log in to the site, verify your email: ${verificationLink}`;
         const html = emailTemplates.verifyEmail(verificationLink, user.firstName);
