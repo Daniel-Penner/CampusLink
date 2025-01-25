@@ -1,0 +1,75 @@
+services:
+  # Nginx Service
+  - name: nginx
+    type: web
+    env: docker
+    dockerfilePath: ./nginx/Dockerfile # Create a Dockerfile for Nginx, or reference the image
+    startCommand: nginx -g 'daemon off;'
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 80
+    volumes:
+      - path: ./nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+      - path: ./nginx/ssl
+        target: /etc/nginx/ssl
+      - path: ./backend/uploads
+        target: /app/uploads
+
+  # MongoDB Service
+  - name: mongo
+    type: worker
+    env: docker
+    dockerfilePath: # Use Render's managed MongoDB, if possible
+    startCommand: mongod
+    autoDeploy: true
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        value: root
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        value: rootpassword
+
+  # Backend Service
+  - name: backend
+    type: web
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    startCommand: npm run start # Adjust based on your backend start command
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        value: "mongodb://root:rootpassword@mongo:27017/campuslink_db?authSource=admin"
+      - key: PORT
+        value: 5000
+    volumes:
+      - path: ./backend
+        target: /src
+      - path: ./backend/uploads
+        target: /app/uploads
+
+  # Frontend Service
+  - name: frontend
+    type: web
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    buildCommand: npm run build
+    startCommand: npm run preview # Adjust based on your frontend start command
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+    volumes:
+      - path: ./frontend
+        target: /src
+
+  # Ollama Service
+  - name: ollama
+    type: worker
+    env: docker
+    dockerfilePath: # Use the official Ollama image
+    autoDeploy: true
+    startCommand: ./ollama # Replace with the correct start command
+    volumes:
+      - path: ollama_data
+        target: /data
