@@ -89,7 +89,7 @@ router.put('/:userId', authenticateToken, async (req, res) => {
             user.emailChangeToken = crypto.randomBytes(32).toString('hex');
             user.emailChangeExpires = new Date(Date.now() + 3600000); // 1-hour expiry
 
-            const verificationLink = `https://localhost/verify-email-change/${user.emailChangeToken}`;
+            const verificationLink = `https://campuslink.online/verify-email-change/${user.emailChangeToken}`;
             const subject = 'Verify Your New Email Address';
             const text = `Verify your new email by clicking this link: ${verificationLink}`;
             const html = emailTemplates.emailChangeVerification(verificationLink, user.firstName);
