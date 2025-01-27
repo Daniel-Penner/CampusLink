@@ -20,7 +20,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO server
 const io = new SocketIOServer(server, {
     cors: {
-        origin: 'https://localhost',
+        origin: 'https://campuslink.online',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true,
     },
