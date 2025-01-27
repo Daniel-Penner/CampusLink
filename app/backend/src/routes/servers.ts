@@ -293,14 +293,51 @@ router.put('/:serverId', authenticateToken, upload.single('photo'), async (req, 
             server.photo = `/uploads/server_photos/${req.file.filename}`;
         }
 
-        // Process channels logic if needed
-        // ...
+        // Process channels logic
+        if (channels) {
+            const updatedChannels = await Promise.all(
+                channels.map(async (channel: { _id?: string; name: string }) => {
+                    if (channel._id) {
+                        // Validate that _id is a valid ObjectId
+                        if (!mongoose.Types.ObjectId.isValid(channel._id)) {
+                            throw new Error(`Invalid ObjectId for channel: ${channel._id}`);
+                        }
+
+                        // Update existing channel
+                        const updatedChannel = await Channel.findByIdAndUpdate(
+                            channel._id,
+                            { name: channel.name },
+                            { new: true }
+                        );
+
+                        if (!updatedChannel) {
+                            throw new Error(`Channel with ID ${channel._id} not found`);
+                        }
+
+                        return updatedChannel;
+                    } else {
+                        // Create a new channel without an _id
+                        const newChannel = new Channel({ name: channel.name, server: server._id });
+                        await newChannel.save();
+                        server.channels.push(newChannel._id); // Use MongoDB-generated ObjectId
+                        return newChannel;
+                    }
+                })
+            );
+
+            // Filter out deleted channels
+            const updatedChannelIds = updatedChannels.map((channel) => channel._id.toString());
+            server.channels = server.channels.filter((channelId) =>
+                updatedChannelIds.includes(channelId.toString())
+            );
+        }
 
         await server.save();
+        const updatedServer = await Server.findById(server._id).populate('channels');
 
         res.status(200).json({
             message: 'Server updated successfully.',
-            server,
+            updatedServer,
         });
     } catch (error) {
         console.error('Error updating server:', error);
