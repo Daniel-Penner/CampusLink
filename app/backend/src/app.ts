@@ -79,7 +79,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.json());
 app.use(
     cors({
-        origin: 'https://localhost',
+        origin: 'https://campuslink.online',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true,
     })
