@@ -6,7 +6,7 @@ import ChatWindow from '../../components/ChatWindow/ChatWindow';
 import styles from './Messages.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
 
-const socket = io('https://localhost', {
+const socket = io('https://campuslink.online', {
     path: '/socket.io',
     withCredentials: true,
     transports: ['websocket', 'polling']
