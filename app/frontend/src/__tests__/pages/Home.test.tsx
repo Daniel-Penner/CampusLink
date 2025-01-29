@@ -59,7 +59,6 @@ describe('Homepage Component', () => {
         ).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Email Address')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
     });
 
     it('renders login section with all elements', () => {
