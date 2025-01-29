@@ -259,13 +259,18 @@ describe("Server Routes API", () => {
 
             const response = await request(app)
                 .put(`/api/servers/${server._id}`)
-                .field("name", "Updated Server Name")
-                .attach("photo", Buffer.from("test photo content"), "test.jpg");
+                .set('Content-Type', 'multipart/form-data')
+                .field('name', 'Updated Server Name')
+                .attach('photo', Buffer.from('test photo content'), 'test.jpg');
+
+            console.log(response.body); // Debugging response
 
             expect(response.status).toBe(200);
-            expect(response.body.server.name).toBe("Updated Server Name");
-            expect(response.body.server.photo).toContain("/uploads/server_photos");
+            expect(response.body.updatedServer.name).toBe('Updated Server Name'); // Fixed assertion
+            expect(response.body.updatedServer.photo).toContain('/uploads/server_photos'); // Fixed assertion
         });
+
+
 
         it("should return 403 if user is not the owner", async () => {
             const server = await Server.create({
