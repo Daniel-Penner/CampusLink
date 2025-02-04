@@ -12,6 +12,13 @@ import locationRoutes from './routes/locations';
 import path from 'path';
 import queries from "./routes/queries";
 import dashboardRoutes from './routes/dashboard';
+import dotenv from "dotenv";
+import sgMail from "@sendgrid/mail";
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+if (!process.env.SITE_ADDRESS) {
+    throw new Error('SITE_ADDRESS is not set in the environment variables.');
+}
 
 // Create an Express app and an HTTP server
 const app = express();
@@ -20,7 +27,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO server
 const io = new SocketIOServer(server, {
     cors: {
-        origin: 'https://campuslink.online',
+        origin: process.env.SITE_ADDRESS,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true,
     },
@@ -79,7 +86,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.json());
 app.use(
     cors({
-        origin: 'https://campuslink.online',
+        origin: process.env.SITE_ADDRESS,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true,
     })

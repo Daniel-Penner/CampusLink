@@ -5,8 +5,9 @@ import DirectMessages from '../../components/DirectMessages/DirectMessages';
 import ChatWindow from '../../components/ChatWindow/ChatWindow';
 import styles from './Messages.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
+const socketURL = import.meta.env.SITE_ADDRESS;
 
-const socket = io('https://campuslink.online', {
+const socket = io(socketURL || '', {
     path: '/socket.io',
     withCredentials: true,
     transports: ['websocket', 'polling']
