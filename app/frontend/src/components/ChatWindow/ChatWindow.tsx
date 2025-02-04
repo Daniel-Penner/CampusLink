@@ -3,8 +3,9 @@ import { FaArrowUp } from 'react-icons/fa';
 import styles from './ChatWindow.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
 import { io } from 'socket.io-client';
+const socketURL = import.meta.env.SITE_ADDRESS;
 
-const socket = io('https://localhost', {
+const socket = io(socketURL || '', {
     path: '/socket.io',
     withCredentials: true,
     transports: ['websocket', 'polling']

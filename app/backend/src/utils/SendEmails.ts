@@ -11,6 +11,7 @@ if (!process.env.SENDGRID_API_KEY) {
 }
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+console.log(process.env.SENDGRID_API_KEY);
 
 // Function to send an email
 export const sendEmail = async (to: string, subject: string, text: string, html: string) => {
