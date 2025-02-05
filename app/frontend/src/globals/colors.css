@@ -1,15 +1,51 @@
 :root {
-    --primary-color: #00c885;       /* Green color for buttons and highlights */
-    --background-color: #131313;    /* Dark background */
-    --secondary-background: #1E1E1E;/* background for containers */
-    --lighter-grey: #353535;        /* for some buttons directly against the dark background color*/
-    --lighter-grey-hover: #2c2c2c;
-    --text-color: #E0E0E0;          /* text against the background and buttons */
-    --input-background: #131313;    /* Dark grey background for input fields */
-    --input-text-color: #5A5A5A;    /* Light gray for input text */
-    --border-color: #565656; /* borders for containers and inputs*/
-    --label-color: #878787; /*subheaders and some labels*/
-    --button-text: #ffffff;         /* for use with green buttons */
-    --button-hover: #00965a;        /* Slightly darker green for hover state */
     --error-color: red;
+}
+
+/* Default Theme */
+.default {
+    --primary-color: #00c885;
+    --background-color: #131313;
+    --secondary-background: #1E1E1E;
+    --lighter-grey: #353535;
+    --lighter-grey-hover: #2c2c2c;
+    --text-color: #E0E0E0;
+    --input-background: #131313;
+    --input-text-color: #5A5A5A;
+    --border-color: #565656;
+    --label-color: #878787;
+    --button-text: #ffffff;
+    --button-hover: #00965a;
+}
+
+/* Light Theme */
+.light {
+    --primary-color: #007BFF;
+    --background-color: #F5F5F5;
+    --secondary-background: #FFFFFF;
+    --lighter-grey: #D6D6D6;
+    --lighter-grey-hover: #C0C0C0;
+    --text-color: #333333;
+    --input-background: #FFFFFF;
+    --input-text-color: #666666;
+    --border-color: #CCCCCC;
+    --label-color: #555555;
+    --button-text: #FFFFFF;
+    --button-hover: #0056b3;
+}
+
+/* Blue Theme */
+.blue {
+    --primary-color: #1E90FF;
+    --background-color: #101820;
+    --secondary-background: #14213D;
+    --lighter-grey: #1F2A40;
+    --lighter-grey-hover: #25334D;
+    --text-color: #E0E0E0;
+    --input-background: #14213D;
+    --input-text-color: #5A5A5A;
+    --border-color: #404A5C;
+    --label-color: #87A5C0;
+    --button-text: #ffffff;
+    --button-hover: #0066CC;
 }

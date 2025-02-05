@@ -18,6 +18,7 @@ import Profile from "./pages/Profile/Profile.tsx";
 import VerifyEmailChange from "./pages/VerifyEmailChange/VerifyEmailChange.tsx";
 import LocationsPage from "./pages/Locations/Locations.tsx";
 import Chatbot from "./components/Chatbot/Chatbot";
+import Settings from "./pages/Settings/Settings.tsx";
 
 function App() {
     return (
@@ -38,6 +39,7 @@ function App() {
                         <Route path="/outgoing-requests" element={<OutgoingRequests />} />
                         <Route path="/servers" element={<Servers />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/settings" element={<Settings />} />
                         <Route path="/verify-email-change/:token" element={<VerifyEmailChange />} />
                         <Route path="/locations" element={<LocationsPage />} />
                     </Routes>
