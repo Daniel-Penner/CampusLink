@@ -33,15 +33,48 @@ const io = new SocketIOServer(server, {
     },
 });
 
-// Setup Socket.IO events
+//socket
 io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
+    console.log(`User connected: ${socket.id}`);
 
     // Join a personal room for direct messages
     socket.on('join', (userId) => {
         console.log(`User ${userId} joined room ${userId}`);
         socket.join(userId);
     });
+
+    // Handle Call Signaling
+    socket.on("call-user", ({ caller, recipient, offer }) => {
+        console.log(`User ${caller} is calling ${recipient}`);
+        console.log("Offer details:", offer);
+
+        io.to(recipient).emit("incoming-call", { caller, offer });
+    });
+
+    socket.on('answer-call', ({ caller, answer }) => {
+        console.log(`User answering call from ${caller}`);
+        io.to(caller).emit('call-answered', { answer });
+    });
+
+    socket.on('ice-candidate', ({ recipient, candidate }) => {
+        console.log(`ICE Candidate sent to ${recipient}`);
+        io.to(recipient).emit('ice-candidate', { candidate });
+    });
+
+    socket.on('end-call', ({ recipient }) => {
+        io.to(recipient).emit('call-ended');
+    });
+
+    socket.on("call-rejected", ({ caller }) => {
+        if (!caller) {
+            console.error("Call rejection received without a caller.");
+            return;
+        }
+
+        console.log(`User ${caller} rejected the call.`);
+        io.to(caller).emit("call-rejected", { caller });
+    });
+
 
     // Join a server channel
     socket.on('join-channel', (channelId) => {
