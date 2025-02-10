@@ -33,9 +33,9 @@ const io = new SocketIOServer(server, {
     },
 });
 
-// Setup Socket.IO events
+//socket
 io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
+    console.log(`User connected: ${socket.id}`);
 
     // Join a personal room for direct messages
     socket.on('join', (userId) => {
@@ -44,9 +44,11 @@ io.on('connection', (socket) => {
     });
 
     // Handle Call Signaling
-    socket.on('call-user', ({ caller, recipient, offer }) => {
+    socket.on("call-user", ({ caller, recipient, offer }) => {
         console.log(`User ${caller} is calling ${recipient}`);
-        io.to(recipient).emit('incoming-call', { caller, offer });
+        console.log("Offer details:", offer);
+
+        io.to(recipient).emit("incoming-call", { caller, offer });
     });
 
     socket.on('answer-call', ({ caller, answer }) => {
@@ -64,8 +66,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on("call-rejected", ({ caller }) => {
-        io.to(caller).emit("call-rejected");
+        if (!caller) {
+            console.error("Call rejection received without a caller.");
+            return;
+        }
+
+        console.log(`User ${caller} rejected the call.`);
+        io.to(caller).emit("call-rejected", { caller });
     });
+
 
     // Join a server channel
     socket.on('join-channel', (channelId) => {

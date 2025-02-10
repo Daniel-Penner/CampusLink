@@ -5,7 +5,7 @@ import DirectMessages from '../../components/DirectMessages/DirectMessages';
 import ChatWindow from '../../components/ChatWindow/ChatWindow';
 import styles from './Messages.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
-import CallManager from "../../components/CallManager.tsx";
+import CallManager from "../../components/CallManager/CallManager"
 const socketURL = import.meta.env.SITE_ADDRESS;
 
 const socket = io(socketURL || '', {
