@@ -43,6 +43,30 @@ io.on('connection', (socket) => {
         socket.join(userId);
     });
 
+    // Handle Call Signaling
+    socket.on('call-user', ({ caller, recipient, offer }) => {
+        console.log(`User ${caller} is calling ${recipient}`);
+        io.to(recipient).emit('incoming-call', { caller, offer });
+    });
+
+    socket.on('answer-call', ({ caller, answer }) => {
+        console.log(`User answering call from ${caller}`);
+        io.to(caller).emit('call-answered', { answer });
+    });
+
+    socket.on('ice-candidate', ({ recipient, candidate }) => {
+        console.log(`ICE Candidate sent to ${recipient}`);
+        io.to(recipient).emit('ice-candidate', { candidate });
+    });
+
+    socket.on('end-call', ({ recipient }) => {
+        io.to(recipient).emit('call-ended');
+    });
+
+    socket.on("call-rejected", ({ caller }) => {
+        io.to(caller).emit("call-rejected");
+    });
+
     // Join a server channel
     socket.on('join-channel', (channelId) => {
         console.log(`User joined channel: ${channelId}`);

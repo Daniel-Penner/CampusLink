@@ -5,6 +5,7 @@ import DirectMessages from '../../components/DirectMessages/DirectMessages';
 import ChatWindow from '../../components/ChatWindow/ChatWindow';
 import styles from './Messages.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
+import CallManager from "../../components/CallManager.tsx";
 const socketURL = import.meta.env.SITE_ADDRESS;
 
 const socket = io(socketURL || '', {
@@ -114,6 +115,7 @@ const MessagesPage: React.FC = () => {
             <div className={styles.mainContent}>
                 <DirectMessages users={friends} setSelectedUser={setSelectedUser} selectedUser={selectedUser} />
                 <ChatWindow messages={messages} setMessages={setMessages} selectedUser={selectedUser} />
+                {selectedUser && <CallManager recipientId={selectedUser._id} />}
             </div>
         </div>
     );

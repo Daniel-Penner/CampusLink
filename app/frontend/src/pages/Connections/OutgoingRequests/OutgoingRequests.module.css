@@ -5,9 +5,9 @@
 .requestsSection {
     margin-top: 20px;
     width: 100vw;
-    height: calc(100vh - 154px);
-    position: absolute;
-    bottom: 0;
+    height: 100vh;
+    position: relative;
+    top: 165px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
