@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
-import { FaPhone, FaPhoneSlash, FaTimes } from "react-icons/fa";
 import socket from "../../utils/socket.ts";
 import { AuthContext } from "../../contexts/AuthContext.tsx";
+import { FaPhone, FaPhoneSlash } from "react-icons/fa";
 
 interface CallProps {
     recipientId: string | null;
@@ -81,8 +81,12 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
                 console.error("Received call rejection but no caller information.");
                 return;
             }
-
             console.log(`Call from ${payload.caller} was rejected.`);
+            endCall();
+        };
+
+        const handleCallEnded = () => {
+            console.log("Call ended...");
             endCall();
         };
 
@@ -90,7 +94,7 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
         socket.on("call-answered", handleCallAnswered);
         socket.on("ice-candidate", handleICECandidate);
         socket.on("call-rejected", handleCallRejected);
-        socket.on("call-ended", endCall);
+        socket.on("call-ended", handleCallEnded);
 
         return () => {
             console.log("Cleaning up event listeners...");
@@ -98,11 +102,16 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
             socket.off("call-answered", handleCallAnswered);
             socket.off("ice-candidate", handleICECandidate);
             socket.off("call-rejected", handleCallRejected);
-            socket.off("call-ended", endCall);
+            socket.off("call-ended", handleCallEnded);
         };
     }, []);
 
     const createPeerConnection = () => {
+        if (peerConnectionRef.current) {
+            console.warn("Peer connection already exists. Returning existing connection.");
+            return peerConnectionRef.current;
+        }
+
         console.log("Creating new peer connection...");
         const peerConnection = new RTCPeerConnection({
             iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
@@ -127,15 +136,19 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
     };
 
     const startCall = async () => {
-        if (!recipientId || isCalling) return;
+        if (!recipientId || isCalling) {
+            console.warn("Cannot start call: Either no recipient or already in a call.");
+            return;
+        }
 
         console.log(`Calling user ${recipientId}`);
         setIsCalling(true);
 
         localStreamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
-
         const peerConnection = createPeerConnection();
-        localStreamRef.current.getTracks().forEach((track) => peerConnection.addTrack(track, localStreamRef.current!));
+        localStreamRef.current.getTracks().forEach((track) => {
+            peerConnection.addTrack(track, localStreamRef.current!);
+        });
 
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
@@ -145,16 +158,21 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
     };
 
     const acceptCall = async () => {
-        if (!callerId) return;
-
-        console.log(`Accepting call from: ${callerId}`);
         setIncomingCall(false);
         setIsCalling(true);
 
-        localStreamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (!callerId) {
+            console.error("Caller ID is missing, cannot accept the call.");
+            return;
+        }
 
+        console.log(`Accepting call from: ${callerId}`);
+
+        localStreamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
         const peerConnection = createPeerConnection();
-        localStreamRef.current.getTracks().forEach((track) => peerConnection.addTrack(track, localStreamRef.current!));
+        localStreamRef.current.getTracks().forEach((track) => {
+            peerConnection.addTrack(track, localStreamRef.current!);
+        });
 
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
@@ -164,7 +182,10 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
     };
 
     const rejectCall = () => {
-        if (!callerId) return;
+        if (!callerId) {
+            console.error("Reject call attempted but callerId is missing.");
+            return;
+        }
 
         console.log(`Rejecting call from: ${callerId}`);
         socket.emit("call-rejected", { caller: callerId });
@@ -174,7 +195,10 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
     };
 
     const endCall = () => {
-        if (!peerConnectionRef.current) return;
+        if (!peerConnectionRef.current) {
+            console.warn("No active call to end.");
+            return;
+        }
 
         console.log("Ending call...");
         peerConnectionRef.current.close();
@@ -188,12 +212,12 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
         setIsCalling(false);
         setIncomingCall(false);
         setCallerId(null);
+
         socket.emit("end-call", { recipient: recipientId });
     };
 
     return (
-        <>
-            {/* Floating Start Call Button */}
+        <div>
             {!isCalling && !incomingCall && (
                 <div
                     className="absolute top-[82px] right-0 bg-secondaryBackground p-3 rounded-lg shadow-lg flex items-center justify-center">
@@ -206,34 +230,28 @@ const CallManager: React.FC<CallProps> = ({ recipientId }) => {
                 </div>
 
             )}
-
-            {/* Full-screen Incoming Call UI */}
             {incomingCall && (
-                <div className="fixed inset-0 flex flex-col items-center justify-center bg-black text-white">
-                    <p className="text-lg font-bold">Incoming call from {callerId}...</p>
-                    <div className="flex space-x-6 mt-6">
-                        <button className="p-4 bg-green-500 text-white rounded-full" onClick={acceptCall}>
-                            <FaPhone size={32} />
-                        </button>
-                        <button className="p-4 bg-red-500 text-white rounded-full" onClick={rejectCall}>
-                            <FaTimes size={32} />
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Full-screen Call UI only while in a call */}
-            {isCalling && (
-                <div className="fixed inset-0 flex flex-col items-center justify-center bg-black text-white">
-                    <p className="text-lg font-bold">In Call...</p>
-                    <button className="p-4 bg-red-500 text-white rounded-full mt-6" onClick={endCall}>
-                        <FaPhoneSlash size={32} />
+                <div
+                    className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-90 text-white">
+                    <p>Incoming call...</p>
+                    <button onClick={acceptCall} className="p-4 bg-green-500 rounded-full">
+                    <FaPhone />
+                    </button>
+                    <button onClick={rejectCall} className="p-4 bg-red-500 rounded-full mt-4">
+                        <FaPhoneSlash />
                     </button>
                 </div>
             )}
-
+            {isCalling && (
+                <div
+                    className="absolute top-[82px] right-0 bg-secondaryBackground p-3 rounded-lg shadow-lg flex items-center justify-center">
+                <button onClick={endCall} className="p-4 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all">
+                    <FaPhoneSlash size={24} />
+                </button>
+                </div>
+            )}
             <audio ref={remoteAudioRef} autoPlay playsInline />
-        </>
+        </div>
     );
 };
 
