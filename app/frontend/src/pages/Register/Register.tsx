@@ -39,7 +39,7 @@ const Register: React.FC = () => {
 
             if (!response.ok) {
                 const data = await response.json();
-                setError(data.msg || 'Registration failed. Please try again.');
+                setError(data.message || 'Registration failed. Please try again.');
                 return;
             }
 

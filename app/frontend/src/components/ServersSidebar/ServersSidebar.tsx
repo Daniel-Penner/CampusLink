@@ -19,11 +19,7 @@ const ServersSidebar: React.FC<ServersSidebarProps> = ({
                                                            onLeave,
                                                            onCreateServer,
                                                        }) => (
-    <div
-        className={styles.sidebar}
-        onMouseEnter={onHover}
-        onMouseLeave={onLeave}
-    >
+    <div className={styles.sidebar} onMouseEnter={onHover} onMouseLeave={onLeave}>
         {/* Add Server button */}
         <div className={styles.box} onClick={onCreateServer}>
             <div className={styles.serverIcon} style={{ backgroundColor: 'var(--primary-color)' }}>
@@ -31,27 +27,31 @@ const ServersSidebar: React.FC<ServersSidebarProps> = ({
             </div>
             <span className={styles.serverName}>Add Server</span>
         </div>
+
         {/* Render server list */}
-        {servers.map((server) => (
-            <div
-                className={`${styles.box} ${server?._id === selectedServer?._id ? styles.active : ''}`}
-                key={server._id || Math.random()}
-                onClick={() => setSelectedServer(server)}
-            >
-                <div className={styles.serverIcon}>
-                    {server?.photo ? (
-                        <img
-                            src={server.photo} // Display server photo
-                            alt={server.name || 'Server'}
-                            className={styles.serverImage}
-                        />
-                    ) : (
-                        <div className={styles.defaultServerIcon}>{server.name?.[0] || 'S'}</div>
-                    )}
+        {servers.map((server) => {
+            const isSelected = server?._id === selectedServer?._id;
+            return (
+                <div
+                    className={`${styles.box} ${isSelected ? styles.active : ''}`}
+                    key={server._id || Math.random()}
+                    onClick={() => !isSelected && setSelectedServer(server)} // Prevent clicking if already selected
+                >
+                    <div className={styles.serverIcon}>
+                        {server?.photo ? (
+                            <img
+                                src={server.photo} // Display server photo
+                                alt={server.name || 'Server'}
+                                className={styles.serverImage}
+                            />
+                        ) : (
+                            <div className={styles.defaultServerIcon}>{server.name?.[0] || 'S'}</div>
+                        )}
+                    </div>
+                    <span className={styles.serverName}>{server.name || 'Unnamed Server'}</span>
                 </div>
-                <span className={styles.serverName}>{server.name || 'Unnamed Server'}</span>
-            </div>
-        ))}
+            );
+        })}
     </div>
 );
 

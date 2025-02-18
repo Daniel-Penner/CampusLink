@@ -25,7 +25,7 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ onClose, onCreate
 
     const handleCreateServer = () => {
         const newServer = {
-            name: serverName,
+            name: serverName || "New Server",
             isPublic,
             channels: channels.filter(channel => channel.name.trim() !== ''),
         };
@@ -80,7 +80,7 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ onClose, onCreate
                 </div>
 
                 {/* Action Buttons */}
-                <button onClick={handleCreateServer} disabled={!serverName.trim()} className={styles.createButton}>
+                <button onClick={handleCreateServer} className={styles.createButton}>
                     Create Server
                 </button>
                 <button onClick={onClose} className={styles.cancelButton}>Cancel</button>

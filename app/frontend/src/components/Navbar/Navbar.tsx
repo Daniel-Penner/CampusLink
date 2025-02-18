@@ -35,7 +35,11 @@ const Navbar: React.FC = () => {
                         setProfilePicture(data.profilePicture);
                     }
                 } catch (error) {
-                    console.error('Error fetching profile picture:', error);
+                    console.error('Error fetching user:', error);
+
+                    // If user fetch fails, log them out and refresh the page
+                    authContext.logout();
+                    window.location.reload();
                 }
             };
 
