@@ -14,29 +14,54 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [name, setName] = useState<string | null>(null);
     const [code, setCode] = useState<string | null>(null);
     const [id, setId] = useState<string | null>(null);
     const [theme, setTheme] = useState<string>(localStorage.getItem('theme') || 'default');
 
-    useEffect(() => {
+    // Function to check authentication state
+    const checkAuth = () => {
         const token = localStorage.getItem('token');
         const storedName = localStorage.getItem('name');
         const storedCode = localStorage.getItem('code');
         const storedId = localStorage.getItem('id');
-        const storedTheme = localStorage.getItem('theme') || 'default';
 
         if (token && storedName && storedCode && storedId) {
             setIsAuthenticated(true);
             setName(storedName);
             setCode(storedCode);
             setId(storedId);
+        } else {
+            setIsAuthenticated(false);
+            setName(null);
+            setCode(null);
+            setId(null);
         }
+    };
 
-        setTheme(storedTheme);
-        document.documentElement.className = storedTheme; // Apply theme on load
+    // Check authentication on mount
+    useEffect(() => {
+        checkAuth();
+
+        // Listen for token removal in localStorage
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'token' || event.key === 'name' || event.key === 'code' || event.key === 'id') {
+                checkAuth();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
+
+    // Ensure theme is applied on load
+    useEffect(() => {
+        document.documentElement.className = theme;
+    }, [theme]);
 
     const changeTheme = (newTheme: string) => {
         setTheme(newTheme);

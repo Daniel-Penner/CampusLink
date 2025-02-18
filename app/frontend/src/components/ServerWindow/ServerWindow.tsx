@@ -182,7 +182,7 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
     if (!selectedChannel) {
         return (
             <div className={styles.placeholder}>
-                Please select a channel within the server to view messages.
+                This server has no channels.
             </div>
         );
     }

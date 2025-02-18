@@ -28,17 +28,18 @@ const ChannelsNavbar: React.FC<ChannelsNavbarProps> = ({
     return (
         <div className={styles.navbar}>
             <div className={styles.channelContainer}>
-                {channels.map((channel) => (
-                    <div
-                        key={channel._id}
-                        className={`${styles.channel} ${
-                            selectedChannel?._id === channel._id ? styles.activeChannel : ''
-                        }`}
-                        onClick={() => setSelectedChannel(channel)}
-                    >
-                        {channel.name}
-                    </div>
-                ))}
+                {channels.map((channel) => {
+                    const isSelected = selectedChannel?._id === channel._id;
+                    return (
+                        <div
+                            key={channel._id}
+                            className={`${styles.channel} ${isSelected ? styles.activeChannel : ''}`}
+                            onClick={() => !isSelected && setSelectedChannel(channel)} // Prevent clicking if already selected
+                        >
+                            {channel.name}
+                        </div>
+                    );
+                })}
             </div>
             {isOwner ? (
                 <div
