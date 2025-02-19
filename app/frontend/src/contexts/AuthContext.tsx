@@ -21,24 +21,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [theme, setTheme] = useState<string>(localStorage.getItem('theme') || 'default');
 
     // Function to check authentication state
-    const checkAuth = () => {
+    const checkAuth = async () => {
         const token = localStorage.getItem('token');
-        const storedName = localStorage.getItem('name');
-        const storedCode = localStorage.getItem('code');
         const storedId = localStorage.getItem('id');
 
-        if (token && storedName && storedCode && storedId) {
+        if (!token || !storedId) {
+            logout();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/users/${storedId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                console.error('Token is invalid or expired, logging out.');
+                logout(); // Log out user if the token is invalid
+                return;
+            }
+
+            const data = await response.json();
             setIsAuthenticated(true);
-            setName(storedName);
-            setCode(storedCode);
+            setName(data.firstName);
+            setCode(data.code);
             setId(storedId);
-        } else {
-            setIsAuthenticated(false);
-            setName(null);
-            setCode(null);
-            setId(null);
+        } catch (error) {
+            console.error('Error checking authentication:', error);
+            logout();
         }
     };
+
 
     // Check authentication on mount
     useEffect(() => {

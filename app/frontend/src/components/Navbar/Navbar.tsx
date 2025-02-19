@@ -30,6 +30,13 @@ const Navbar: React.FC = () => {
                     const response = await fetch(`/api/users/${userId}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
+
+                    if (response.status === 401 || response.status === 403) {
+                        console.error('Invalid token detected, logging out.');
+                        authContext.logout();
+                        return;
+                    }
+
                     const data = await response.json();
                     if (response.ok) {
                         setProfilePicture(data.profilePicture);
@@ -37,15 +44,15 @@ const Navbar: React.FC = () => {
                 } catch (error) {
                     console.error('Error fetching user:', error);
 
-                    // If user fetch fails, log them out and refresh the page
+                    // If user fetch fails due to authentication, log them out
                     authContext.logout();
-                    window.location.reload();
                 }
             };
 
             fetchProfilePicture();
         }
     }, [isAuthenticated, authContext.id]);
+
 
     const toggleMenu = () => {
         if (menuOpen) {

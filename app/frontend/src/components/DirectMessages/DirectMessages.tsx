@@ -12,9 +12,10 @@ interface DirectMessagesProps {
         React.SetStateAction<{ _id: string; name: string; profilePicture?: string } | null>
     >;
     selectedUser: { _id: string; name: string; profilePicture?: string } | null;
+    unreadMessages: { [key: string]: boolean }; // Track unread messages
 }
 
-const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser, selectedUser }) => {
+const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser, selectedUser, unreadMessages }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png';
 
@@ -52,7 +53,7 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser,
                                 ? `${styles.messageItem} ${styles.messageItemSelected}`
                                 : styles.messageItem
                         }
-                        onClick={() => setSelectedUser(user)} // Pass the full user object, including profilePic
+                        onClick={() => setSelectedUser(user)}
                     >
                         <img
                             src={user.profilePicture || defaultProfilePicture}
@@ -62,6 +63,7 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser,
                         <div className={styles.userInfo}>
                             <div className={styles.userName}>{user.name}</div>
                         </div>
+                        {unreadMessages[user._id] && <div className={styles.unreadDot}></div>}
                     </li>
                 ))}
             </ul>
