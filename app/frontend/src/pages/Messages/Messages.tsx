@@ -45,7 +45,7 @@ const MessagesPage: React.FC = () => {
         throw new Error('AuthContext is not provided.');
     }
 
-    const { id } = authContext;
+    const  id  = localStorage.getItem('id');
     const token = localStorage.getItem('token');
 
     // 🔹 Fetch unread messages from the database when the page loads
@@ -94,7 +94,7 @@ const MessagesPage: React.FC = () => {
             setMessages((prevMessages) => [...prevMessages, newMessage]);
 
             if (selectedUser?._id === newMessage.sender) {
-                await fetch(`/api/direct-messages/mark-read/${newMessage.sender}`, {
+                await fetch(`/api/connections/mark-read/${newMessage.recipient}/${newMessage.sender}`, {
                     method: 'POST',
                     headers: {Authorization: `Bearer ${token}`}
                 });
@@ -160,7 +160,6 @@ const MessagesPage: React.FC = () => {
                     messages={messages}
                     setMessages={setMessages}
                     selectedUser={selectedUser}
-                    setUnreadMessages={setUnreadMessages}
                 />
                 {selectedUser && <CallManager recipientId={selectedUser._id} />}
             </div>

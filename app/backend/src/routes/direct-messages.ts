@@ -50,7 +50,6 @@ router.get('/messageable-friends', authenticateToken, async (req, res) => {
 });
 
 
-// Endpoint to get message history between two users
 router.get('/messages/:userId/:otherUserId', authenticateToken, async (req, res) => {
     const { userId, otherUserId } = req.params;
 
@@ -81,7 +80,6 @@ router.get('/messages/:userId/:otherUserId', authenticateToken, async (req, res)
 });
 
 
-// Endpoint to send a new message
 router.post('/message', authenticateToken, async (req, res) => {
     const { sender, recipient, content, timestamp } = req.body;
 
@@ -91,7 +89,7 @@ router.post('/message', authenticateToken, async (req, res) => {
             recipient,
             content,
             timestamp,
-            isRead: false // Initially unread
+            isRead: false
         });
 
         await newMessage.save();
@@ -99,22 +97,13 @@ router.post('/message', authenticateToken, async (req, res) => {
         console.log(`Emitting message to rooms: ${recipient}, ${sender}`);
         req.io.to(recipient).emit('new-message', newMessage);
 
-        // ✅ Check if recipient is currently chatting with the sender
         const activeUsers = req.io.sockets.adapter.rooms.get(recipient);
-        if (activeUsers) {
-            console.log(`User ${recipient} is active, marking message as read.`);
-            await Message.updateOne(
-                { _id: newMessage._id },
-                { $set: { isRead: true } }
-            );
-        } else {
-            // Increment unread count for offline users
-            await Connection.updateOne(
-                { sender, recipient },
-                { $inc: { unreadCount: 1 } },
-                { upsert: true }
-            );
-        }
+
+        await Connection.updateOne(
+            { sender, recipient },
+            { $inc: { unreadCount: 1 } },
+            { upsert: true }
+        );
 
         res.status(201).json(newMessage);
     } catch (err) {
@@ -122,6 +111,9 @@ router.post('/message', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Error saving message' });
     }
 });
+
+
+
 
 
 

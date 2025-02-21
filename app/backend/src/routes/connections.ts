@@ -187,27 +187,38 @@ router.get('/unread-count/:userId', authenticateToken, async (req, res) => {
 });
 
 router.post('/mark-read/:userId/:otherUserId', authenticateToken, async (req, res) => {
-    const { userId } = req.params;
-    const currentUserId = req.user.userId;
+    const { userId, otherUserId } = req.params;
 
     try {
+        // Mark all messages between these two users as read
         await Message.updateMany(
-            { sender: userId, recipient: currentUserId, isRead: false },
+            {
+                $or: [
+                    { sender: otherUserId, recipient: userId, isRead: false },
+                    { sender: userId, recipient: otherUserId, isRead: false }
+                ]
+            },
             { $set: { isRead: true } }
         );
 
-        // Reset unread count
-        await Connection.updateOne(
-            { sender: userId, recipient: currentUserId },
+        // Reset unread count for both users
+        await Connection.updateMany(
+            {
+                $or: [
+                    { sender: otherUserId, recipient: userId },
+                    { sender: userId, recipient: otherUserId }
+                ]
+            },
             { $set: { unreadCount: 0 } }
         );
 
-        res.status(200).json({ message: 'Messages marked as read.' });
+        res.status(200).json({ message: 'Messages marked as read and unread count reset for both users.' });
     } catch (error) {
         console.error('Error marking messages as read:', error);
         res.status(500).json({ message: 'Server error. Please try again later.' });
     }
 });
+
 
 
 

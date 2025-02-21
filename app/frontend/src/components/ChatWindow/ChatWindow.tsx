@@ -2,14 +2,6 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { FaArrowUp } from 'react-icons/fa';
 import styles from './ChatWindow.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
-import { io } from 'socket.io-client';
-
-const socketURL = import.meta.env.SITE_ADDRESS;
-const socket = io(socketURL || '', {
-    path: '/socket.io',
-    withCredentials: true,
-    transports: ['websocket', 'polling']
-});
 
 interface Message {
     sender: string;
@@ -22,10 +14,9 @@ interface ChatWindowProps {
     messages: Message[];
     selectedUser: { _id: string; name: string; profilePicture?: string } | null;
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-    setUnreadMessages: React.Dispatch<React.SetStateAction<{ [key: string]: number }>>;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMessages, setUnreadMessages }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMessages }) => {
     const [newMessage, setNewMessage] = useState('');
 
     const authContext = useContext(AuthContext);
@@ -37,36 +28,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
     const { id } = authContext;
     const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png';
     const messageAreaRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleNewMessage = (newMessage: Message) => {
-            if (
-                (newMessage.sender === selectedUser?._id && newMessage.recipient === id) ||
-                (newMessage.sender === id && newMessage.recipient === selectedUser?._id)
-            ) {
-                setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-                // ✅ Mark messages as read if they're from the selected user
-                if (newMessage.sender === selectedUser?._id) {
-                    fetch(`/api/direct-messages/mark-read/${selectedUser._id}`, {
-                        method: 'POST',
-                        headers: { Authorization: `Bearer ${token}` }
-                    })
-                        .catch(err => console.error('Error marking messages as read:', err));
-
-                    // ✅ Reset unread count
-                    setUnreadMessages(prev => ({ ...prev, [newMessage.sender]: 0 }));
-                }
-            }
-        };
-
-        socket.on('new-message', handleNewMessage);
-
-        return () => {
-            socket.off('new-message', handleNewMessage);
-        };
-
-    }, [selectedUser, id, setMessages, setUnreadMessages, token]);
 
 
 
@@ -81,10 +42,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
         return <div className={styles.chatContainer}>Select a user to chat with.</div>;
     }
 
-    const sendMessage = () => {
+    const sendMessage = async () => {
         if (!newMessage.trim()) return;
-        const timestamp = new Date();
 
+        const timestamp = new Date();
         const messageData: Message = {
             sender: id as string,
             recipient: selectedUser._id,
@@ -92,20 +53,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
             timestamp,
         };
 
-        fetch('/api/direct-messages/message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(messageData)
-        })
-            .then(() => {
-                setMessages(prevMessages => [...prevMessages, messageData]);
-                setNewMessage('');
-            })
-            .catch(err => console.log('Error sending message:', err));
+        try {
+            const response = await fetch('/api/direct-messages/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token ? `Bearer ${token}` : '',
+                },
+                body: JSON.stringify(messageData),
+            });
+
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                console.error('Error sending message:', errorResponse);
+                return;
+            }
+
+            const sentMessage = await response.json(); //
+
+            setMessages(prevMessages => [...prevMessages, sentMessage]);
+            setNewMessage('');
+        } catch (err) {
+            console.error('Error sending message:', err);
+        }
     };
+
 
     return (
         <div className={styles.chatContainer}>
