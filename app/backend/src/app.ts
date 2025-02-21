@@ -14,6 +14,8 @@ import queries from "./routes/queries";
 import dashboardRoutes from './routes/dashboard';
 import dotenv from "dotenv";
 import sgMail from "@sendgrid/mail";
+import Connection from "./models/Connection";
+import Message from "./models/Message";
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 if (!process.env.SITE_ADDRESS) {
@@ -41,6 +43,21 @@ io.on('connection', (socket) => {
     socket.on('join', (userId) => {
         console.log(`User ${userId} joined room ${userId}`);
         socket.join(userId);
+    });
+
+    socket.on('send-message', async ({ sender, recipient, content }) => {
+        const message = new Message({ sender, recipient, content });
+        await message.save();
+
+        // Increment unread messages count
+        await Connection.updateOne(
+            { sender, recipient },
+            { $inc: { unreadCount: 1 } },
+            { upsert: true }
+        );
+
+        // Emit event to update unread count
+        io.to(recipient).emit('new-message', message);
     });
 
     // Handle Call Signaling

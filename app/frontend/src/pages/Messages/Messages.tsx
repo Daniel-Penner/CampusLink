@@ -15,13 +15,6 @@ const socket = io(socketURL || '', {
     transports: ['websocket', 'polling']
 });
 
-interface Friend {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    profilePicture: string;
-}
-
 interface MappedFriend {
     _id: string;
     name: string;
@@ -45,9 +38,7 @@ const MessagesPage: React.FC = () => {
     const [friends, setFriends] = useState<MappedFriend[]>([]);
     const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
-    const [unreadMessages, setUnreadMessages] = useState<{ [key: string]: boolean }>(
-        JSON.parse(localStorage.getItem('unreadMessages') || '{}') // Load from local storage on first render
-    );
+    const [unreadMessages, setUnreadMessages] = useState<{ [key: string]: number }>({});
 
     const authContext = useContext(AuthContext);
     if (!authContext) {
@@ -55,11 +46,78 @@ const MessagesPage: React.FC = () => {
     }
 
     const { id } = authContext;
+    const token = localStorage.getItem('token');
 
+    // 🔹 Fetch unread messages from the database when the page loads
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const fetchUnreadMessages = async () => {
+            try {
+                const response = await fetch(`/api/connections/unread-count/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const { unreadMessages } = await response.json();
+                setUnreadMessages(unreadMessages || {});
+            } catch (error) {
+                console.error('Error fetching unread messages:', error);
+            }
+        };
+
+        // 🔹 Fetch unread message counts when the page loads
+        fetchUnreadMessages();
 
         fetch('/api/direct-messages/messageable-friends', {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => res.json())
+            .then((data) => {
+                // Remove duplicate users in case of API errors
+                const uniqueFriends = data.reduce((acc: MappedFriend[], friend: any) => {
+                    if (!acc.some(f => f._id === friend._id)) {
+                        acc.push({
+                            _id: friend._id,
+                            name: `${friend.firstName} ${friend.lastName}`,
+                            profilePicture: friend.profilePicture || '',
+                        });
+                    }
+                    return acc;
+                }, []);
+
+                setFriends(uniqueFriends);
+            });
+
+        socket.emit('join', id);
+
+        socket.on('new-message', async (newMessage: Message) => {
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+            if (selectedUser?._id === newMessage.sender) {
+                await fetch(`/api/direct-messages/mark-read/${newMessage.sender}`, {
+                    method: 'POST',
+                    headers: {Authorization: `Bearer ${token}`}
+                });
+
+                setUnreadMessages(prev => ({ ...prev, [newMessage.sender]: 0 }));
+            } else {
+                setUnreadMessages(prev => ({
+                    ...prev,
+                    [newMessage.sender]: (prev[newMessage.sender] || 0) + 1
+                }));
+            }
+        });
+
+        return () => {
+            socket.off('new-message');
+        };
+    }, [id, selectedUser, token]);
+
+    // 🔹 Fetch messages and mark as read when a user selects a conversation
+    useEffect(() => {
+        if (!selectedUser || !token) return;
+
+        fetch(`/api/direct-messages/messages/${id}/${selectedUser._id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -67,63 +125,26 @@ const MessagesPage: React.FC = () => {
             },
         })
             .then(res => res.json())
-            .then((data: Friend[]) => {
-                const mappedFriends = data.map(friend => ({
-                    _id: friend._id,
-                    name: `${friend.firstName} ${friend.lastName}`,
-                    profilePicture: friend.profilePicture,
+            .then(data => {
+                setMessages(data);
+
+                // 🔹 Reset unread count for the selected user
+                setUnreadMessages((prev) => ({
+                    ...prev,
+                    [selectedUser._id]: 0
                 }));
-                setFriends(mappedFriends);
-            })
-            .catch(err => console.log('Error fetching friends:', err));
 
-        // Join the user's room on connection
-        socket.emit('join', id);
-
-        // Listen for new messages
-        socket.on('new-message', (newMessage: Message) => {
-            if (newMessage.sender === selectedUser?._id || newMessage.recipient === selectedUser?._id) {
-                // If the message is from the selected user, add it to the chat
-                setMessages((prevMessages) => [...prevMessages, newMessage]);
-            } else {
-                // Otherwise, mark it as unread and save to local storage
-                setUnreadMessages((prev) => {
-                    const updated = { ...prev, [newMessage.sender]: true };
-                    localStorage.setItem('unreadMessages', JSON.stringify(updated));
-                    return updated;
+                // 🔹 Update the database to mark messages as read
+                fetch(`/api/connections/mark-read/${id}/${selectedUser._id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    }
                 });
-            }
-        });
-
-        return () => {
-            socket.off('new-message');
-        };
-    }, [id, selectedUser]);
-
-    useEffect(() => {
-        if (selectedUser) {
-            const token = localStorage.getItem('token');
-            fetch(`/api/direct-messages/messages/${id}/${selectedUser._id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
             })
-                .then(res => res.json())
-                .then(data => {
-                    setMessages(data);
-
-                    // Mark messages as read for this user and update local storage
-                    setUnreadMessages((prev) => {
-                        const updated = { ...prev, [selectedUser._id]: false };
-                        localStorage.setItem('unreadMessages', JSON.stringify(updated));
-                        return updated;
-                    });
-                })
-                .catch(err => console.log('Error fetching messages:', err));
-        }
-    }, [selectedUser]);
+            .catch(err => console.error('Error fetching messages:', err));
+    }, [selectedUser, id, token]);
 
     return (
         <div className={styles.pageContainer}>
@@ -133,9 +154,14 @@ const MessagesPage: React.FC = () => {
                     users={friends}
                     setSelectedUser={setSelectedUser}
                     selectedUser={selectedUser}
-                    unreadMessages={unreadMessages} // Pass unread messages state
+                    unreadMessages={unreadMessages}
                 />
-                <ChatWindow messages={messages} setMessages={setMessages} selectedUser={selectedUser} />
+                <ChatWindow
+                    messages={messages}
+                    setMessages={setMessages}
+                    selectedUser={selectedUser}
+                    setUnreadMessages={setUnreadMessages}
+                />
                 {selectedUser && <CallManager recipientId={selectedUser._id} />}
             </div>
         </div>
