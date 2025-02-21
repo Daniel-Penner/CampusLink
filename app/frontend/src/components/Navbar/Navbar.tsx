@@ -14,38 +14,49 @@ const Navbar: React.FC = () => {
     }
 
     const navigate = useNavigate();
-    const { isAuthenticated } = authContext;
+    const { isAuthenticated, profilePicture } = authContext;
     const [menuOpen, setMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [hamburgerOpen, setHamburgerOpen] = useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-    const [profilePicture, setProfilePicture] = useState<string | null>(null);
+    const [displayPicture, setDisplayPicture] = useState<string | null>(profilePicture);
+
+    useEffect(() => {
+        setDisplayPicture(profilePicture);
+    }, [profilePicture]);
 
     useEffect(() => {
         if (isAuthenticated) {
             const fetchProfilePicture = async () => {
                 const token = localStorage.getItem('token');
-                const userId = authContext.id || localStorage.getItem('id');
+                const userId = authContext.id || localStorage.getItem('6id');
                 try {
                     const response = await fetch(`/api/users/${userId}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
+
+                    if (response.status === 401 || response.status === 403) {
+                        console.error('Invalid token detected, logging out.');
+                        authContext.logout();
+                        return;
+                    }
+
                     const data = await response.json();
                     if (response.ok) {
-                        setProfilePicture(data.profilePicture);
+                        setDisplayPicture(data.profilePicture);
                     }
                 } catch (error) {
                     console.error('Error fetching user:', error);
 
-                    // If user fetch fails, log them out and refresh the page
+                    // If user fetch fails due to authentication, log them out
                     authContext.logout();
-                    window.location.reload();
                 }
             };
 
             fetchProfilePicture();
         }
     }, [isAuthenticated, authContext.id]);
+
 
     const toggleMenu = () => {
         if (menuOpen) {
@@ -92,7 +103,7 @@ const Navbar: React.FC = () => {
                     {isAuthenticated ? (
                         <div className={styles.profileContainer}>
                             <img
-                                src={profilePicture || '/path-to-default-placeholder.png'} // Fallback to default
+                                src={displayPicture || '/path-to-default-placeholder.png'} // Fallback to default
                                 alt="Profile"
                                 className={styles.profilePic}
                                 onClick={toggleProfileMenu}

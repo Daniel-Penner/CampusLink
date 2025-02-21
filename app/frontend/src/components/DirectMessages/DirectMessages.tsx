@@ -12,13 +12,13 @@ interface DirectMessagesProps {
         React.SetStateAction<{ _id: string; name: string; profilePicture?: string } | null>
     >;
     selectedUser: { _id: string; name: string; profilePicture?: string } | null;
+    unreadMessages: { [key: string]: number }; // ✅ Changed to a number type
 }
 
-const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser, selectedUser }) => {
+const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser, selectedUser, unreadMessages }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png';
 
-    // Filter users based on the search term
     const filteredUsers = users.filter((user) =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -47,12 +47,8 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser,
                 {filteredUsers.map((user) => (
                     <li
                         key={user._id}
-                        className={
-                            user._id === selectedUser?._id
-                                ? `${styles.messageItem} ${styles.messageItemSelected}`
-                                : styles.messageItem
-                        }
-                        onClick={() => setSelectedUser(user)} // Pass the full user object, including profilePic
+                        className={user._id === selectedUser?._id ? `${styles.messageItem} ${styles.messageItemSelected}` : styles.messageItem}
+                        onClick={() => setSelectedUser(user)}
                     >
                         <img
                             src={user.profilePicture || defaultProfilePicture}
@@ -62,6 +58,13 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser,
                         <div className={styles.userInfo}>
                             <div className={styles.userName}>{user.name}</div>
                         </div>
+
+                        {/* ✅ Display the number of unread messages */}
+                        {unreadMessages[user._id] > 0 && (
+                            <div className={styles.unreadDot}>
+                                {unreadMessages[user._id]}
+                            </div>
+                        )}
                     </li>
                 ))}
             </ul>

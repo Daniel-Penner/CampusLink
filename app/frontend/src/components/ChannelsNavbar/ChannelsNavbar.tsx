@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './ChannelsNavbar.module.css';
 import { FaCog } from 'react-icons/fa';
 
@@ -11,7 +11,6 @@ interface ChannelsNavbarProps {
     channels: Channel[];
     selectedChannel: Channel | null;
     setSelectedChannel: (channel: Channel) => void;
-    selectedServer: any; // Server object passed to the settings modal
     onSettings: () => void; // Handler to open settings modal
     onLeave: () => void; // Handler to leave the server
     isOwner: boolean; // Indicates whether the current user owns the server
@@ -25,16 +24,23 @@ const ChannelsNavbar: React.FC<ChannelsNavbarProps> = ({
                                                            onLeave,
                                                            isOwner,
                                                        }) => {
+    const [channelList, setChannelList] = useState<Channel[]>(channels);
+
+    // Keep local state in sync with `channels`
+    useEffect(() => {
+        setChannelList(channels);
+    }, [channels]);
+
     return (
         <div className={styles.navbar}>
             <div className={styles.channelContainer}>
-                {channels.map((channel) => {
+                {channelList.map((channel) => {
                     const isSelected = selectedChannel?._id === channel._id;
                     return (
                         <div
                             key={channel._id}
                             className={`${styles.channel} ${isSelected ? styles.activeChannel : ''}`}
-                            onClick={() => !isSelected && setSelectedChannel(channel)} // Prevent clicking if already selected
+                            onClick={() => !isSelected && setSelectedChannel(channel)}
                         >
                             {channel.name}
                         </div>
@@ -42,20 +48,12 @@ const ChannelsNavbar: React.FC<ChannelsNavbarProps> = ({
                 })}
             </div>
             {isOwner ? (
-                <div
-                    className={styles.settingsButton}
-                    onClick={onSettings}
-                    title="Server Settings"
-                >
+                <div className={styles.settingsButton} onClick={onSettings} title="Server Settings">
                     <FaCog />
                     <span>Settings</span>
                 </div>
             ) : (
-                <button
-                    className={styles.leaveButton}
-                    onClick={onLeave}
-                    title="Leave Server"
-                >
+                <button className={styles.leaveButton} onClick={onLeave} title="Leave Server">
                     Leave Server
                 </button>
             )}

@@ -1,5 +1,6 @@
 .incomingRequestsPage {
     padding: 20px;
+    background-color: var(--secondary-background);
 }
 
 .requestsSection {

@@ -60,7 +60,11 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
             }
 
             const data = await response.json();
-            setServerPhoto(data.photo); // Update the photo preview with the new photo URL
+
+            setServerPhoto(data.photo); // Update preview immediately
+
+            // Ensure updated photo appears immediately in the sidebar
+            onServerUpdated({ ...server, photo: data.photo });
         } catch (error) {
             console.error('Error uploading server photo:', error);
         }
@@ -87,8 +91,8 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
                 throw new Error('Failed to update server settings.');
             }
 
-            const updatedServer = await response.json();
-            onServerUpdated(updatedServer);
+            const { updatedServer } = await response.json();
+            onServerUpdated(updatedServer); // ✅ Immediately update frontend state
             onClose();
         } catch (error) {
             console.error('Error updating server:', error);

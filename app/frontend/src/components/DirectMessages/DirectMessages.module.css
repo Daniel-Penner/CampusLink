@@ -71,6 +71,7 @@
     padding: 10px 5px;
     cursor: pointer;
     border-bottom: 1px solid var(--border-color);
+    position: relative;
 }
 
 .messageItem:hover {
@@ -107,4 +108,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.unreadDot {
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    right: 10px;
+    top: 25%;
+    text-align: center;
+    justify-content: center;
+    transform: translateY(-50%);
+}
+
 
