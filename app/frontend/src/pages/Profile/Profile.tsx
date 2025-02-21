@@ -59,6 +59,8 @@ const UpdateProfile: React.FC = () => {
         }
         const token = localStorage.getItem("token");
 
+        let uploadedProfilePicture = profilePicture; // Default to current picture
+
         // Upload the profile picture if a new file is selected
         if (profilePictureFile) {
             const formData = new FormData();
@@ -70,9 +72,18 @@ const UpdateProfile: React.FC = () => {
                     headers: { Authorization: `Bearer ${token}` },
                     body: formData,
                 });
+
                 if (!response.ok) {
                     throw new Error("Failed to upload profile picture");
                 }
+
+                const data = await response.json();
+                uploadedProfilePicture = data.profilePicture; // Store the new profile picture URL
+
+                if (authContext) {
+                    authContext.updateProfilePicture(uploadedProfilePicture);
+                }
+
             } catch (error) {
                 setError("Error uploading profile picture");
                 return;
@@ -96,13 +107,19 @@ const UpdateProfile: React.FC = () => {
 
             const data = await response.json();
             if (response.ok) {
-                setSuccess(data.message); // Use the message returned by the route
+                setSuccess(data.message);
                 setError(null);
 
-                // Update AuthContext name
+                // Update AuthContext
                 if (authContext) {
-                    const updatedName = `${firstName} ${lastName}`;
-                    authContext.login(token!, userId, updatedName, authContext.code || "");
+                    authContext.updateProfilePicture(uploadedProfilePicture);
+                    authContext.login(
+                        token!,
+                        userId,
+                        firstName + " " + lastName,
+                        authContext.code || "",
+                        uploadedProfilePicture || undefined
+                    );
                 }
             } else {
                 setError(data.message || "Error updating profile");
@@ -113,6 +130,7 @@ const UpdateProfile: React.FC = () => {
             setSuccess(null);
         }
     };
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
