@@ -19,6 +19,7 @@ import VerifyEmailChange from "./pages/VerifyEmailChange/VerifyEmailChange.tsx";
 import LocationsPage from "./pages/Locations/Locations.tsx";
 import Chatbot from "./components/Chatbot/Chatbot";
 import Settings from "./pages/Settings/Settings.tsx";
+import About from "./pages/About/About.tsx";
 
 function App() {
     return (
@@ -42,6 +43,7 @@ function App() {
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/verify-email-change/:token" element={<VerifyEmailChange />} />
                         <Route path="/locations" element={<LocationsPage />} />
+                        <Route path="/about" element={<About />} />
                     </Routes>
                     {/* Chatbot Component */}
                     <Chatbot />
