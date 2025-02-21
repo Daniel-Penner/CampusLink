@@ -66,3 +66,6 @@ backend/coverage/
 *.lock
 *.bak
 *.tmp
+app/.env
+app/backend/uploads/profile_pictures/profilePicture-1738628237193-889503263buildidea5.jpg
+app/nginx/nginx.conf
