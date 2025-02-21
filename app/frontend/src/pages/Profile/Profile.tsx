@@ -146,9 +146,9 @@ const UpdateProfile: React.FC = () => {
             style={{ backgroundImage: `url(${background})` }}
         >
             <Navbar />
-            <div className="flex flex-col items-center justify-center w-[90%] sm:w-[60%] md:w-[40%] lg:w-[30%] h-[calc(90vh-80px)] p-5 sm:p-6 lg:p-8 bg-secondaryBackground rounded-lg text-text-color">
-                <h1 className="text-4xl font-bold mb-6 text-primary-color">Update Profile</h1>
-                {error && <p className="text-error-color mb-4">{error}</p>}
+            <div className="flex flex-col items-center justify-center w-[90%] sm:w-[60%] md:w-[40%] lg:w-[30%] h-[calc(90vh-80px)] p-5 sm:p-6 lg:p-8 bg-secondaryBackground rounded-lg text-text">
+                <h1 className="text-4xl font-bold mb-6 text-primary">Update Profile</h1>
+                {error && <p className="text-error mb-4">{error}</p>}
                 {success && <p className="text-green-500 mb-4">{success}</p>}
                 <form className="flex flex-wrap gap-4 w-full" onSubmit={handleUpdateProfile}>
                     <div className="w-full flex justify-center items-center mb-4">
@@ -162,27 +162,27 @@ const UpdateProfile: React.FC = () => {
                         <input
                             type="file"
                             accept="image/*"
-                            className="w-full text-sm"
+                            className="w-full text-sm text-text"
                             onChange={handleFileChange}
                         />
                     </div>
                     <input
                         type="text"
                         placeholder="First Name"
-                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-inputBackground text-text border border-border rounded-md"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
                     <input
                         type="text"
                         placeholder="Last Name"
-                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-inputBackground text-text border border-border rounded-md"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
                     <textarea
                         placeholder="Bio"
-                        className="w-full min-w-[48%] p-3 bg-input-background text-text-color rounded-md resize-none"
+                        className="w-full min-w-[48%] p-3 bg-inputBackground text-text border border-border rounded-md resize-none"
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
                         rows={3}
@@ -190,27 +190,27 @@ const UpdateProfile: React.FC = () => {
                     <input
                         type="email"
                         placeholder="Email Address"
-                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-inputBackground text-text border border-border rounded-md"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Current Password"
-                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-inputBackground text-text border border-border rounded-md"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="New Password"
-                        className="flex-1 min-w-[48%] p-3 bg-input-background text-text-color rounded-md"
+                        className="flex-1 min-w-[48%] p-3 bg-inputBackground text-text border border-border rounded-md"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                     />
                     <button
                         type="submit"
-                        className="w-full p-3 bg-primary text-button-text rounded-md hover:bg-button-hover"
+                        className="w-full p-3 bg-primary text-buttonText rounded-md hover:bg-buttonHover"
                     >
                         Update Profile
                     </button>

@@ -21,10 +21,10 @@
 /* Light Theme */
 .light {
     --primary-color: #007BFF;
-    --background-color: #F5F5F5;
-    --secondary-background: #FFFFFF;
-    --lighter-grey: #D6D6D6;
-    --lighter-grey-hover: #C0C0C0;
+    --background-color: #b4b4ba;
+    --secondary-background: #ffffff;
+    --lighter-grey: #98989e;
+    --lighter-grey-hover: #a6a6ac;
     --text-color: #333333;
     --input-background: #FFFFFF;
     --input-text-color: #666666;
