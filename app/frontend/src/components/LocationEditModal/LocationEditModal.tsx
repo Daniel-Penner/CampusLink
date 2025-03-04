@@ -96,6 +96,11 @@ const LocationEditModal: React.FC<LocationEditModalProps> = ({
             const updatedLocation = await response.json();
             setPreview(updatedLocation.image); // Update the preview
             onLocationUpdated(updatedLocation); // Notify parent of the updated location
+
+            // Update the image in the selectedLocation state
+            setTimeout(() => {
+                onLocationUpdated({ ...location, image: updatedLocation.image });
+            }, 100);
         } catch (error) {
             console.error('Error uploading image:', error);
         }

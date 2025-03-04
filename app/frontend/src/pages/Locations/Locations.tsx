@@ -88,10 +88,15 @@ const LocationsPage: React.FC = () => {
 
     const handleUpdateLocation = (updatedLocation: any) => {
         setLocations((prev) =>
-            prev.map((location) => (location._id === updatedLocation._id ? updatedLocation : location))
+            prev.map((location) =>
+                location._id === updatedLocation._id ? { ...location, ...updatedLocation } : location
+            )
         );
-        setIsEditingLocation(false);
-        setSelectedLocation(null);
+
+        // Ensure the selected location updates immediately
+        setSelectedLocation((prev: any) =>
+            prev && prev._id === updatedLocation._id ? updatedLocation : prev
+        );
     };
 
     const handleDeleteLocation = (deletedLocationId: string) => {
@@ -173,7 +178,7 @@ const LocationsPage: React.FC = () => {
                 </div>
             </div>
             {isModalOpen && selectedLocation && (
-                <LocationModal location={selectedLocation} onClose={handleCloseModal} />
+                <LocationModal location={selectedLocation} onClose={handleCloseModal} onLocationUpdated={handleUpdateLocation} />
             )}
             {isAddingLocation && newLocationCoords && (
                 <CreationModal

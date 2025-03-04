@@ -3,8 +3,9 @@ import { FaArrowUp } from 'react-icons/fa';
 import styles from './ServerWindow.module.css';
 import { io } from 'socket.io-client';
 import { AuthContext } from '../../contexts/AuthContext';
+const socketURL = import.meta.env.SITE_ADDRESS;
 
-const socket = io('https://campuslink.online', {
+const socket = io(socketURL || '', {
     path: '/socket.io',
     withCredentials: true,
     transports: ['websocket', 'polling']
@@ -181,7 +182,7 @@ const ServerWindow: React.FC<ServerWindowProps> = ({ messages, setMessages, sele
     if (!selectedChannel) {
         return (
             <div className={styles.placeholder}>
-                Please select a channel within the server to view messages.
+                This server has no channels.
             </div>
         );
     }

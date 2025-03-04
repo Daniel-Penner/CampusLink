@@ -8,6 +8,7 @@ import Connection from "../models/Connection";
 const router = express.Router();
 
 // Endpoint to get messageable friends
+// Endpoint to get messageable friends
 router.get('/messageable-friends', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
@@ -19,19 +20,27 @@ router.get('/messageable-friends', authenticateToken, async (req, res) => {
             ]
         }).populate('sender recipient', 'firstName lastName email profilePicture');
 
-        const messageableFriends = connections.map(connection => {
+        // Use a Map to ensure unique users
+        const messageableFriendsMap = new Map();
+
+        connections.forEach(connection => {
             const friend = connection.sender._id.toString() === userId
                 ? connection.recipient
                 : connection.sender;
 
-            return {
-                _id: friend._id,
-                firstName: friend.firstName,
-                lastName: friend.lastName,
-                email: friend.email,
-                profilePicture: friend.profilePicture || 'default-profile-pic.png',
-            };
+            // Avoid duplicate users
+            if (!messageableFriendsMap.has(friend._id.toString())) {
+                messageableFriendsMap.set(friend._id.toString(), {
+                    _id: friend._id,
+                    firstName: friend.firstName,
+                    lastName: friend.lastName,
+                    email: friend.email,
+                    profilePicture: friend.profilePicture || 'default-profile-pic.png',
+                });
+            }
         });
+
+        const messageableFriends = Array.from(messageableFriendsMap.values());
 
         return res.status(200).json(messageableFriends);
     } catch (error) {
@@ -40,9 +49,10 @@ router.get('/messageable-friends', authenticateToken, async (req, res) => {
     }
 });
 
-// Endpoint to get message history between two users
+
 router.get('/messages/:userId/:otherUserId', authenticateToken, async (req, res) => {
     const { userId, otherUserId } = req.params;
+
     try {
         const messages = await Message.find({
             $or: [
@@ -50,15 +60,28 @@ router.get('/messages/:userId/:otherUserId', authenticateToken, async (req, res)
                 { sender: otherUserId, recipient: userId }
             ]
         }).sort({ timestamp: 1 });
+
+        // Mark messages as read
+        await Message.updateMany(
+            { sender: otherUserId, recipient: userId, isRead: false },
+            { $set: { isRead: true } }
+        );
+
+        // Reset unread count for the connection
+        await Connection.findOneAndUpdate(
+            { sender: otherUserId, recipient: userId },
+            { $set: { unreadCount: 0 } }
+        );
+
         res.status(200).json(messages);
     } catch (err) {
         res.status(500).json({ message: 'Error fetching messages' });
     }
 });
 
-// Endpoint to send a new message
+
 router.post('/message', authenticateToken, async (req, res) => {
-    const { sender, recipient, content, timestamp, conversationId } = req.body;
+    const { sender, recipient, content, timestamp } = req.body;
 
     try {
         const newMessage = new Message({
@@ -66,14 +89,21 @@ router.post('/message', authenticateToken, async (req, res) => {
             recipient,
             content,
             timestamp,
-            conversationId
+            isRead: false
         });
+
         await newMessage.save();
 
-        // Emit to the recipient's and sender's rooms
         console.log(`Emitting message to rooms: ${recipient}, ${sender}`);
         req.io.to(recipient).emit('new-message', newMessage);
-        req.io.to(sender).emit('new-message', newMessage);
+
+        const activeUsers = req.io.sockets.adapter.rooms.get(recipient);
+
+        await Connection.updateOne(
+            { sender, recipient },
+            { $inc: { unreadCount: 1 } },
+            { upsert: true }
+        );
 
         res.status(201).json(newMessage);
     } catch (err) {
@@ -81,5 +111,11 @@ router.post('/message', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Error saving message' });
     }
 });
+
+
+
+
+
+
 
 export default router;

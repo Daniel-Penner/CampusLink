@@ -59,33 +59,33 @@ const Login: React.FC = () => {
             style={{ backgroundImage: `url(${background})` }}
         >
             <Navbar />
-            <div className="flex flex-col items-center justify-center w-[90%] sm:w-[60%] md:w-[40%] lg:w-[30%] h-[calc(80vh-80px)] p-5 sm:p-6 lg:p-8 bg-secondaryBackground rounded-lg text-text-color text-center">
-                <h1 className="text-4xl md:text-3xl lg:text-4xl font-bold mb-5 lg:mb-8 text-primary-color">Welcome Back</h1>
+            <div className="flex flex-col items-center justify-center w-[90%] sm:w-[60%] md:w-[40%] lg:w-[30%] h-[calc(80vh-80px)] p-5 sm:p-6 lg:p-8 bg-secondaryBackground rounded-lg text-text text-center">
+                <h1 className="text-4xl md:text-3xl lg:text-4xl font-bold mb-5 lg:mb-8 text-primary">Welcome Back</h1>
                 <img src={logo} alt="Logo" className="w-16 md:w-20 lg:w-24 h-auto mx-auto mb-4 lg:mb-6" />
-                {error && <p className="text-error-color mb-4">{error}</p>}
-                {resendMessage && <p className="text-success-color mb-4">{resendMessage}</p>}
+                {error && <p className="text-error mb-4">{error}</p>}
+                {resendMessage && <p className="text-green-500 mb-4">{resendMessage}</p>}
                 <form className="flex flex-col mt-4 lg:mt-6 w-full" onSubmit={handleLogin}>
                     <input
                         type="email"
                         placeholder="Email Address"
-                        className="w-full p-2 lg:p-3 text-base lg:text-lg mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-2 lg:p-3 text-base lg:text-lg mb-4 bg-inputBackground text-text rounded-md"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Password"
-                        className="w-full p-2 lg:p-3 text-base lg:text-lg mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-2 lg:p-3 text-base lg:text-lg mb-4 bg-inputBackground text-text rounded-md"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <a href="/password-reset" className="text-primary-color hover:underline text-left mb-4">Forgot Password?</a>
-                    <button type="submit" className="w-full p-2 lg:p-3 bg-primary text-button-text rounded-md hover:bg-button-hover">
+                    <a href="/password-reset" className="text-primary hover:underline text-left mb-4">Forgot Password?</a>
+                    <button type="submit" className="w-full p-2 lg:p-3 bg-primary text-buttonText rounded-md hover:bg-buttonHover">
                         Login
                     </button>
                 </form>
                 {error === 'This account is not yet verified' && (
-                    <button onClick={handleResendVerification} className="mt-4 text-primary-color hover:underline">
+                    <button onClick={handleResendVerification} className="mt-4 text-primary hover:underline">
                         Resend Verification Email
                     </button>
                 )}

@@ -10,9 +10,10 @@ interface Review {
 interface LocationModalProps {
     location: any;
     onClose: () => void;
+    onLocationUpdated: (updatedLocation: any) => void;
 }
 
-const LocationModal: React.FC<LocationModalProps> = ({ location, onClose }) => {
+const LocationModal: React.FC<LocationModalProps> = ({ location, onClose, onLocationUpdated }) => {
     const [newRating, setNewRating] = useState<number>(0);
     const [newReviewText, setNewReviewText] = useState<string>('');
     const [isReviewSectionVisible, setIsReviewSectionVisible] = useState<boolean>(false);
@@ -61,15 +62,14 @@ const LocationModal: React.FC<LocationModalProps> = ({ location, onClose }) => {
                     }
                     return response.json();
                 })
-                .then(() => {
-                    // Add the review directly to the local state
-                    setReviews((prev) => [
-                        { rating: newRating, text: newReviewText }, // Add the new review
-                        ...prev, // Keep existing reviews
-                    ]);
+                .then((updatedLocation) => {
+                    setReviews((prev: Review[]) => [{ rating: newRating, text: newReviewText }, ...prev]);
                     setNewRating(0);
                     setNewReviewText('');
                     setIsReviewSectionVisible(false);
+
+                    // Call `onLocationUpdated` to update sidebar immediately
+                    onLocationUpdated(updatedLocation);
                 })
                 .catch((error) => console.error('Error adding review:', error));
         }

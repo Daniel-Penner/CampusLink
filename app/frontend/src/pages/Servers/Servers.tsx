@@ -27,6 +27,10 @@ const ServersPage: React.FC = () => {
         fetchServers();
     }, []);
 
+    useEffect(() => {
+        fetchServers();
+    }, []);
+
     const fetchServers = () => {
         fetch('/api/servers', {
             method: 'GET',
@@ -38,11 +42,16 @@ const ServersPage: React.FC = () => {
             .then((response) => response.json())
             .then((data) => {
                 setServers(data);
-                if (data.length > 0) {
-                    setSelectedServer(data[0]);
-                    setSelectedChannel(data[0].channels[0] || null);
-                    setMessages([]);
-                }
+
+                const savedServerId = localStorage.getItem('selectedServerId');
+                const savedChannelId = localStorage.getItem('selectedChannelId');
+
+                let foundServer = data.find((server: { _id: string | null; }) => server._id === savedServerId) || data[0] || null;
+                let foundChannel = foundServer?.channels.find((channel: { _id: string | null; }) => channel._id === savedChannelId) || foundServer?.channels[0] || null;
+
+                setSelectedServer(foundServer);
+                setSelectedChannel(foundChannel);
+                setMessages([]); // Ensure messages are cleared when switching servers
             })
             .catch((error) => console.error('Error fetching servers:', error));
     };
@@ -51,11 +60,15 @@ const ServersPage: React.FC = () => {
         setSelectedServer(server);
         setSelectedChannel(server.channels[0] || null);
         setMessages([]);
+
+        localStorage.setItem('selectedServerId', server._id);
+        localStorage.setItem('selectedChannelId', server.channels[0]?._id || '');
     };
 
     const handleChannelSelect = (channel: any) => {
         setSelectedChannel(channel);
         setMessages([]);
+        localStorage.setItem('selectedChannelId', channel._id);
     };
 
     const handleServerCreated = (serverData: { name: string; isPublic: boolean; channels: { name: string }[] }) => {
@@ -115,10 +128,43 @@ const ServersPage: React.FC = () => {
     };
 
     const handleServerUpdated = (updatedServer: any) => {
-        setServers(
-            servers.map((server) => (server._id === updatedServer._id ? updatedServer : server))
+        setServers((prevServers: any[]) =>
+            prevServers.map((server) =>
+                server._id === updatedServer._id
+                    ? { ...server, ...updatedServer, channels: updatedServer.channels || server.channels }
+                    : server
+            )
         );
-        setSelectedServer(updatedServer);
+
+        // Update selected server immediately if it's being modified
+        setSelectedServer((prev: any) => {
+            if (prev && prev._id === updatedServer._id) {
+                return { ...prev, ...updatedServer };
+            }
+            return prev;
+        });
+
+        // Update the UI in `ChannelsNavbar`
+        if (
+            selectedServer &&
+            selectedServer._id === updatedServer._id
+        ) {
+            setSelectedServer((prev: any) => ({
+                ...prev,
+                ...updatedServer,
+                channels: updatedServer.channels || prev?.channels,
+            }));
+        }
+
+        // If the currently selected channel was removed, reset selection
+        if (
+            selectedChannel &&
+            updatedServer.channels &&
+            !updatedServer.channels.some((ch: any) => ch._id === selectedChannel._id)
+        ) {
+            setSelectedChannel(updatedServer.channels[0] || null);
+            localStorage.setItem('selectedChannelId', updatedServer.channels[0]?._id || '');
+        }
     };
 
     const handleServerDeleted = () => {
@@ -173,7 +219,6 @@ const ServersPage: React.FC = () => {
                                 channels={selectedServer.channels || []}
                                 selectedChannel={selectedChannel}
                                 setSelectedChannel={handleChannelSelect}
-                                selectedServer={selectedServer}
                                 onSettings={() => setIsSettingsOpen(true)}
                                 onLeave={handleLeaveServer}
                                 isOwner={selectedServer?.owner === storedId}

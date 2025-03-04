@@ -2,13 +2,6 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { FaArrowUp } from 'react-icons/fa';
 import styles from './ChatWindow.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
-import { io } from 'socket.io-client';
-
-const socket = io('https://campuslink.online', {
-    path: '/socket.io',
-    withCredentials: true,
-    transports: ['websocket', 'polling']
-});
 
 interface Message {
     sender: string;
@@ -25,34 +18,20 @@ interface ChatWindowProps {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMessages }) => {
     const [newMessage, setNewMessage] = useState('');
+
     const authContext = useContext(AuthContext);
+    const token = localStorage.getItem('token'); // ✅ FIX: Retrieve token
     if (!authContext) {
         throw new Error('AuthContext is not provided.');
     }
 
     const { id } = authContext;
     const defaultProfilePicture = '/uploads/profile_pictures/default-profile.png';
-
-    // Reference for the message area div
     const messageAreaRef = useRef<HTMLDivElement>(null);
 
-    // Listen for real-time incoming messages
-    useEffect(() => {
-        socket.on('new-message', (newMessage: Message) => {
-            if (
-                (newMessage.sender === selectedUser?._id && newMessage.recipient === id) ||
-                (newMessage.sender === id && newMessage.recipient === selectedUser?._id)
-            ) {
-                setMessages((prevMessages) => [...prevMessages, newMessage]);
-            }
-        });
 
-        return () => {
-            socket.off('new-message');
-        };
-    }, [selectedUser, id, setMessages]);
 
-    // Scroll to the bottom of the message area when messages change
+    // ✅ Scroll to bottom when messages update
     useEffect(() => {
         if (messageAreaRef.current) {
             messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
@@ -63,10 +42,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
         return <div className={styles.chatContainer}>Select a user to chat with.</div>;
     }
 
-    const sendMessage = () => {
+    const sendMessage = async () => {
         if (!newMessage.trim()) return;
-        const timestamp = new Date();
 
+        const timestamp = new Date();
         const messageData: Message = {
             sender: id as string,
             recipient: selectedUser._id,
@@ -74,64 +53,59 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, selectedUser, setMess
             timestamp,
         };
 
-        const token = localStorage.getItem('token');
-        fetch('/api/direct-messages/message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(messageData)
-        })
-            .then(() => {
-                setMessages(prevMessages => [...prevMessages]);
-                setNewMessage('');
-            })
-            .catch(err => console.log('Error sending message:', err));
-    };
+        try {
+            const response = await fetch('/api/direct-messages/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token ? `Bearer ${token}` : '',
+                },
+                body: JSON.stringify(messageData),
+            });
 
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            sendMessage();
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                console.error('Error sending message:', errorResponse);
+                return;
+            }
+
+            const sentMessage = await response.json(); //
+
+            setMessages(prevMessages => [...prevMessages, sentMessage]);
+            setNewMessage('');
+        } catch (err) {
+            console.error('Error sending message:', err);
         }
     };
 
-    let previousSender: string | null = null;
 
     return (
         <div className={styles.chatContainer}>
             <div className={styles.messageArea} ref={messageAreaRef}>
-                {messages.map((msg, index) => {
-                    const isOwnMessage = msg.sender === id;
-                    const showProfilePicture = !isOwnMessage && previousSender !== msg.sender;
-                    previousSender = msg.sender;
-
-                    return (
-                        <div key={index} className={isOwnMessage ? styles.sentMessage : styles.receivedMessage}>
-                            {!isOwnMessage && showProfilePicture && (
-                                <img
-                                    src={selectedUser.profilePicture || defaultProfilePicture}
-                                    alt={selectedUser.name}
-                                    className={styles.messageProfilePic}
-                                />
-                            )}
-                            <p className={styles.messageContent}>
-                                {msg.content}
-                                <span className={styles.timestamp}>{new Date(msg.timestamp).toLocaleString()}</span>
-                            </p>
-                        </div>
-                    );
-                })}
+                {messages.map((msg, index) => (
+                    <div key={index} className={msg.sender === id ? styles.sentMessage : styles.receivedMessage}>
+                        {msg.sender !== id && (
+                            <img
+                                src={selectedUser.profilePicture || defaultProfilePicture}
+                                alt={selectedUser.name}
+                                className={styles.messageProfilePic}
+                            />
+                        )}
+                        <p className={styles.messageContent}>
+                            {msg.content}
+                            <span className={styles.timestamp}>{new Date(msg.timestamp).toLocaleString()}</span>
+                        </p>
+                    </div>
+                ))}
             </div>
             <div className={styles.inputContainer}>
                 <input
                     type="text"
-                    placeholder={`Message to ${selectedUser.name}...`}
+                    placeholder={`Message ${selectedUser.name}...`}
                     className={styles.messageInput}
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyDown={handleKeyPress}
+                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                 />
                 <button className={styles.sendButton} onClick={sendMessage}>
                     <FaArrowUp />

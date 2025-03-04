@@ -39,7 +39,7 @@ const Register: React.FC = () => {
 
             if (!response.ok) {
                 const data = await response.json();
-                setError(data.msg || 'Registration failed. Please try again.');
+                setError(data.message || 'Registration failed. Please try again.');
                 return;
             }
 
@@ -58,50 +58,48 @@ const Register: React.FC = () => {
             className="flex flex-col items-center justify-center h-screen w-screen bg-cover p-[5%]"
             style={{ backgroundImage: `url(${background})` }}
         >
-            <Navbar/>
-            <div
-                className="flex flex-col items-center justify-center w-[90%] sm:w-[60%] md:w-[40%] lg:w-[30%] h-[calc(80vh-80px)] p-6 sm:p-8 lg:p-10 bg-secondaryBackground rounded-lg text-text-color text-center">
-                <h1 className="text-[24px] sm:text-[24px] md:text-[26px] lg:text-[28px] font-bold mb-8 text-primary-color">Create Your Account</h1>
-                {error && <p className="text-error-color mb-4">{error}</p>}
+            <Navbar />
+            <div className="flex flex-col items-center justify-center w-[90%] sm:w-[60%] md:w-[40%] lg:w-[30%] h-[calc(80vh-80px)] p-6 sm:p-8 lg:p-10 bg-secondaryBackground rounded-lg text-text text-center">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-8 text-primary">Create Your Account</h1>
+                {error && <p className="text-error mb-4">{error}</p>}
                 {success && <p className="text-green-500 mb-4">{success}</p>}
                 <form className="flex flex-col w-full" onSubmit={handleRegister}>
                     <input
                         type="email"
                         placeholder="Email Address"
-                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-4 text-lg bg-inputBackground text-text rounded-md mb-4"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <input
                         type="text"
                         placeholder="First Name"
-                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-4 text-lg bg-inputBackground text-text rounded-md mb-4"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
                     <input
                         type="text"
                         placeholder="Last Name"
-                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-4 text-lg bg-inputBackground text-text rounded-md mb-4"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Password"
-                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-4 text-lg bg-inputBackground text-text rounded-md mb-4"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Confirm Password"
-                        className="w-full p-[1.5vw] sm:p-[1.5vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] mb-4 bg-input-background text-text-color rounded-md"
+                        className="w-full p-4 text-lg bg-inputBackground text-text rounded-md mb-4"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
-                    <button type="submit"
-                            className="w-full p-[1.5vw] sm:p-[1.25vw] md:p-[1vw] lg:p-[0.75vw] text-[2.5vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] bg-primary text-button-text rounded-md hover:bg-button-hover">
+                    <button type="submit" className="w-full p-4 bg-primary text-buttonText rounded-md hover:bg-buttonHover">
                         Register
                     </button>
                 </form>

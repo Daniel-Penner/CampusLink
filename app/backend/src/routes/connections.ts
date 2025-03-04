@@ -2,6 +2,8 @@ import express from 'express';
 import Connection from '../models/Connection';
 import User from '../models/User';
 import authenticateToken from '../middleware/authMiddleware';
+import Message from "../models/Message";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -155,5 +157,69 @@ router.get('/received-pending', authenticateToken, async (req, res) => {
         return res.status(500).json({ message: 'Server error. Please try again later.' });
     }
 });
+
+router.get('/unread-count/:userId', authenticateToken, async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const unreadCounts = await Message.aggregate([
+            {
+                $match: { recipient: new mongoose.Types.ObjectId(userId), isRead: false }
+            },
+            {
+                $group: {
+                    _id: "$sender",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const unreadMessages = unreadCounts.reduce((acc, { _id, count }) => {
+            acc[_id.toString()] = count;
+            return acc;
+        }, {} as { [key: string]: number });
+
+        res.status(200).json({ unreadMessages });
+    } catch (error) {
+        console.error('Error fetching unread message counts:', error);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
+});
+
+router.post('/mark-read/:userId/:otherUserId', authenticateToken, async (req, res) => {
+    const { userId, otherUserId } = req.params;
+
+    try {
+        // Mark all messages between these two users as read
+        await Message.updateMany(
+            {
+                $or: [
+                    { sender: otherUserId, recipient: userId, isRead: false },
+                    { sender: userId, recipient: otherUserId, isRead: false }
+                ]
+            },
+            { $set: { isRead: true } }
+        );
+
+        // Reset unread count for both users
+        await Connection.updateMany(
+            {
+                $or: [
+                    { sender: otherUserId, recipient: userId },
+                    { sender: userId, recipient: otherUserId }
+                ]
+            },
+            { $set: { unreadCount: 0 } }
+        );
+
+        res.status(200).json({ message: 'Messages marked as read and unread count reset for both users.' });
+    } catch (error) {
+        console.error('Error marking messages as read:', error);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
+});
+
+
+
 
 export default router;

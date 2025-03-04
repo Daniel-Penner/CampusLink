@@ -12,6 +12,15 @@ import locationRoutes from './routes/locations';
 import path from 'path';
 import queries from "./routes/queries";
 import dashboardRoutes from './routes/dashboard';
+import dotenv from "dotenv";
+import sgMail from "@sendgrid/mail";
+import Connection from "./models/Connection";
+import Message from "./models/Message";
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+if (!process.env.SITE_ADDRESS) {
+    throw new Error('SITE_ADDRESS is not set in the environment variables.');
+}
 
 // Create an Express app and an HTTP server
 const app = express();
@@ -20,21 +29,69 @@ const server = http.createServer(app);
 // Initialize Socket.IO server
 const io = new SocketIOServer(server, {
     cors: {
-        origin: 'https://campuslink.online',
+        origin: process.env.SITE_ADDRESS,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true,
     },
 });
 
-// Setup Socket.IO events
+//socket
 io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
+    console.log(`User connected: ${socket.id}`);
 
     // Join a personal room for direct messages
     socket.on('join', (userId) => {
         console.log(`User ${userId} joined room ${userId}`);
         socket.join(userId);
     });
+
+    socket.on('send-message', async ({ sender, recipient, content }) => {
+        const message = new Message({ sender, recipient, content });
+        await message.save();
+
+        // Increment unread messages count
+        await Connection.updateOne(
+            { sender, recipient },
+            { $inc: { unreadCount: 1 } },
+            { upsert: true }
+        );
+
+        // Emit event to update unread count
+        io.to(recipient).emit('new-message', message);
+    });
+
+    // Handle Call Signaling
+    socket.on("call-user", ({ caller, recipient, offer }) => {
+        console.log(`User ${caller} is calling ${recipient}`);
+        console.log("Offer details:", offer);
+
+        io.to(recipient).emit("incoming-call", { caller, offer });
+    });
+
+    socket.on('answer-call', ({ caller, answer }) => {
+        console.log(`User answering call from ${caller}`);
+        io.to(caller).emit('call-answered', { answer });
+    });
+
+    socket.on('ice-candidate', ({ recipient, candidate }) => {
+        console.log(`ICE Candidate sent to ${recipient}`);
+        io.to(recipient).emit('ice-candidate', { candidate });
+    });
+
+    socket.on('end-call', ({ recipient }) => {
+        io.to(recipient).emit('call-ended');
+    });
+
+    socket.on("call-rejected", ({ caller }) => {
+        if (!caller) {
+            console.error("Call rejection received without a caller.");
+            return;
+        }
+
+        console.log(`User ${caller} rejected the call.`);
+        io.to(caller).emit("call-rejected", { caller });
+    });
+
 
     // Join a server channel
     socket.on('join-channel', (channelId) => {
@@ -79,7 +136,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.json());
 app.use(
     cors({
-        origin: 'https://campuslink.online',
+        origin: process.env.SITE_ADDRESS,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true,
     })

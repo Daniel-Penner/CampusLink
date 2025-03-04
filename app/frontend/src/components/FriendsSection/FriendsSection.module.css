@@ -1,9 +1,9 @@
 .friendsSection {
     width: 100vw;
-    height: calc(100vh - 154px);
+    height: 100vh;
     gap: 20px;
-    position: absolute;
-    bottom: 0;
+    position: relative;
+    top: 165px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
