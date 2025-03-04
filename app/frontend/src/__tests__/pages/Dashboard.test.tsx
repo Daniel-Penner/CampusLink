@@ -21,7 +21,12 @@ const mockAuthContext = {
     id: 'mockId',
     login: jest.fn(),
     logout: jest.fn(),
+    profilePicture: 'default_profile.jpg',
+    updateProfilePicture: jest.fn(),
+    theme: 'light',
+    setTheme: jest.fn(),
 };
+
 
 const mockFetchResponse = {
     recentMessages: [

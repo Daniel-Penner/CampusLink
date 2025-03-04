@@ -70,7 +70,7 @@ const FriendsPage: React.FC = () => {
     return (
         <div className={styles.friendsPage}>
             <Navbar />
-            <ConnectionsNavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            <ConnectionsNavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
             <FriendsSection friends={filteredFriends} setFriends={setFriends} />
         </div>
     );
