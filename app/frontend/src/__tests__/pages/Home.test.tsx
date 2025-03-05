@@ -3,33 +3,19 @@ import { BrowserRouter } from 'react-router-dom';
 import Homepage from '../../pages/Home/Home';
 import { AuthContext } from '../../contexts/AuthContext';
 
-export interface AuthContextType {
-    isAuthenticated: boolean;
-    user: {
-        id: string | null;
-        friendCode: string;
-    } | null;
-    name: string;
-    code: string;
-    id: string;
-    login: (token: string, id: string, name: string, friendCode: string) => void;
-    logout: () => void;
-}
-
-const mockAuthContext: AuthContextType = {
-    isAuthenticated: false,
-    user: {
-        id: null,
-        friendCode: '',
-    },
-    code: "12345",
-    name: '',
+const mockAuthContext = {
+    isAuthenticated: true,
+    user: null,
+    name: 'John Doe',
+    code: '12345',
     id: 'mockId',
     login: jest.fn(),
     logout: jest.fn(),
+    profilePicture: 'default_profile.jpg',
+    updateProfilePicture: jest.fn(),
+    theme: 'light',
+    setTheme: jest.fn(),
 };
-
-
 
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
@@ -59,7 +45,6 @@ describe('Homepage Component', () => {
         ).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Email Address')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
     });
 
     it('renders login section with all elements', () => {

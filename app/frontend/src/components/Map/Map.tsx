@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GoogleMap, useLoadScript, OverlayView } from '@react-google-maps/api';
 import './MarkerStyles.css';
-const apiUrl = import.meta.env.VITE_API_URL;
-const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const apiUrl = typeof window !== "undefined" ? import.meta.env.VITE_API_URL : process.env.VITE_API_URL || '';
+const googleMapsApiKey = typeof window !== "undefined" ? import.meta.env.VITE_GOOGLE_MAPS_API_KEY : process.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
 const mapContainerStyle = {
     width: '100%',

@@ -62,6 +62,7 @@ const PasswordResetForm: React.FC = () => {
                     <input
                         type="password"
                         placeholder="New Password"
+                        data-testid="new-password"
                         className="w-full p-[3vw] sm:p-[2.5vw] md:p-[2vw] lg:p-[1vw] text-[3vw] sm:text-[2.5vw] md:text-[2vw] lg:text-[1vw] mb-4 bg-input-background text-white rounded-md"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
@@ -69,6 +70,7 @@ const PasswordResetForm: React.FC = () => {
                     <input
                         type="password"
                         placeholder="Confirm New Password"
+                        data-testid="confirm-password"
                         className="w-full p-[3vw] sm:p-[2.5vw] md:p-[2vw] lg:p-[1vw] text-[3vw] sm:text-[2.5vw] md:text-[2vw] lg:text-[1vw] mb-4 bg-input-background text-white rounded-md"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}

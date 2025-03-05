@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import { AuthContext } from '../../contexts/AuthContext';
+import {useNavigate} from "react-router-dom";
 
 interface Message {
     content: string;
@@ -19,6 +20,7 @@ interface Location {
 }
 
 const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
     const authContext = useContext(AuthContext);
 
     if (!authContext) {
@@ -79,7 +81,7 @@ const Dashboard: React.FC = () => {
                             </div>
                             <button
                                 className="mt-4 bg-primary text-white py-2 px-4 rounded hover:bg-buttonHover"
-                                onClick={() => (window.location.href = '/messages')}
+                                onClick={() => navigate('/messages')}
                             >
                                 View All Messages
                             </button>
@@ -100,7 +102,7 @@ const Dashboard: React.FC = () => {
                             )}
                             <button
                                 className="mt-4 bg-primary text-white py-2 px-4 rounded hover:bg-buttonHover"
-                                onClick={() => (window.location.href = '/servers')}
+                                onClick={() => navigate('/servers')}
                             >
                                 View All Servers
                             </button>
@@ -126,7 +128,7 @@ const Dashboard: React.FC = () => {
                             </div>
                             <button
                                 className="mt-4 bg-primary text-white py-2 px-4 rounded hover:bg-buttonHover"
-                                onClick={() => (window.location.href = '/locations')}
+                                onClick={() => navigate('/locations')}
                             >
                                 View All Locations
                             </button>
