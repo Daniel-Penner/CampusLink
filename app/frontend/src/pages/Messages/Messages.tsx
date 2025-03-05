@@ -7,7 +7,7 @@ import styles from './Messages.module.css';
 import { AuthContext } from "../../contexts/AuthContext.tsx";
 import CallManager from "../../components/CallManager/CallManager";
 
-const socketURL = process.env.SITE_ADDRESS || '';
+const socketURL = import.meta.env.SITE_ADDRESS;
 
 const socket = io(socketURL || '', {
     path: '/socket.io',
