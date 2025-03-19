@@ -81,3 +81,12 @@
     background-color: var(--button-hover);
     transform: scale(1.05);
 }
+
+.searchBar {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}

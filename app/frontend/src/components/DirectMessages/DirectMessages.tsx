@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './DirectMessages.module.css';
-import { FaEdit, FaSearch } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 
 interface DirectMessagesProps {
     users: {
@@ -27,9 +27,6 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({ users, setSelectedUser,
         <div className={styles.sidebar}>
             <div className={styles.header}>
                 <h2>Direct Messages</h2>
-                <button className={styles.newMessageButton}>
-                    <FaEdit className={styles.newMessageIcon} />
-                </button>
             </div>
 
             <div className={styles.searchContainer}>

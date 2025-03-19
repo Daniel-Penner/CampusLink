@@ -20,12 +20,11 @@ const NavMenu: React.FC<NavMenuProps> = ({ isClosing }) => {
     return (
         <div className={`${styles.navMenu} ${isClosing ? styles.slideOut : styles.slideIn}`}>
             {/* Always visible */}
-            <button onClick={() => navigate('/')} className={styles.navButton}>
-                Home
-            </button>
-            <button onClick={() => navigate('/about')} className={styles.navButton}>
-                About
-            </button>
+            {!isAuthenticated && (
+                <button onClick={() => navigate('/')} className={styles.navButton}>
+                    Home
+                </button>
+            )}
 
             {/* Only show these if the user is authenticated */}
             {isAuthenticated && (
@@ -47,6 +46,9 @@ const NavMenu: React.FC<NavMenuProps> = ({ isClosing }) => {
                     </button>
                 </>
             )}
+            <button onClick={() => navigate('/about')} className={styles.navButton}>
+                About
+            </button>
         </div>
     );
 };

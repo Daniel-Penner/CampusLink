@@ -14,6 +14,7 @@ const LocationsPage: React.FC = () => {
     const [isAddingLocation, setIsAddingLocation] = useState(false);
     const [isEditingLocation, setIsEditingLocation] = useState(false); // Track if editing
     const [newLocationCoords, setNewLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const token = localStorage.getItem('token');
 
@@ -38,7 +39,9 @@ const LocationsPage: React.FC = () => {
         return rating + reviewWeight * reviewCount;
     };
 
-    const sortedLocations = [...locations].sort((a, b) => calculateScore(b) - calculateScore(a));
+    const sortedLocations = [...locations]
+        .sort((a, b) => calculateScore(b) - calculateScore(a))
+        .filter((location) => location.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const handleStartAddingLocation = () => {
         setIsAddingLocation(true);
@@ -134,6 +137,9 @@ const LocationsPage: React.FC = () => {
             </div>
         );
     };
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+    };
 
     return (
         <div className={styles.pageContainer}>
@@ -141,6 +147,13 @@ const LocationsPage: React.FC = () => {
             <div className={styles.mainContent}>
                 <div className={styles.sidebar}>
                     <h2 className={styles.sidebarHeader}>Top Rated Locations</h2>
+                    <input
+                        type="text"
+                        placeholder="Search locations..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        className={styles.searchBar}
+                    />
                     {sortedLocations.map((location, index) => (
                         <div
                             key={location._id}
