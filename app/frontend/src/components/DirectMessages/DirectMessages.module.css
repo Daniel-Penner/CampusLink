@@ -21,15 +21,6 @@
     margin-bottom: 0;
 }
 
-.newMessageButton {
-    background-color: var(--primary-color);
-    border: none;
-    border-radius: 5px;
-    padding: 8px 10px;
-    cursor: pointer;
-    font-size: 18px;
-}
-
 .newMessageIcon {
     color: var(--button-text);
 }
